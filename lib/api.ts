@@ -160,9 +160,9 @@ const apiRequest = async (
   if ((options.method === 'GET' || !options.method) && !endpoint.includes('_t=')) {
     url += endpoint.includes('?') ? `&_t=${Date.now()}` : `?_t=${Date.now()}`;
   }
-  
+
   console.log(`🌐 [apiRequest] Making ${options.method || 'GET'} request to:`, url);
-  
+
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -172,15 +172,11 @@ const apiRequest = async (
       'Expires': '0',
     },
   });
-  
+
   console.log(`📡 [apiRequest] Response status:`, response.status, 'for', endpoint);
 
   if (response.status === 401) {
-    // Unauthorized - clear token and redirect to login
-    removeToken();
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
+    // Unauthorized - throw error and let the caller (AuthContext) handle it
     throw new Error('Unauthorized');
   }
 
@@ -238,7 +234,7 @@ export const lessonsAPI = {
       console.log('📚 [lessonsAPI.getAll] Starting - endpoint:', endpoint);
       const response = await apiRequest(endpoint);
       console.log('📚 [lessonsAPI.getAll] Response received - status:', response.status, 'ok:', response.ok);
-      
+
       // Check if response is ok (200-299) or 304
       if (response.status === 304) {
         console.warn('Lessons: Got 304 (cached) - making fresh request');
@@ -249,11 +245,11 @@ export const lessonsAPI = {
         console.log('Lessons result (fresh):', Array.isArray(result) ? `${result.length} items` : 'not an array');
         return Array.isArray(result) ? result : [];
       }
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      
+
       const result = await response.json();
       console.log('Lessons result:', Array.isArray(result) ? `${result.length} items` : 'not an array', result);
       return Array.isArray(result) ? result : [];
@@ -300,7 +296,7 @@ export const gamesAPI = {
       console.log('🎮 [gamesAPI.getAll] Starting - endpoint:', endpoint);
       const response = await apiRequest(endpoint);
       console.log('🎮 [gamesAPI.getAll] Response received - status:', response.status);
-      
+
       // Check if response is ok (200-299) or 304
       if (response.status === 304) {
         console.warn('Games: Got 304 (cached) - making fresh request');
@@ -311,11 +307,11 @@ export const gamesAPI = {
         console.log('Games result (fresh):', Array.isArray(result) ? `${result.length} items` : 'not an array');
         return Array.isArray(result) ? result : [];
       }
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      
+
       const result = await response.json();
       console.log('Games result:', Array.isArray(result) ? `${result.length} items` : 'not an array', result);
       return Array.isArray(result) ? result : [];
@@ -558,12 +554,12 @@ export const feedbackAPI = {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
         },
       });
-      
+
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: 'Failed to download report' }));
         throw new Error(error.message || 'Failed to download report');
       }
-      
+
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');

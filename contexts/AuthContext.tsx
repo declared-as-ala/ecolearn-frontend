@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI, User, setToken, removeToken } from '@/lib/api';
+import { authAPI, usersAPI, User, setToken, removeToken } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -35,10 +35,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Set token in API client before making request
           setToken(token);
           const userData = await authAPI.getMe();
+
+          // If student has no gradeLevel in user object, check localStorage
+          if (userData.role === 'student' && !userData.gradeLevel) {
+            const savedLevel = typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0;
+            if (savedLevel === 5 || savedLevel === 6) {
+              userData.gradeLevel = savedLevel as 5 | 6;
+              // Update backend as well if missing
+              usersAPI.updateGradeLevel(savedLevel as 5 | 6).catch(console.error);
+            }
+          } else if (userData.role === 'student' && userData.gradeLevel) {
+            // Persist valid level to localStorage
+            localStorage.setItem('gradeLevel', userData.gradeLevel.toString());
+          }
+
           setUser(userData);
         } catch (error) {
+          console.error('Session restoration failed:', error);
           // Token is invalid, remove it
           removeToken();
+          localStorage.removeItem('gradeLevel'); // Clear level too if session failed
           setUser(null);
         }
       } else {
@@ -51,20 +67,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (username: string, password: string) => {
-    const response = await authAPI.login(username, password);
-    setToken(response.token);
-    setUser(response.user);
-    
-    // For students, check if grade level is set
-    if (response.user.role === 'student') {
-      const gradeLevel = response.user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
-      if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
-        router.push('/student/select-level');
-        return;
+    try {
+      const response = await authAPI.login(username, password);
+      setToken(response.token);
+      setUser(response.user);
+
+      // For students, handle grade level
+      if (response.user.role === 'student') {
+        const gradeLevel = response.user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
+        if (gradeLevel && (gradeLevel === 5 || gradeLevel === 6)) {
+          // If we have a local level but not in user object, sync it
+          if (!response.user.gradeLevel) {
+            await usersAPI.updateGradeLevel(gradeLevel as 5 | 6).catch(console.error);
+          }
+          localStorage.setItem('gradeLevel', gradeLevel.toString());
+          router.push('/student/dashboard');
+        } else {
+          router.push('/student/select-level');
+        }
+      } else {
+        router.push(`/${response.user.role}/dashboard`);
       }
+    } catch (error) {
+      removeToken();
+      throw error;
     }
-    
-    router.push(`/${response.user.role}/dashboard`);
   };
 
   const register = async (data: {
@@ -74,29 +101,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     role: string;
     profile?: any;
   }) => {
-    const response = await authAPI.register(data);
-    setToken(response.token);
-    setUser(response.user);
-    
-    // For students, redirect to level selection if no level is set
-    if (response.user.role === 'student') {
-      const gradeLevel = response.user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
-      if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
+    try {
+      const response = await authAPI.register(data);
+      setToken(response.token);
+      setUser(response.user);
+
+      if (response.user.role === 'student') {
         router.push('/student/select-level');
-        return;
+      } else {
+        router.push(`/${response.user.role}/dashboard`);
       }
+    } catch (error) {
+      removeToken();
+      throw error;
     }
-    
-    router.push(`/${response.user.role}/dashboard`);
   };
 
   const logout = () => {
     removeToken();
+    localStorage.removeItem('gradeLevel');
     setUser(null);
     router.push('/login');
   };
 
   const updateUser = (userData: User) => {
+    if (userData && userData.gradeLevel) {
+      localStorage.setItem('gradeLevel', userData.gradeLevel.toString());
+    }
     setUser(userData);
   };
 

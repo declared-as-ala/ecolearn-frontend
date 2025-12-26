@@ -12,9 +12,10 @@ import CartoonReaction from '@/components/cartoons/CartoonReaction';
 
 interface ScenarioGameProps {
   game: Game;
+  onComplete?: (points: number) => void;
 }
 
-export default function ScenarioGame({ game }: ScenarioGameProps) {
+export default function ScenarioGame({ game, onComplete }: ScenarioGameProps) {
   const { user, updateUser } = useAuth();
   const router = useRouter();
   const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
@@ -34,7 +35,8 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
     if (gameCompleted) return;
 
     const choice = choices.find((c: any) => c.id === choiceId);
-    const isCorrect = (choice?.impact || 0) > 0;
+    if (!choice) return;
+    const isCorrect = (choice.impact || 0) > 0;
 
     setSelectedChoices([...selectedChoices, choiceId]);
 
@@ -44,7 +46,7 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
       message: isCorrect
         ? 'اختيار ممتاز! 🌟 هذا القرار يساعد كوكبنا!'
         : 'دعنا نفكر معاً... 💭',
-      explanation: choice?.explanation || (isCorrect
+      explanation: choice.explanation || (isCorrect
         ? 'أنت بطل بيئي! 🌍'
         : 'يمكننا دائماً الاختيار الأفضل لحماية البيئة.')
     });
@@ -67,44 +69,16 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
     // Score is based on positive impact
     const maxImpact = choices
       .filter((c: any) => c.impact > 0)
-      .reduce((sum: number, c: any) => sum + c.impact, 0);
-    const scoreValue = Math.max(0, Math.round((totalImpact / maxImpact) * choices.length));
+      .reduce((sum: number, c: any) => sum + c.impact, 0) || 1;
 
-    setScore(scoreValue);
+    const pointsEarned = Math.round((totalImpact / maxImpact) * (game.points || 20));
+    const scoreVal = selectedChoices.filter(id => (choices.find((c: any) => c.id === id)?.impact || 0) > 0).length;
+
+    setScore(scoreVal);
     setGameCompleted(true);
 
-    try {
-      await gamesAPI.submitScore(game._id, {
-        score: scoreValue,
-        maxScore: choices.length,
-        answers: selectedChoices.map((choiceId) => {
-          const choice = choices.find((c: any) => c.id === choiceId);
-          return {
-            questionId: choiceId,
-            answer: choice?.text || '',
-            isCorrect: (choice?.impact || 0) > 0,
-          };
-        }),
-      });
-
-      // Update user points if game passed
-      const percentage = Math.round((scoreValue / choices.length) * 100);
-      const passed = percentage >= 70;
-
-      if (passed && user && updateUser) {
-        const newPoints = (user.points || 0) + game.points;
-        const newLevel = Math.floor(newPoints / 100);
-        updateUser({
-          ...user,
-          points: newPoints,
-          level: newLevel
-        });
-
-        // Set flag to trigger dashboard refresh
-        localStorage.setItem('ecolearn_refresh_dashboard', Date.now().toString());
-      }
-    } catch (error) {
-      console.error('Failed to submit score:', error);
+    if (onComplete) {
+      onComplete(pointsEarned);
     }
   };
 
@@ -204,10 +178,10 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
                     key={choice.id}
                     variant={isSelected ? 'default' : 'outline'}
                     className={`w-full justify-start text-right h-auto py-4 rounded-xl transition-all ${isSelected
-                        ? isCorrectChoice
-                          ? 'bg-green-500 hover:bg-green-600 text-white border-2 border-green-600'
-                          : 'bg-amber-500 hover:bg-amber-600 text-white border-2 border-amber-600'
-                        : 'bg-white hover:bg-green-50 border-2 border-gray-300 hover:border-green-400'
+                      ? isCorrectChoice
+                        ? 'bg-green-500 hover:bg-green-600 text-white border-2 border-green-600'
+                        : 'bg-amber-500 hover:bg-amber-600 text-white border-2 border-amber-600'
+                      : 'bg-white hover:bg-green-50 border-2 border-gray-300 hover:border-green-400'
                       }`}
                     onClick={() => handleChoiceSelect(choice.id)}
                     disabled={gameCompleted}

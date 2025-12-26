@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress as ProgressBar } from '@/components/ui/progress';
-import { 
-  PlayCircle, CheckCircle, Trophy, Award, 
+import {
+  PlayCircle, CheckCircle, Trophy, Award,
   Video, FileText, Gamepad2, TrendingUp
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -87,16 +87,25 @@ export default function CourseDetailPage() {
 
   const handleExerciseComplete = async (exerciseId: string, points: number) => {
     try {
-      await coursesAPI.submitExercise(courseId, exerciseId, {
+      const result = await coursesAPI.submitExercise(courseId, exerciseId, {
         score: points,
         maxScore: points,
       });
-      // Refresh course data
-      const updatedCourse = await coursesAPI.getOne(courseId);
-      setApiCourse(updatedCourse);
-      // Refresh user data for points
-      const updatedUser = await authAPI.getMe();
-      if (updateUser) updateUser(updatedUser);
+
+      // Update course progress immediately from result
+      if (result.progress) {
+        setApiCourse(prev => prev ? { ...prev, progress: { ...prev.progress, ...result.progress } } : null);
+      }
+
+      // Update user context for points/badges immediately
+      if (result.user && updateUser) {
+        updateUser({ ...user, ...result.user } as any);
+      }
+
+      // If new badges were awarded, we could show a toast or notification here
+      if (result.badges && result.badges.length > 0) {
+        console.log('New badges earned:', result.badges);
+      }
     } catch (error) {
       console.error('Failed to submit exercise:', error);
     }
@@ -104,16 +113,24 @@ export default function CourseDetailPage() {
 
   const handleGameComplete = async (gameId: string, points: number) => {
     try {
-      await coursesAPI.submitGame(courseId, gameId, {
+      const result = await coursesAPI.submitGame(courseId, gameId, {
         score: points,
         maxScore: points,
       });
-      // Refresh course data
-      const updatedCourse = await coursesAPI.getOne(courseId);
-      setApiCourse(updatedCourse);
-      // Refresh user data for points
-      const updatedUser = await authAPI.getMe();
-      if (updateUser) updateUser(updatedUser);
+
+      // Update course progress immediately
+      if (result.progress) {
+        setApiCourse(prev => prev ? { ...prev, progress: { ...prev.progress, ...result.progress } } : null);
+      }
+
+      // Update user context for points/badges immediately
+      if (result.user && updateUser) {
+        updateUser({ ...user, ...result.user } as any);
+      }
+
+      if (result.badges && result.badges.length > 0) {
+        console.log('New badges earned:', result.badges);
+      }
     } catch (error) {
       console.error('Failed to submit game:', error);
     }
@@ -308,7 +325,7 @@ export default function CourseDetailPage() {
                         onEnded={handleVideoEnd}
                       />
                     ) : null}
-                    
+
                     {/* Instructions for students */}
                     <div className="bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-xl p-6 flex items-center gap-4">
                       <WiseGuide size="medium" emotion="happy" animation="nod" />
@@ -437,18 +454,17 @@ export default function CourseDetailPage() {
                           'scenario': { label: 'موقف', emoji: '🎭', color: 'from-red-500 to-red-600' },
                         };
 
-                        const gameType = gameTypeLabels[game.type] || { 
-                          label: 'لعبة', 
-                          emoji: '🎮', 
-                          color: 'from-amber-500 to-amber-600' 
+                        const gameType = gameTypeLabels[game.type] || {
+                          label: 'لعبة',
+                          emoji: '🎮',
+                          color: 'from-amber-500 to-amber-600'
                         };
 
                         return (
                           <div
                             key={game.id}
-                            className={`relative transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
-                              isCompleted ? 'ring-4 ring-green-300' : ''
-                            }`}
+                            className={`relative transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${isCompleted ? 'ring-4 ring-green-300' : ''
+                              }`}
                           >
                             {/* Game Number Badge */}
                             <div className="absolute -top-3 -right-3 z-20 w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white">
@@ -470,12 +486,12 @@ export default function CourseDetailPage() {
                                   <div className="text-6xl mb-3 transform hover:scale-110 transition-transform">
                                     {gameType.emoji}
                                   </div>
-                                  
+
                                   {/* Game Title with Arabic Number */}
                                   <CardTitle className="text-xl font-bold text-white mb-2 leading-tight">
                                     لعبة {index + 1}: {game.title || `لعبة ${index + 1}`}
                                   </CardTitle>
-                                  
+
                                   {/* Game Type */}
                                   <Badge className="bg-white/20 text-white border-white/30 mt-2">
                                     {gameType.label}
@@ -509,8 +525,8 @@ export default function CourseDetailPage() {
                                         {score} / {maxScore}
                                       </span>
                                     </div>
-                                    <ProgressBar 
-                                      value={(score / maxScore) * 100} 
+                                    <ProgressBar
+                                      value={(score / maxScore) * 100}
                                       className="h-2 mt-2 bg-green-200"
                                     />
                                   </div>
@@ -532,11 +548,10 @@ export default function CourseDetailPage() {
                                     setSelectedGame(game);
                                     setIsGameDialogOpen(true);
                                   }}
-                                  className={`w-full py-6 rounded-2xl text-xl font-bold shadow-lg transition-transform active:scale-95 ${
-                                    isCompleted
+                                  className={`w-full py-6 rounded-2xl text-xl font-bold shadow-lg transition-transform active:scale-95 ${isCompleted
                                       ? 'bg-green-600 hover:bg-green-700 text-white'
                                       : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white'
-                                  }`}
+                                    }`}
                                   size="lg"
                                 >
                                   <PlayCircle className="w-6 h-6 ml-2" />

@@ -99,35 +99,36 @@ export default function DragDropGame({ game, onComplete }: DragDropGameProps) {
       onComplete(pointsEarned);
     }
 
-    try {
-      await gamesAPI.submitScore(game._id, {
-        score: correct,
-        maxScore: items.length,
-        answers: items.map((item: any) => ({
-          questionId: item.id,
-          answer: Object.keys(categories).find(cat => categories[cat]?.includes(item.id)) || 'none',
-          isCorrect: Object.keys(categories).find(cat => categories[cat]?.includes(item.id)) === item.category
-        }))
-      });
-
-      // Update user points if game passed
-      const percentage = Math.round((correct / items.length) * 100);
-      const passed = percentage >= 70;
-
-      if (passed && user && updateUser) {
-        const newPoints = (user.points || 0) + game.points;
-        const newLevel = Math.floor(newPoints / 100);
-        updateUser({
-          ...user,
-          points: newPoints,
-          level: newLevel
+    if (onComplete) {
+      onComplete(pointsEarned);
+    } else {
+      // Standalone mode - handle submission here
+      try {
+        await gamesAPI.submitScore(game._id, {
+          score: correct,
+          maxScore: items.length,
+          answers: items.map((item: any) => ({
+            questionId: item.id,
+            answer: Object.keys(categories).find(cat => categories[cat]?.includes(item.id)) || 'none',
+            isCorrect: Object.keys(categories).find(cat => categories[cat]?.includes(item.id)) === item.category
+          }))
         });
 
-        // Set flag to trigger dashboard refresh
-        localStorage.setItem('ecolearn_refresh_dashboard', Date.now().toString());
+        // Update user points
+        const percentage = Math.round((correct / items.length) * 100);
+        const passed = percentage >= 70;
+
+        if (passed && user && updateUser) {
+          const newPoints = (user.points || 0) + (game.points || 20);
+          updateUser({
+            ...user,
+            points: newPoints,
+            level: Math.floor(newPoints / 100) + 1
+          } as any);
+        }
+      } catch (error) {
+        console.error('Failed to submit score:', error);
       }
-    } catch (error) {
-      console.error('Failed to submit score:', error);
     }
   };
 
