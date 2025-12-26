@@ -15,6 +15,7 @@ interface ScenarioGameProps {
 }
 
 export default function ScenarioGame({ game }: ScenarioGameProps) {
+  const { user, updateUser } = useAuth();
   const router = useRouter();
   const [selectedChoices, setSelectedChoices] = useState<string[]>([]);
   const [gameCompleted, setGameCompleted] = useState(false);
@@ -31,23 +32,23 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
 
   const handleChoiceSelect = (choiceId: string) => {
     if (gameCompleted) return;
-    
+
     const choice = choices.find((c: any) => c.id === choiceId);
     const isCorrect = (choice?.impact || 0) > 0;
-    
+
     setSelectedChoices([...selectedChoices, choiceId]);
-    
+
     // Show immediate cartoon reaction
     setLastChoiceReaction({
       isCorrect,
-      message: isCorrect 
-        ? 'اختيار ممتاز! 🌟 هذا القرار يساعد كوكبنا!' 
+      message: isCorrect
+        ? 'اختيار ممتاز! 🌟 هذا القرار يساعد كوكبنا!'
         : 'دعنا نفكر معاً... 💭',
-      explanation: choice?.explanation || (isCorrect 
-        ? 'أنت بطل بيئي! 🌍' 
+      explanation: choice?.explanation || (isCorrect
+        ? 'أنت بطل بيئي! 🌍'
         : 'يمكننا دائماً الاختيار الأفضل لحماية البيئة.')
     });
-    
+
     // Auto-hide reaction after 3 seconds
     setTimeout(() => {
       setLastChoiceReaction(null);
@@ -85,11 +86,11 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
           };
         }),
       });
-      
+
       // Update user points if game passed
       const percentage = Math.round((scoreValue / choices.length) * 100);
       const passed = percentage >= 70;
-      
+
       if (passed && user && updateUser) {
         const newPoints = (user.points || 0) + game.points;
         const newLevel = Math.floor(newPoints / 100);
@@ -98,7 +99,7 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
           points: newPoints,
           level: newLevel
         });
-        
+
         // Set flag to trigger dashboard refresh
         localStorage.setItem('ecolearn_refresh_dashboard', Date.now().toString());
       }
@@ -138,14 +139,14 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
         <div className="max-w-2xl w-full">
           <CartoonReaction
             isCorrect={passed}
-            message={passed 
+            message={passed
               ? `ممتاز! حصلت على ${score} / ${choices.length} 🎉
 
 لقد كسبت ${game.points} نقطة! أنت بطل بيئي حقيقي! 🌟`
               : `حصلت على ${score} / ${choices.length}
 
 لا بأس! يمكنك المحاولة مرة أخرى لتحسين نتائجك! 💪`}
-            explanation={passed 
+            explanation={passed
               ? 'أنت تفهم كيفية حماية البيئة! استمر في العمل الجيد! 🌍'
               : 'كل خطوة نحو التعلم مهمة! حاول مرة أخرى وستتحسن! 📚'}
             onContinue={() => router.push('/student/dashboard')}
@@ -174,7 +175,6 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
                 message={lastChoiceReaction.message}
                 explanation={lastChoiceReaction.explanation}
                 onContinue={() => setLastChoiceReaction(null)}
-                showButton={true}
               />
             </div>
           </div>
@@ -203,13 +203,12 @@ export default function ScenarioGame({ game }: ScenarioGameProps) {
                   <Button
                     key={choice.id}
                     variant={isSelected ? 'default' : 'outline'}
-                    className={`w-full justify-start text-right h-auto py-4 rounded-xl transition-all ${
-                      isSelected 
+                    className={`w-full justify-start text-right h-auto py-4 rounded-xl transition-all ${isSelected
                         ? isCorrectChoice
                           ? 'bg-green-500 hover:bg-green-600 text-white border-2 border-green-600'
                           : 'bg-amber-500 hover:bg-amber-600 text-white border-2 border-amber-600'
                         : 'bg-white hover:bg-green-50 border-2 border-gray-300 hover:border-green-400'
-                    }`}
+                      }`}
                     onClick={() => handleChoiceSelect(choice.id)}
                     disabled={gameCompleted}
                   >

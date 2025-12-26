@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy, CheckCircle, XCircle, RefreshCcw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { gamesAPI } from '@/lib/api';
 import EcoHero from '../cartoons/EcoHero';
 import FriendlyAnimal from '../cartoons/FriendlyAnimal';
 
@@ -11,16 +14,18 @@ interface Game {
   _id: string;
   title: string;
   description: string;
-  points?: number;
+  points: number;
   gameData?: any;
 }
 
 interface DragDropGameProps {
   game: Game;
-  onComplete: (points: number) => void;
+  onComplete?: (points: number) => void;
 }
 
 export default function DragDropGame({ game, onComplete }: DragDropGameProps) {
+  const router = useRouter();
+  const { user, updateUser } = useAuth();
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [categories, setCategories] = useState<Record<string, string[]>>({});
   const [gameCompleted, setGameCompleted] = useState(false);
@@ -75,7 +80,7 @@ export default function DragDropGame({ game, onComplete }: DragDropGameProps) {
     setTimeout(() => setFeedback(''), 2000);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     let correct = 0;
     items.forEach((item: any) => {
       const userCategory = Object.keys(categories).find((cat) =>
@@ -86,10 +91,44 @@ export default function DragDropGame({ game, onComplete }: DragDropGameProps) {
       }
     });
 
-    const points = Math.round((correct / items.length) * (game.points || 20));
+    const pointsEarned = Math.round((correct / items.length) * (game.points || 20));
     setScore(correct);
     setGameCompleted(true);
-    onComplete(points);
+
+    if (onComplete) {
+      onComplete(pointsEarned);
+    }
+
+    try {
+      await gamesAPI.submitScore(game._id, {
+        score: correct,
+        maxScore: items.length,
+        answers: items.map((item: any) => ({
+          questionId: item.id,
+          answer: Object.keys(categories).find(cat => categories[cat]?.includes(item.id)) || 'none',
+          isCorrect: Object.keys(categories).find(cat => categories[cat]?.includes(item.id)) === item.category
+        }))
+      });
+
+      // Update user points if game passed
+      const percentage = Math.round((correct / items.length) * 100);
+      const passed = percentage >= 70;
+
+      if (passed && user && updateUser) {
+        const newPoints = (user.points || 0) + game.points;
+        const newLevel = Math.floor(newPoints / 100);
+        updateUser({
+          ...user,
+          points: newPoints,
+          level: newLevel
+        });
+
+        // Set flag to trigger dashboard refresh
+        localStorage.setItem('ecolearn_refresh_dashboard', Date.now().toString());
+      }
+    } catch (error) {
+      console.error('Failed to submit score:', error);
+    }
   };
 
   const handleRestart = () => {
@@ -199,11 +238,10 @@ export default function DragDropGame({ game, onComplete }: DragDropGameProps) {
               key={category}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, category)}
-              className={`border-4 border-dashed rounded-2xl p-6 min-h-[200px] transition-all ${
-                draggedItem
-                  ? 'border-green-400 bg-green-50 scale-105'
-                  : 'border-gray-300 bg-gray-50 hover:border-gray-400'
-              }`}
+              className={`border-4 border-dashed rounded-2xl p-6 min-h-[200px] transition-all ${draggedItem
+                ? 'border-green-400 bg-green-50 scale-105'
+                : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                }`}
             >
               <h3 className="font-bold text-xl mb-4 text-center text-gray-700 bg-white rounded-lg py-2">
                 {category}
@@ -228,11 +266,10 @@ export default function DragDropGame({ game, onComplete }: DragDropGameProps) {
         <Button
           onClick={handleSubmit}
           disabled={!allItemsPlaced}
-          className={`w-full py-6 rounded-2xl text-xl font-bold shadow-lg transition-all ${
-            allItemsPlaced
-              ? 'bg-green-600 hover:bg-green-700 text-white'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          }`}
+          className={`w-full py-6 rounded-2xl text-xl font-bold shadow-lg transition-all ${allItemsPlaced
+            ? 'bg-green-600 hover:bg-green-700 text-white'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
         >
           {allItemsPlaced ? (
             <>

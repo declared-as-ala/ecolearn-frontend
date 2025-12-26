@@ -11,8 +11,9 @@ import { notificationsAPI } from '@/lib/api';
 interface Notification {
   _id: string;
   message: string;
-  type: 'lesson_completed' | 'badge_earned' | 'feedback' | 'general' | 'teacher_feedback';
-  read: boolean;
+  type: string;
+  isRead: boolean;
+  title?: string;
   createdAt: string;
 }
 
@@ -36,7 +37,7 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
     try {
       const notifications = await notificationsAPI.getAll(true);
       setNotifications(notifications || []);
-      setUnreadCount((notifications || []).filter((n: Notification) => !n.read).length);
+      setUnreadCount((notifications || []).filter((n: Notification) => !n.isRead).length);
     } catch (error) {
       console.error('Failed to load notifications:', error);
       // Silently fail - don't show error to user
@@ -46,8 +47,8 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
   const markAsRead = async (notificationId: string) => {
     try {
       await notificationsAPI.markAsRead(notificationId);
-      setNotifications(notifications.map(n => 
-        n._id === notificationId ? { ...n, read: true } : n
+      setNotifications(notifications.map(n =>
+        n._id === notificationId ? { ...n, isRead: true } : n
       ));
       setUnreadCount(Math.max(0, unreadCount - 1));
     } catch (error) {
@@ -100,8 +101,8 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
 
       {isOpen && (
         <>
-          <div 
-            className="fixed inset-0 z-40" 
+          <div
+            className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
           <Card className="absolute top-12 left-0 z-50 w-80 max-h-96 overflow-y-auto shadow-xl border-2 border-green-200">
@@ -117,7 +118,7 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-              
+
               {notifications.length === 0 ? (
                 <div className="p-8 text-center">
                   <EcoHero size="medium" emotion="happy" className="mx-auto mb-4" />
@@ -128,10 +129,9 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
                   {notifications.map((notification) => (
                     <div
                       key={notification._id}
-                      className={`p-4 hover:bg-green-50 transition-colors cursor-pointer ${
-                        !notification.read ? 'bg-blue-50/50' : ''
-                      }`}
-                      onClick={() => !notification.read && markAsRead(notification._id)}
+                      className={`p-4 hover:bg-green-50 transition-colors cursor-pointer ${!notification.isRead ? 'bg-blue-50/50' : ''
+                        }`}
+                      onClick={() => !notification.isRead && markAsRead(notification._id)}
                     >
                       <div className="flex items-start gap-3">
                         <div className="mt-1">
@@ -141,7 +141,7 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
                           <p className="text-sm font-semibold text-gray-800">
                             {getNotificationMessage(notification)}
                           </p>
-                          {!notification.read && (
+                          {!notification.isRead && (
                             <Badge className="mt-1 bg-blue-500 text-xs">جديد</Badge>
                           )}
                         </div>

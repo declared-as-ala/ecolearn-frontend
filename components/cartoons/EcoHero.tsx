@@ -3,14 +3,14 @@
 import React from 'react';
 
 interface EcoHeroProps {
-  emotion?: 'happy' | 'thinking' | 'sad' | 'celebrating' | 'neutral';
+  emotion?: 'happy' | 'thinking' | 'sad' | 'celebrating' | 'neutral' | 'encouraging';
   size?: 'small' | 'medium' | 'large';
   animation?: 'idle' | 'bounce' | 'wave' | 'jump';
   className?: string;
 }
 
-export default function EcoHero({ 
-  emotion = 'happy', 
+export default function EcoHero({
+  emotion = 'happy',
   size = 'medium',
   animation = 'idle',
   className = ''
@@ -88,13 +88,13 @@ export default function EcoHero({
       <svg viewBox="0 0 80 80" className="w-full h-full">
         {/* Body - rounded friendly shape */}
         <ellipse cx="40" cy="50" rx="22" ry="18" fill="#4ade80" stroke="#22c55e" strokeWidth="2" />
-        
+
         {/* Head */}
         <circle cx="40" cy="30" r="18" fill="#86efac" stroke="#22c55e" strokeWidth="2" />
-        
+
         {/* Face expression */}
         {getFaceExpression()}
-        
+
         {/* Eco leaf on head */}
         <path
           d="M 40 15 Q 35 10 30 15 Q 35 12 40 15 Q 45 12 50 15 Q 45 10 40 15"
@@ -102,7 +102,7 @@ export default function EcoHero({
           className="animate-[leafSway_2s_ease-in-out_infinite]"
           style={{ transformOrigin: '40px 15px' }}
         />
-        
+
         {/* Arms */}
         <ellipse cx="25" cy="45" rx="4" ry="12" fill="#86efac" />
         <ellipse cx="55" cy="45" rx="4" ry="12" fill="#86efac" />

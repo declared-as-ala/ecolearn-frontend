@@ -99,27 +99,11 @@ export default function StudentSidebar() {
               const isActive = item.href === '/student/courses'
                 ? pathname.startsWith('/student/courses')
                 : item.href === '/student/dashboard'
-                ? pathname === '/student/dashboard'
-                : pathname === item.href;
+                  ? pathname === '/student/dashboard'
+                  : pathname === item.href;
 
-              const Component = item.onClick ? 'button' : Link;
-              const props = item.onClick 
-                ? { onClick: item.onClick }
-                : { href: item.href };
-
-              return (
-                <Component
-                  key={item.href}
-                  {...props}
-                  className={`
-                    group relative flex ${isCollapsed ? 'flex-col' : 'flex-row'} items-center justify-center gap-2 p-3 rounded-2xl transition-all duration-300 w-full
-                    ${isActive
-                      ? 'bg-white text-green-600 shadow-md border-2 border-green-200'
-                      : 'text-gray-600 hover:bg-white/70 hover:text-green-600 hover:shadow-sm'
-                    }
-                  `}
-                  title={item.label}
-                >
+              const content = (
+                <>
                   {/* Icon */}
                   <div className={`
                     transition-transform duration-300
@@ -127,7 +111,7 @@ export default function StudentSidebar() {
                   `}>
                     {item.icon}
                   </div>
-                  
+
                   {/* Label */}
                   {!isCollapsed && (
                     <span className={`
@@ -142,7 +126,39 @@ export default function StudentSidebar() {
                   {isActive && (
                     <div className={`absolute ${isCollapsed ? 'right-2 top-1/2 transform -translate-y-1/2 w-1 h-8' : 'left-2 top-1/2 transform -translate-y-1/2 w-1 h-8'} bg-green-500 rounded-full`}></div>
                   )}
-                </Component>
+                </>
+              );
+
+              const className = `
+                group relative flex ${isCollapsed ? 'flex-col' : 'flex-row'} items-center justify-center gap-2 p-3 rounded-2xl transition-all duration-300 w-full
+                ${isActive
+                  ? 'bg-white text-green-600 shadow-md border-2 border-green-200'
+                  : 'text-gray-600 hover:bg-white/70 hover:text-green-600 hover:shadow-sm'
+                }
+              `;
+
+              if (item.onClick) {
+                return (
+                  <button
+                    key={item.href}
+                    onClick={item.onClick}
+                    className={className}
+                    title={item.label}
+                  >
+                    {content}
+                  </button>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={className}
+                  title={item.label}
+                >
+                  {content}
+                </Link>
               );
             })}
           </nav>
@@ -160,7 +176,7 @@ export default function StudentSidebar() {
           </div>
         </div>
       </aside>
-      
+
       {/* Export sidebar state for use in pages */}
       <script
         dangerouslySetInnerHTML={{

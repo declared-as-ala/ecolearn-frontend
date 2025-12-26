@@ -4,13 +4,13 @@ import React from 'react';
 
 interface FriendlyAnimalProps {
   type?: 'bird' | 'rabbit' | 'turtle' | 'fish' | 'butterfly';
-  emotion?: 'happy' | 'excited' | 'curious' | 'proud';
+  emotion?: 'happy' | 'excited' | 'curious' | 'proud' | 'thinking' | 'celebrating';
   size?: 'small' | 'medium' | 'large';
   className?: string;
 }
 
-export default function FriendlyAnimal({ 
-  type = 'bird', 
+export default function FriendlyAnimal({
+  type = 'bird',
   emotion = 'happy',
   size = 'medium',
   className = ''
@@ -113,9 +113,9 @@ export default function FriendlyAnimal({
     }
   };
 
-  const animationClass = emotion === 'excited' ? 'animate-[bounce_0.6s_ease-in-out_infinite]' : 
-                        emotion === 'curious' ? 'animate-[wave_1s_ease-in-out_infinite]' :
-                        'animate-[float_3s_ease-in-out_infinite]';
+  const animationClass = emotion === 'excited' ? 'animate-[bounce_0.6s_ease-in-out_infinite]' :
+    emotion === 'curious' ? 'animate-[wave_1s_ease-in-out_infinite]' :
+      'animate-[float_3s_ease-in-out_infinite]';
 
   return (
     <div className={`${sizeClasses[size]} ${className} ${animationClass} inline-block`}>
