@@ -47,10 +47,10 @@ export default function ProgressPage() {
     }
   };
 
-  const completedLessons = progress.filter(p => p.lesson && p.status === 'completed').length;
-  const completedGames = progress.filter(p => p.game && p.status === 'completed').length;
+  const completedLessons = progress.filter(p => (p.lesson || p.courseSection === 'exercise') && p.status === 'completed').length;
+  const completedGames = progress.filter(p => (p.game || p.courseSection === 'game') && p.status === 'completed').length;
   const totalPoints = user?.points || 0;
-  const currentLevel = user?.level || 0;
+  const currentLevel = user?.level || 1;
   const pointsInCurrentLevel = totalPoints % 100;
   const progressPercentage = Math.min((pointsInCurrentLevel / 100) * 100, 100);
   const remainingPoints = Math.max(100 - pointsInCurrentLevel, 0);
@@ -184,7 +184,7 @@ export default function ProgressPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 flex-1 bg-[url('https://www.transparenttextures.com/patterns/white-diamond.png')]">
-                {!user.badges || user.badges.length === 0 ? (
+                {(!user || !user.badges || user.badges.length === 0) ? (
                   <div className="h-full flex flex-col items-center justify-center text-center py-10">
                     <FriendlyAnimal type="rabbit" emotion="curious" size="large" />
                     <p className="text-2xl font-black text-gray-400 mt-6 mb-2">الخزانة فارغة حالياً!</p>
@@ -192,7 +192,7 @@ export default function ProgressPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-4 overflow-y-auto max-h-[500px] pr-2 custom-scrollbar">
-                    {user.badges.map((badge, index) => (
+                    {user?.badges?.map((badge, index) => (
                       <div
                         key={index}
                         className="group bg-gradient-to-l from-white to-gray-50 border-4 border-yellow-200 rounded-3xl p-4 flex items-center gap-4 hover:border-yellow-400 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
@@ -241,5 +241,6 @@ export default function ProgressPage() {
     </div>
   );
 }
+
 
 

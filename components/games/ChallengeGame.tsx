@@ -10,9 +10,10 @@ import { useRouter } from 'next/navigation';
 
 interface ChallengeGameProps {
   game: Game;
+  onComplete?: (points: number) => void;
 }
 
-export default function ChallengeGame({ game }: ChallengeGameProps) {
+export default function ChallengeGame({ game, onComplete }: ChallengeGameProps) {
   const router = useRouter();
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [gameCompleted, setGameCompleted] = useState(false);
@@ -41,15 +42,19 @@ export default function ChallengeGame({ game }: ChallengeGameProps) {
     setGameCompleted(true);
 
     try {
-      await gamesAPI.submitScore(game._id, {
-        score: scoreValue,
-        maxScore: tasks.length,
-        answers: tasks.map((task: any) => ({
-          questionId: task.id,
-          answer: completedTasks.includes(task.id),
-          isCorrect: completedTasks.includes(task.id),
-        })),
-      });
+      if (onComplete) {
+        onComplete(game.points);
+      } else {
+        await gamesAPI.submitScore(game._id, {
+          score: scoreValue,
+          maxScore: tasks.length,
+          answers: tasks.map((task: any) => ({
+            questionId: task.id,
+            answer: completedTasks.includes(task.id),
+            isCorrect: completedTasks.includes(task.id),
+          })),
+        });
+      }
     } catch (error) {
       console.error('Failed to submit score:', error);
     }
@@ -142,6 +147,7 @@ export default function ChallengeGame({ game }: ChallengeGameProps) {
     </Card>
   );
 }
+
 
 
 

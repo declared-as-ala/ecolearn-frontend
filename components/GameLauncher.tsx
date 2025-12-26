@@ -63,7 +63,7 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
     const renderGame = () => {
         // Convert game type to match component names
         const gameType = game.type.toLowerCase();
-        
+
         // Create a game object compatible with the game components
         const gameObj = {
             _id: game.id,
@@ -90,15 +90,16 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
             case 'build':
                 return <ConstructionGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'quiz':
-                // QuizGame handles completion internally, but we can wrap it
-                return <QuizGame game={gameObj as any} />;
+                return <QuizGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'scenario':
-                // ScenarioGame handles completion internally
-                return <ScenarioGame game={gameObj as any} />;
+                return <ScenarioGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'sequencing':
+                // For now use quiz for sequencing or a dedicated component if available
+                return <QuizGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'memory':
-                return <MemoryGame game={gameObj as any} />;
+                return <MemoryGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'challenge':
-                return <ChallengeGame game={gameObj as any} />;
+                return <ChallengeGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'rescue':
                 return <RescueGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'roleplay':
@@ -106,6 +107,9 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
                 return <RolePlayGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'audio':
                 return <AudioGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'sticker':
+                // ConstructionGame can double as a sticker/repair game
+                return <ConstructionGame game={gameObj as any} onComplete={handleGameComplete} />;
             default:
                 // Fallback to drag-drop for unknown types
                 return <DragDropGame game={gameObj as any} onComplete={handleGameComplete} />;

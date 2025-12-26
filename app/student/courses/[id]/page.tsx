@@ -99,12 +99,13 @@ export default function CourseDetailPage() {
 
       // Update user context for points/badges immediately
       if (result.user && updateUser) {
-        updateUser({ ...user, ...result.user } as any);
+        console.log('✅ [Exercise] Progress saved, updating user:', result.user);
+        updateUser(result.user);
       }
 
       // If new badges were awarded, we could show a toast or notification here
       if (result.badges && result.badges.length > 0) {
-        console.log('New badges earned:', result.badges);
+        console.log('🏅 New badges earned:', result.badges);
       }
     } catch (error) {
       console.error('Failed to submit exercise:', error);
@@ -125,11 +126,12 @@ export default function CourseDetailPage() {
 
       // Update user context for points/badges immediately
       if (result.user && updateUser) {
-        updateUser({ ...user, ...result.user } as any);
+        console.log('✅ [Game] Progress saved, updating user:', result.user);
+        updateUser(result.user);
       }
 
       if (result.badges && result.badges.length > 0) {
-        console.log('New badges earned:', result.badges);
+        console.log('🏅 New badges earned:', result.badges);
       }
     } catch (error) {
       console.error('Failed to submit game:', error);
@@ -549,8 +551,8 @@ export default function CourseDetailPage() {
                                     setIsGameDialogOpen(true);
                                   }}
                                   className={`w-full py-6 rounded-2xl text-xl font-bold shadow-lg transition-transform active:scale-95 ${isCompleted
-                                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                                      : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white'
+                                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                                    : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white'
                                     }`}
                                   size="lg"
                                 >
@@ -641,12 +643,25 @@ export default function CourseDetailPage() {
                   <div>
                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
                       <Award className="w-6 h-6 text-yellow-600" />
-                      الشارات
+                      أوسمتي المستحقة
                     </h3>
-                    <div className="text-center py-8 bg-gray-100 rounded-xl">
-                      <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">لم تحصل على شارات بعد في هذه الدورة</p>
-                    </div>
+                    {(!user || !user.badges || user.badges.length === 0) ? (
+                      <div className="text-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                        <FriendlyAnimal type="rabbit" emotion="thinking" size="medium" className="mx-auto mb-2" />
+                        <p className="text-gray-500 font-bold">لم تحصل على أوسمة بعد. أكمل الدروس والتمارين لتحصل عليها! 🌱</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {user.badges.map((badge, idx) => (
+                          <div key={idx} className="bg-white border-2 border-yellow-200 rounded-2xl p-3 text-center shadow-sm hover:shadow-md transition-all transform hover:scale-105">
+                            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <Award className="w-6 h-6 text-yellow-600" />
+                            </div>
+                            <p className="text-sm font-bold text-gray-800">{badge}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>

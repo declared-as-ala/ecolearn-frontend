@@ -14,9 +14,10 @@ import EcoHero from '@/components/cartoons/EcoHero';
 
 interface QuizGameProps {
   game: Game;
+  onComplete?: (points: number) => void;
 }
 
-export default function QuizGame({ game }: QuizGameProps) {
+export default function QuizGame({ game, onComplete }: QuizGameProps) {
   const router = useRouter();
   const { user, updateUser } = useAuth();
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -60,7 +61,7 @@ export default function QuizGame({ game }: QuizGameProps) {
 
     const question = questions[currentQuestion];
     const isCorrect = selectedAnswer === question.correctAnswer;
-    
+
     setAnswers([...answers, {
       questionId: `q${currentQuestion}`,
       answer: selectedAnswer,
@@ -74,8 +75,8 @@ export default function QuizGame({ game }: QuizGameProps) {
     // Show cartoon reaction
     setShowAnswerReaction({
       isCorrect,
-      message: isCorrect 
-        ? 'إجابة صحيحة! 🌟 أنت ذكي جداً!' 
+      message: isCorrect
+        ? 'إجابة صحيحة! 🌟 أنت ذكي جداً!'
         : 'دعنا نفكر معاً... 💭',
       explanation: question.explanation
     });
@@ -97,41 +98,34 @@ export default function QuizGame({ game }: QuizGameProps) {
 
   const handleSubmit = async () => {
     if (gameCompleted) return;
-    
+
     setGameCompleted(true);
-    const finalScore = selectedAnswer !== null && 
-      selectedAnswer === questions[currentQuestion]?.correctAnswer 
-        ? score + 1 
-        : score;
+    const finalScore = selectedAnswer !== null &&
+      selectedAnswer === questions[currentQuestion]?.correctAnswer
+      ? score + 1
+      : score;
 
     try {
-      const result = await gamesAPI.submitScore(game._id, {
-        score: finalScore,
-        maxScore: questions.length,
-        answers: answers.map((a, idx) => ({
-          questionId: `q${idx}`,
-          answer: a.answer,
-          isCorrect: a.isCorrect,
-          timestamp: new Date(),
-        })),
-        timeSpent: game.timeLimit > 0 ? game.timeLimit - timeRemaining : 0,
-      });
-      
-      // Update user points if game passed
       const percentage = Math.round((finalScore / questions.length) * 100);
       const passed = percentage >= 70;
-      
-      if (passed && user && updateUser) {
-        const newPoints = (user.points || 0) + game.points;
-        const newLevel = Math.floor(newPoints / 100);
-        updateUser({
-          ...user,
-          points: newPoints,
-          level: newLevel
-        });
-        
-        // Set flag to trigger dashboard refresh
-        localStorage.setItem('ecolearn_refresh_dashboard', Date.now().toString());
+
+      if (passed) {
+        if (onComplete) {
+          onComplete(game.points);
+        } else {
+          // Fallback if no onComplete provided
+          await gamesAPI.submitScore(game._id, {
+            score: finalScore,
+            maxScore: questions.length,
+            answers: answers.map((a, idx) => ({
+              questionId: `q${idx}`,
+              answer: a.answer,
+              isCorrect: a.isCorrect,
+              timestamp: new Date(),
+            })),
+            timeSpent: game.timeLimit > 0 ? game.timeLimit - timeRemaining : 0,
+          });
+        }
       }
     } catch (error) {
       console.error('Failed to submit score:', error);
@@ -184,14 +178,14 @@ export default function QuizGame({ game }: QuizGameProps) {
         <div className="max-w-2xl w-full">
           <CartoonReaction
             isCorrect={passed}
-            message={passed 
+            message={passed
               ? `رائع! حصلت على ${score} / ${questions.length} 🎉
 
 لقد كسبت ${game.points} نقطة! أنت بطل بيئي! 🌟`
               : `حصلت على ${score} / ${questions.length}
 
 لا بأس! يمكنك المحاولة مرة أخرى! 💪`}
-            explanation={passed 
+            explanation={passed
               ? 'أنت تفهم الكثير عن البيئة! استمر في العمل الجيد! 🌍'
               : 'كل سؤال إضافي يساعدك على التعلم! حاول مرة أخرى! 📚'}
             onContinue={() => router.push('/student/dashboard')}
@@ -242,13 +236,12 @@ export default function QuizGame({ game }: QuizGameProps) {
                   <Button
                     key={index}
                     variant={isSelected ? 'default' : 'outline'}
-                    className={`w-full justify-start text-right h-auto py-4 rounded-xl transition-all ${
-                      isSelected 
+                    className={`w-full justify-start text-right h-auto py-4 rounded-xl transition-all ${isSelected
                         ? isCorrect
                           ? 'bg-green-500 hover:bg-green-600 text-white border-2 border-green-600'
                           : 'bg-amber-500 hover:bg-amber-600 text-white border-2 border-amber-600'
                         : 'bg-white hover:bg-green-50 border-2 border-gray-300 hover:border-green-400'
-                    }`}
+                      }`}
                     onClick={() => handleAnswerSelect(index)}
                     disabled={gameCompleted}
                   >

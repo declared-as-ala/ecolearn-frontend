@@ -9,9 +9,10 @@ import { useRouter } from 'next/navigation';
 
 interface MemoryGameProps {
   game: Game;
+  onComplete?: (points: number) => void;
 }
 
-export default function MemoryGame({ game }: MemoryGameProps) {
+export default function MemoryGame({ game, onComplete }: MemoryGameProps) {
   const router = useRouter();
   const [cards, setCards] = useState<any[]>([]);
   const [flipped, setFlipped] = useState<number[]>([]);
@@ -63,11 +64,15 @@ export default function MemoryGame({ game }: MemoryGameProps) {
     const score = totalPairs; // Perfect score if all matched
 
     try {
-      await gamesAPI.submitScore(game._id, {
-        score,
-        maxScore: totalPairs,
-        answers: [],
-      });
+      if (onComplete) {
+        onComplete(game.points);
+      } else {
+        await gamesAPI.submitScore(game._id, {
+          score,
+          maxScore: totalPairs,
+          answers: [],
+        });
+      }
     } catch (error) {
       console.error('Failed to submit score:', error);
     }
@@ -134,11 +139,10 @@ export default function MemoryGame({ game }: MemoryGameProps) {
               <div
                 key={index}
                 onClick={() => handleCardClick(index)}
-                className={`aspect-square flex items-center justify-center border-2 rounded-lg cursor-pointer transition-all ${
-                  isFlipped || isMatched
+                className={`aspect-square flex items-center justify-center border-2 rounded-lg cursor-pointer transition-all ${isFlipped || isMatched
                     ? 'bg-blue-100 border-blue-500'
                     : 'bg-gray-200 border-gray-300 hover:bg-gray-300'
-                }`}
+                  }`}
               >
                 {isFlipped || isMatched ? (
                   <span className="text-lg font-semibold">{card.content}</span>
@@ -153,6 +157,7 @@ export default function MemoryGame({ game }: MemoryGameProps) {
     </Card>
   );
 }
+
 
 
 

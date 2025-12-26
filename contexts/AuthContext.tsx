@@ -124,11 +124,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.push('/login');
   };
 
-  const updateUser = (userData: User) => {
-    if (userData && userData.gradeLevel) {
-      localStorage.setItem('gradeLevel', userData.gradeLevel.toString());
-    }
-    setUser(userData);
+  const updateUser = (userData: Partial<User>) => {
+    setUser(prev => {
+      if (!prev) return userData as User;
+      const updatedUser = { ...prev, ...userData };
+
+      if (updatedUser.gradeLevel) {
+        localStorage.setItem('gradeLevel', updatedUser.gradeLevel.toString());
+      }
+
+      console.log('🔄 [AuthContext] User updated:', {
+        points: updatedUser.points,
+        level: updatedUser.level,
+        badgesCount: updatedUser.badges?.length
+      });
+
+      return updatedUser;
+    });
   };
 
   return (

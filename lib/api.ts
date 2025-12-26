@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ecolearn-backend.vercel.app/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface User {
   id: string;
@@ -101,6 +101,8 @@ export interface Progress {
   user: string;
   lesson?: Lesson;
   game?: Game;
+  courseSection?: 'video' | 'exercise' | 'game';
+  sectionId?: string;
   status: string;
   score: number;
   maxScore: number;
