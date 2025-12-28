@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,6 +57,7 @@ export interface AnimatedVideoData {
   totalDuration: number; // Total video duration in seconds
   scenes: VideoScene[];
   finalMessage?: string;
+  backgroundMusicUrl?: string;
 }
 
 interface AnimatedCourseVideoProps {
@@ -208,11 +209,19 @@ export default function AnimatedCourseVideo({
   onMarkWatched,
   watched = false,
 }: AnimatedCourseVideoProps) {
+  const DEFAULT_MUSIC = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+  const MUSIC_FALLBACKS = [
+    DEFAULT_MUSIC,
+    'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+  ];
+  const musicUrl = videoData.backgroundMusicUrl || DEFAULT_MUSIC;
+
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [sceneProgress, setSceneProgress] = useState(0);
   const [hasCompleted, setHasCompleted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const scenes = useMemo(() => videoData.scenes, [videoData.scenes]);
   const currentScene = scenes[currentSceneIndex];
@@ -268,6 +277,9 @@ export default function AnimatedCourseVideo({
     setSceneProgress(0);
     setIsPlaying(false);
     setHasCompleted(false);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
   }, []);
 
   const handleMarkWatched = useCallback(() => {
@@ -277,6 +289,56 @@ export default function AnimatedCourseVideo({
   const overallProgress = useMemo(() => {
     return ((currentSceneIndex / totalScenes) * 100) + (sceneProgress / totalScenes);
   }, [currentSceneIndex, totalScenes, sceneProgress]);
+
+  // Setup / reload background music when URL changes
+  useEffect(() => {
+    let disposed = false;
+
+    const tryLoad = (urls: string[], idx = 0) => {
+      if (disposed || idx >= urls.length) return;
+      const audio = new Audio(urls[idx]);
+      audio.loop = true;
+      audio.volume = 0.35;
+      audio.muted = isMuted;
+
+      const onError = () => {
+        audio.removeEventListener('error', onError);
+        tryLoad(urls, idx + 1);
+      };
+
+      audio.addEventListener('error', onError);
+      audioRef.current = audio;
+
+      if (isPlaying && !isMuted) {
+        audio.play().catch(() => {
+          // Ignore autoplay block; user interaction (play button) will retry
+        });
+      }
+    };
+
+    tryLoad([musicUrl, ...MUSIC_FALLBACKS.filter((u) => u !== musicUrl)]);
+
+    return () => {
+      disposed = true;
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      audioRef.current = null;
+    };
+  }, [musicUrl, isMuted, isPlaying]);
+
+  // Sync playback/mute with audio element
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = isMuted;
+
+    if (isPlaying && !isMuted) {
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying, isMuted]);
 
   if (!currentScene) {
     return (

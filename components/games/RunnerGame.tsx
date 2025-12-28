@@ -89,6 +89,12 @@ export default function RunnerGame({ game, onComplete }: { game: Game; onComplet
     }
   }, [timeLeft, finished, collected, lives, collectItems.length, game.points, onComplete]);
 
+  // Helper to mutate a tile back to an empty state after it has been used
+  const clearTile = (tile: RunnerTile) => {
+    tile.kind = 'empty';
+    tile.icon = '⬜';
+  };
+
   const handleClickTile = (tile: RunnerTile) => {
     if (finished) return;
     if (tile.kind === 'collect') {
@@ -104,8 +110,7 @@ export default function RunnerGame({ game, onComplete }: { game: Game; onComplet
       });
       setFeedback('✅ أحسنت! جمعت عنصراً مفيداً!');
       window.setTimeout(() => setFeedback(''), 1200);
-      tile.kind = 'empty';
-      tile.icon = '⬜';
+      clearTile(tile);
       return;
     }
 
@@ -122,8 +127,7 @@ export default function RunnerGame({ game, onComplete }: { game: Game; onComplet
       });
       setFeedback('❌ دخان/خطر! تجنّبه في المرة القادمة 😷');
       window.setTimeout(() => setFeedback(''), 1400);
-      tile.kind = 'empty';
-      tile.icon = '⬜';
+      clearTile(tile);
       return;
     }
 

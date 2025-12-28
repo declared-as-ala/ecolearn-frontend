@@ -62,6 +62,7 @@ export interface Course {
     grade: 5 | 6;
     icon: string;
     color: string;
+    backgroundMusicUrl?: string;
     videoUrl?: string; // Keep for backward compatibility
     videos?: Video[]; // Array of videos
     videoConcept: {

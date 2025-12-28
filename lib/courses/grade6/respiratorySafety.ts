@@ -120,6 +120,8 @@ export const respiratorySafetyCourse: Course = {
   icon: '🫁',
   color: 'bg-pink-100',
   badge: { name: 'بطل الهواء النقي', icon: '🌬️' },
+  // Use CORS-friendly music host
+  backgroundMusicUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
   rewardMessages: {
     student: 'أنت الآن خبير في حماية الجهاز التنفسي! تنفس بعمق!',
     parent: 'طفلك تعلم كيف يحمي جهازه التنفسي من التلوث! 🌬️',
