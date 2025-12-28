@@ -33,7 +33,7 @@ export default function SettingsPage() {
 
   const handleChangeLevel = async (level: 5 | 6) => {
     if (selectedLevel === level) return;
-    
+
     setLoading(true);
     try {
       const updatedUser = await usersAPI.updateGradeLevel(level);
@@ -41,8 +41,11 @@ export default function SettingsPage() {
         updateUser(updatedUser);
       }
       setSelectedLevel(level);
-      alert('✅ تم تغيير المستوى الدراسي بنجاح! سيتم تحديث الدروس المتاحة.');
-      router.push('/student/courses');
+      alert('✅ تم تغيير المستوى الدراسي بنجاح! سيتم توجيهك للاختبار التشخيصي.');
+
+      // Redirect to level test page with the correct level parameter
+      const levelKey = level === 5 ? '5eme' : '6eme';
+      router.push(`/student/level-test?level=${levelKey}`);
     } catch (error: any) {
       console.error('Failed to update level:', error);
       alert(error.message || '❌ فشل تحديث المستوى الدراسي. يرجى المحاولة مرة أخرى.');
@@ -86,14 +89,13 @@ export default function SettingsPage() {
             <p className="text-gray-700 mb-6 text-base leading-relaxed">
               يمكنك تغيير مستواك الدراسي. سيتم حفظ تقدمك في كل مستوى بشكل منفصل.
             </p>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card
-                className={`cursor-pointer transition-all duration-300 transform hover:scale-105 border-4 rounded-2xl ${
-                  selectedLevel === 5
+                className={`cursor-pointer transition-all duration-300 transform hover:scale-105 border-4 rounded-2xl ${selectedLevel === 5
                     ? 'border-green-500 bg-green-50 shadow-xl'
                     : 'border-green-200 hover:border-green-400 hover:shadow-lg'
-                }`}
+                  }`}
                 onClick={() => !loading && handleChangeLevel(5)}
               >
                 <CardContent className="p-6 text-center">
@@ -108,11 +110,10 @@ export default function SettingsPage() {
               </Card>
 
               <Card
-                className={`cursor-pointer transition-all duration-300 transform hover:scale-105 border-4 rounded-2xl ${
-                  selectedLevel === 6
+                className={`cursor-pointer transition-all duration-300 transform hover:scale-105 border-4 rounded-2xl ${selectedLevel === 6
                     ? 'border-sky-500 bg-sky-50 shadow-xl'
                     : 'border-sky-200 hover:border-sky-400 hover:shadow-lg'
-                }`}
+                  }`}
                 onClick={() => !loading && handleChangeLevel(6)}
               >
                 <CardContent className="p-6 text-center">
