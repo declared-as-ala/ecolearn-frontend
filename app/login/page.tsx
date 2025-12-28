@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,26 +11,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Leaf, User, Lock, Mail, GraduationCap } from 'lucide-react';
 import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
+import EcoLoading from '@/components/ui/EcoLoading';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'student' | 'teacher' | 'parent'>('student');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login, register } = useAuth();
+  const [localLoading, setLocalLoading] = useState(false);
+  const { user, login, register, loading: authLoading } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push(`/${user.role}/dashboard`);
+    }
+  }, [user, authLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setLocalLoading(true);
     try {
       await login(username, password);
     } catch (err: any) {
       setError(err.message || 'فشل تسجيل الدخول');
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
 
@@ -40,15 +49,23 @@ export default function LoginPage() {
       setError('يرجى ملء جميع الحقول');
       return;
     }
-    setLoading(true);
+    setLocalLoading(true);
     try {
       await register({ username, email, password, role });
     } catch (err: any) {
       setError(err.message || 'فشل التسجيل');
     } finally {
-      setLoading(false);
+      setLocalLoading(false);
     }
   };
+
+  if (authLoading) {
+    return <EcoLoading />;
+  }
+
+  if (user) {
+    return null; // Will redirect
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-sky-50 to-amber-50 p-4" dir="rtl">
@@ -148,9 +165,9 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-14 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]" 
-                  disabled={loading}
+                  disabled={localLoading}
                 >
-                  {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+                  {localLoading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
                 </Button>
               </form>
             </TabsContent>
@@ -238,9 +255,9 @@ export default function LoginPage() {
                 <Button 
                   type="submit" 
                   className="w-full h-14 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]" 
-                  disabled={loading}
+                  disabled={localLoading}
                 >
-                  {loading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
+                  {localLoading ? 'جاري إنشاء الحساب...' : 'إنشاء حساب'}
                 </Button>
               </form>
             </TabsContent>

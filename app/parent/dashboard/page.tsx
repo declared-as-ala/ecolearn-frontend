@@ -33,7 +33,7 @@ export default function ParentDashboard() {
     if (user) {
       loadData();
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   const loadData = async () => {
     try {
@@ -281,6 +281,7 @@ export default function ParentDashboard() {
     </div>
   );
 }
+
 
 
 

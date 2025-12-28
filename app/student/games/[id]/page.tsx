@@ -20,17 +20,19 @@ import EcoHero from '@/components/cartoons/EcoHero';
 export default function GamePage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user || user.role !== 'student') {
       router.push('/login');
       return;
     }
     loadGame();
-  }, [params.id]);
+  }, [user, authLoading, params.id, router]);
 
   const loadGame = async () => {
     try {
@@ -43,7 +45,7 @@ export default function GamePage() {
     }
   };
 
-  if (loading || !game) {
+  if (authLoading || loading || !game) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-amber-50 to-[#f5e6d3]" dir="rtl">
         <StudentSidebar />

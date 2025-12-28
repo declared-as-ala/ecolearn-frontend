@@ -423,6 +423,22 @@ export const usersAPI = {
     if (!response.ok) throw new Error(result.message || 'Failed to update grade level');
     return result.user || result;
   },
+
+  addPoints: async (data: {
+    points: number;
+    type?: string;
+    description?: string;
+    courseId?: string;
+    activityId?: string;
+  }): Promise<any> => {
+    const response = await apiRequest('/users/progress/add-points', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to add points');
+    return result;
+  },
 };
 
 // Courses API

@@ -16,7 +16,8 @@ interface AuthContextType {
     profile?: any;
   }) => Promise<void>;
   logout: () => void;
-  updateUser: (userData: User) => void;
+  updateUser: (userData: Partial<User>) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,45 +27,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check if user is logged in on mount and restore session
-    const checkAuth = async () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      if (token) {
-        try {
-          // Set token in API client before making request
-          setToken(token);
-          const userData = await authAPI.getMe();
+  const checkAuth = async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (token) {
+      try {
+        // Set token in API client before making request
+        setToken(token);
+        const userData = await authAPI.getMe();
 
-          // If student has no gradeLevel in user object, check localStorage
-          if (userData.role === 'student' && !userData.gradeLevel) {
-            const savedLevel = typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0;
-            if (savedLevel === 5 || savedLevel === 6) {
-              userData.gradeLevel = savedLevel as 5 | 6;
-              // Update backend as well if missing
-              usersAPI.updateGradeLevel(savedLevel as 5 | 6).catch(console.error);
-            }
-          } else if (userData.role === 'student' && userData.gradeLevel) {
-            // Persist valid level to localStorage
-            localStorage.setItem('gradeLevel', userData.gradeLevel.toString());
+        // If student has no gradeLevel in user object, check localStorage
+        if (userData.role === 'student' && !userData.gradeLevel) {
+          const savedLevel = typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0;
+          if (savedLevel === 5 || savedLevel === 6) {
+            userData.gradeLevel = savedLevel as 5 | 6;
+            // Update backend as well if missing
+            usersAPI.updateGradeLevel(savedLevel as 5 | 6).catch(console.error);
           }
-
-          setUser(userData);
-        } catch (error) {
-          console.error('Session restoration failed:', error);
-          // Token is invalid, remove it
-          removeToken();
-          localStorage.removeItem('gradeLevel'); // Clear level too if session failed
-          setUser(null);
+        } else if (userData.role === 'student' && userData.gradeLevel) {
+          // Persist valid level to localStorage
+          localStorage.setItem('gradeLevel', userData.gradeLevel.toString());
         }
-      } else {
+
+        setUser(userData);
+      } catch (error) {
+        console.error('Session restoration failed:', error);
+        // Token is invalid, remove it
+        removeToken();
+        localStorage.removeItem('gradeLevel'); // Clear level too if session failed
         setUser(null);
       }
-      setLoading(false);
-    };
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
+    // Check if user is logged in on mount and restore session
     checkAuth();
   }, []);
+
+  const refreshUser = async () => {
+    await checkAuth();
+  };
 
   const login = async (username: string, password: string) => {
     try {

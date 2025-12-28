@@ -17,7 +17,7 @@ import EcoHero from '@/components/cartoons/EcoHero';
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, loading: authLoading } = useAuth();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeSpent, setTimeSpent] = useState(0);
@@ -27,6 +27,8 @@ export default function LessonPage() {
   const [showEndScene, setShowEndScene] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user || user.role !== 'student') {
       router.push('/login');
       return;
@@ -39,7 +41,7 @@ export default function LessonPage() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [params.id]);
+  }, [user, authLoading, params.id, router, startTime]);
 
   const loadLesson = async () => {
     try {
@@ -78,7 +80,7 @@ export default function LessonPage() {
     }
   };
 
-  if (loading || !lesson) {
+  if (authLoading || loading || !lesson) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-amber-50 to-[#f5e6d3]" dir="rtl">
         <StudentSidebar />

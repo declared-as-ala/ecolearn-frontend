@@ -16,18 +16,20 @@ import { usersAPI, authAPI } from '@/lib/api';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState<5 | 6 | null>(null);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user || user.role !== 'student') {
       router.push('/login');
       return;
     }
     setSelectedLevel(user.gradeLevel || null);
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
   const handleChangeLevel = async (level: 5 | 6) => {
     if (selectedLevel === level) return;
@@ -49,7 +51,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (!user) {
+  if (authLoading || !user) {
     return <EcoLoading />;
   }
 

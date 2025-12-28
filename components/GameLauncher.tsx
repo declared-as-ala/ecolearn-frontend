@@ -20,6 +20,10 @@ import ChallengeGame from './games/ChallengeGame';
 import RescueGame from './games/RescueGame';
 import RolePlayGame from './games/RolePlayGame';
 import AudioGame from './games/AudioGame';
+import RunnerGame from './games/RunnerGame';
+import MapPlacementGame from './games/MapPlacementGame';
+import EnergyFlowGame from './games/EnergyFlowGame';
+import WaterLabGame from './games/WaterLabGame';
 
 interface Game {
     id: string;
@@ -107,6 +111,17 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
                 return <RolePlayGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'audio':
                 return <AudioGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'runner':
+                return <RunnerGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'map':
+            case 'map-placement':
+                return <MapPlacementGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'energy-flow':
+            case 'flow':
+                return <EnergyFlowGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'lab':
+            case 'water-lab':
+                return <WaterLabGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'sticker':
                 // ConstructionGame can double as a sticker/repair game
                 return <ConstructionGame game={gameObj as any} onComplete={handleGameComplete} />;

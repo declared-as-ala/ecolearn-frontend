@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, RefreshCcw, Plus, X } from 'lucide-react';
+import { Trophy, RefreshCcw, X } from 'lucide-react';
 import EcoHero from '../cartoons/EcoHero';
 import FriendlyAnimal from '../cartoons/FriendlyAnimal';
 
@@ -12,7 +12,7 @@ interface Game {
   title: string;
   description: string;
   points?: number;
-  gameData?: any;
+  gameData?: unknown;
 }
 
 interface ConstructionGameProps {
@@ -32,7 +32,18 @@ export default function ConstructionGame({ game, onComplete }: ConstructionGameP
   const [gameCompleted, setGameCompleted] = useState(false);
   const [score, setScore] = useState(0);
 
-  const availableElements: EcosystemElement[] = [
+  const cfg = (game.gameData as Partial<{
+    availableElements: EcosystemElement[];
+    constraints: {
+      minLiving?: number;
+      minNonLiving?: number;
+      mustIncludeType?: EcosystemElement['type'];
+      mustIncludeAny?: string[];
+      avoidAny?: string[];
+    };
+  }>) || {};
+
+  const availableElements: EcosystemElement[] = cfg.availableElements || [
     { id: '1', name: 'نبات', type: 'producer', icon: '🌱' },
     { id: '2', name: 'شجرة', type: 'producer', icon: '🌳' },
     { id: '3', name: 'أرنب', type: 'consumer', icon: '🐰' },
@@ -42,6 +53,8 @@ export default function ConstructionGame({ game, onComplete }: ConstructionGameP
     { id: '7', name: 'شمس', type: 'sun', icon: '☀️' },
     { id: '8', name: 'تربة', type: 'soil', icon: '🌍' },
   ];
+
+  const constraints = cfg.constraints || {};
 
   const addElement = (element: EcosystemElement) => {
     if (ecosystem.length >= 8) return; // Max 8 elements
@@ -73,8 +86,36 @@ export default function ConstructionGame({ game, onComplete }: ConstructionGameP
       points += 10;
     }
 
-    const finalPoints = Math.min(game.points || 20, points);
-    setScore(points);
+    // Custom constraints (used by the grade-6 refreshed courses)
+    const livingCount = ecosystem.filter(e => e.type === 'producer' || e.type === 'consumer' || e.type === 'decomposer').length;
+    const nonLivingCount = ecosystem.filter(e => e.type === 'water' || e.type === 'sun' || e.type === 'soil').length;
+
+    if (typeof constraints.minLiving === 'number') {
+      if (livingCount >= constraints.minLiving) points += 10;
+      else points -= 5;
+    }
+    if (typeof constraints.minNonLiving === 'number') {
+      if (nonLivingCount >= constraints.minNonLiving) points += 10;
+      else points -= 5;
+    }
+    if (typeof constraints.mustIncludeType === 'string') {
+      const hasType = ecosystem.some((e) => e.type === constraints.mustIncludeType);
+      points += hasType ? 10 : -5;
+    }
+    if (Array.isArray(constraints.mustIncludeAny)) {
+      const iconSet = new Set(ecosystem.map(e => e.icon));
+      const hasAny = constraints.mustIncludeAny.some((x: string) => iconSet.has(x));
+      points += hasAny ? 8 : -4;
+    }
+    if (Array.isArray(constraints.avoidAny)) {
+      const iconSet = new Set(ecosystem.map(e => e.icon));
+      const hasBad = constraints.avoidAny.some((x: string) => iconSet.has(x));
+      points += hasBad ? -10 : 10;
+    }
+
+    const normalizedPoints = Math.max(0, points);
+    const finalPoints = Math.min(game.points || 20, normalizedPoints);
+    setScore(normalizedPoints);
     setGameCompleted(true);
     onComplete(finalPoints);
   };
@@ -187,5 +228,6 @@ export default function ConstructionGame({ game, onComplete }: ConstructionGameP
     </Card>
   );
 }
+
 
 

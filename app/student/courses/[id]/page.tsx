@@ -15,6 +15,8 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import StudentSidebar from '@/components/navigation/StudentSidebar';
 import VideoPlayer from '@/components/VideoPlayer';
+import CourseStoryboardVideo from '@/components/CourseStoryboardVideo';
+import AnimatedCourseVideo from '@/components/animated-video/AnimatedCourseVideo';
 import CartoonScene from '@/components/cartoons/CartoonScene';
 import EcoHero from '@/components/cartoons/EcoHero';
 import WiseGuide from '@/components/cartoons/WiseGuide';
@@ -23,29 +25,31 @@ import Link from 'next/link';
 import { coursesAPI, Course as APICourse } from '@/lib/api';
 import { coursesData, Course as LocalCourse } from '@/lib/coursesData';
 import useWindowSize from '@/lib/hooks/useWindowSize';
-import { authAPI } from '@/lib/api';
 import SimpleQuiz from '@/components/SimpleQuiz';
+import ExerciseV2Renderer from '@/components/course/exercises/ExerciseV2Renderer';
 import GameLauncher from '@/components/GameLauncher';
+import { usersAPI } from '@/lib/api';
 
 export default function CourseDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, refreshUser, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('video');
   const [course, setCourse] = useState<LocalCourse | null>(null);
   const [apiCourse, setApiCourse] = useState<APICourse | null>(null);
   const [videoWatched, setVideoWatched] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
-  const [completed, setCompleted] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<any>(null);
+  const [selectedGame, setSelectedGame] = useState<LocalCourse['games'][number] | null>(null);
   const [isGameDialogOpen, setIsGameDialogOpen] = useState(false);
-  const { width, height } = useWindowSize();
+  useWindowSize(); // keep hook side-effects (if any), avoid unused vars lint
 
   const courseId = params.id as string;
 
   useEffect(() => {
     const loadCourse = async () => {
+      if (authLoading) return;
+
       if (!user || user.role !== 'student') {
         router.push('/login');
         return;
@@ -71,10 +75,7 @@ export default function CourseDetailPage() {
         const data = await coursesAPI.getOne(courseId);
         setApiCourse(data);
         setVideoWatched(data.progress?.videoWatched || false);
-        if (data.progress?.completed) {
-          setCompleted(true);
-        }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Failed to load course progress from API:', error);
         // Fallback to local data only
       } finally {
@@ -83,14 +84,40 @@ export default function CourseDetailPage() {
     };
 
     loadCourse();
-  }, [user, router, courseId]);
+  }, [user, authLoading, router, courseId]);
 
-  const handleExerciseComplete = async (exerciseId: string, points: number) => {
+  const handleExerciseComplete = async (exerciseId: string, score: number, maxScore: number) => {
     try {
-      const result = await coursesAPI.submitExercise(courseId, exerciseId, {
-        score: points,
-        maxScore: points,
-      });
+      // First try the course-specific endpoint
+      let result;
+      try {
+        result = await coursesAPI.submitExercise(courseId, exerciseId, {
+          score,
+          maxScore,
+        });
+      } catch (err: any) {
+        // If course not found in backend, use the fallback points endpoint
+        if (err.message?.includes('404') || err.message?.includes('not found')) {
+          console.warn('⚠️ Course not found in backend, using fallback addPoints API');
+          result = await usersAPI.addPoints({
+            points: score,
+            type: 'exercise',
+            description: `تمرين: ${exerciseId}`,
+            courseId: courseId,
+            activityId: exerciseId
+          });
+
+          // Locally mark exercise as completed so progress UI updates even without backend progress
+          setApiCourse(prev => {
+            const prevProgress = prev?.progress || {};
+            const exercisesStatus = { ...(prevProgress.exercisesStatus || {}), [exerciseId]: { status: 'completed', score, maxScore } };
+            const totalPoints = (prevProgress.totalPoints || 0) + score;
+            return prev ? { ...prev, progress: { ...prevProgress, exercisesStatus, totalPoints } } : null;
+          });
+        } else {
+          throw err;
+        }
+      }
 
       // Update course progress immediately from result
       if (result.progress) {
@@ -102,11 +129,6 @@ export default function CourseDetailPage() {
         console.log('✅ [Exercise] Progress saved, updating user:', result.user);
         updateUser(result.user);
       }
-
-      // If new badges were awarded, we could show a toast or notification here
-      if (result.badges && result.badges.length > 0) {
-        console.log('🏅 New badges earned:', result.badges);
-      }
     } catch (error) {
       console.error('Failed to submit exercise:', error);
     }
@@ -114,10 +136,36 @@ export default function CourseDetailPage() {
 
   const handleGameComplete = async (gameId: string, points: number) => {
     try {
-      const result = await coursesAPI.submitGame(courseId, gameId, {
-        score: points,
-        maxScore: points,
-      });
+      // First try the course-specific endpoint
+      let result;
+      try {
+        result = await coursesAPI.submitGame(courseId, gameId, {
+          score: points,
+          maxScore: points,
+        });
+      } catch (err: any) {
+        // Fallback to direct points addition if course missing from backend
+        if (err.message?.includes('404') || err.message?.includes('not found')) {
+          console.warn('⚠️ Course not found in backend, using fallback addPoints API');
+          result = await usersAPI.addPoints({
+            points: points,
+            type: 'game',
+            description: `لعبة: ${gameId}`,
+            courseId: courseId,
+            activityId: gameId
+          });
+
+          // Locally mark game as completed so progress UI updates even without backend progress
+          setApiCourse(prev => {
+            const prevProgress = prev?.progress || {};
+            const gamesStatus = { ...(prevProgress.gamesStatus || {}), [gameId]: { status: 'completed', score: points, maxScore: points } };
+            const totalPoints = (prevProgress.totalPoints || 0) + points;
+            return prev ? { ...prev, progress: { ...prevProgress, gamesStatus, totalPoints } } : null;
+          });
+        } else {
+          throw err;
+        }
+      }
 
       // Update course progress immediately
       if (result.progress) {
@@ -129,33 +177,32 @@ export default function CourseDetailPage() {
         console.log('✅ [Game] Progress saved, updating user:', result.user);
         updateUser(result.user);
       }
-
-      if (result.badges && result.badges.length > 0) {
-        console.log('🏅 New badges earned:', result.badges);
-      }
     } catch (error) {
       console.error('Failed to submit game:', error);
     }
   };
   const handleVideoEnd = async () => {
     try {
-      await coursesAPI.watchVideo(courseId);
+      try {
+        await coursesAPI.watchVideo(courseId);
+      } catch (err: any) {
+        if (err.message?.includes('404') || err.message?.includes('not found')) {
+          console.warn('⚠️ Course not found in backend for video watch');
+        } else {
+          throw err;
+        }
+      }
       setVideoWatched(true);
 
       // Refresh data
-      const updatedCourse = await coursesAPI.getOne(courseId);
-      setApiCourse(updatedCourse);
+      try {
+        const updatedCourse = await coursesAPI.getOne(courseId);
+        setApiCourse(updatedCourse);
+      } catch (e) {}
 
       // Refresh user data to update points
-      if (updateUser) {
-        try {
-          const userData = await authAPI.getMe();
-          if (userData) {
-            updateUser(userData);
-          }
-        } catch (err) {
-          console.error('Failed to fetch updated user:', err);
-        }
+      if (refreshUser) {
+        await refreshUser();
       }
     } catch (error: any) {
       console.error('Failed to mark video as watched:', error);
@@ -164,7 +211,7 @@ export default function CourseDetailPage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-amber-50 to-[#f5e6d3] flex items-center justify-center" dir="rtl">
         <StudentSidebar />
@@ -210,8 +257,20 @@ export default function CourseDetailPage() {
   const videoUrl = apiCourse?.sections?.video?.url || apiCourse?.videoUrl || course.videoUrl || '';
   const videos = course.videos || [];
   const exercises = course.exercises || [];
+  const exercisesV2 = course.exercisesV2 || [];
   const games = course.games || [];
-  const hasVideos = (videos && videos.length > 0) || videoUrl;
+  const hasStoryboard = !!course.videoStoryboard;
+  const hasAnimatedVideo = !!course.animatedVideo;
+  const hasVideos = hasAnimatedVideo || hasStoryboard || (videos && videos.length > 0) || videoUrl;
+  const totalExercises = exercisesV2.length > 0 ? exercisesV2.length : exercises.length;
+  const totalGames = games.length;
+  const completedExercises = Object.values(apiCourse?.progress?.exercisesStatus || {}).filter((s: unknown) => (s as any)?.status === 'completed').length;
+  const completedGames = Object.values(apiCourse?.progress?.gamesStatus || {}).filter((s: unknown) => (s as any)?.status === 'completed').length;
+  const isCourseCompletedLocal = isVideoWatched && completedExercises >= totalExercises && completedGames >= totalGames;
+  const progressUnitsTotal = 1 + totalExercises + totalGames;
+  const progressUnitsDone = (isVideoWatched ? 1 : 0) + completedExercises + completedGames;
+  const computedProgressPercent = progressUnitsTotal > 0 ? Math.round((progressUnitsDone / progressUnitsTotal) * 100) : 0;
+  const rewardMessages = course.rewardMessages;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-sky-50 to-amber-50" dir="rtl">
@@ -274,88 +333,104 @@ export default function CourseDetailPage() {
 
           {/* Video Tab */}
           <TabsContent value="video" className="mt-6">
-            <Card className="shadow-lg rounded-2xl overflow-hidden border-4 border-green-200">
-              <CardHeader className="bg-green-50 border-b-2 border-green-100">
-                <CardTitle className="text-2xl flex items-center gap-2 text-green-700">
-                  <Video className="w-6 h-6" />
-                  🎬 الفيديو الكرتوني: {course.videoConcept.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="mb-6 bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-2xl border-2 border-dashed border-blue-200">
-                  <h4 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
-                    <FriendlyAnimal type="bird" emotion="happy" size="small" />
-                    ماذا سنشاهد اليوم؟
-                  </h4>
-                  <p className="text-lg text-gray-700 leading-relaxed">
-                    {course.videoConcept.scenario}
-                  </p>
-                  <div className="mt-4 p-3 bg-white/50 rounded-lg text-sm text-green-700 font-bold border border-green-200">
-                    💡 الحكمة: {course.videoConcept.moralMessage}
+            {/* Priority: AnimatedVideo > Storyboard > VideoPlayer */}
+            {course.animatedVideo ? (
+              <AnimatedCourseVideo
+                videoData={course.animatedVideo}
+                onComplete={handleVideoEnd}
+                onMarkWatched={handleVideoEnd}
+                watched={isVideoWatched}
+              />
+            ) : course.videoStoryboard ? (
+              <CourseStoryboardVideo
+                spec={course.videoStoryboard}
+                onMarkWatched={handleVideoEnd}
+                watched={isVideoWatched}
+              />
+            ) : (
+              <Card className="shadow-lg rounded-2xl overflow-hidden border-4 border-green-200">
+                <CardHeader className="bg-green-50 border-b-2 border-green-100">
+                  <CardTitle className="text-2xl flex items-center gap-2 text-green-700">
+                    <Video className="w-6 h-6" />
+                    🎬 الفيديو الكرتوني: {course.videoConcept.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="mb-6 bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-2xl border-2 border-dashed border-blue-200">
+                    <h4 className="font-bold text-blue-700 mb-2 flex items-center gap-2">
+                      <FriendlyAnimal type="bird" emotion="happy" size="small" />
+                      ماذا سنشاهد اليوم؟
+                    </h4>
+                    <p className="text-lg text-gray-700 leading-relaxed">
+                      {course.videoConcept.scenario}
+                    </p>
+                    <div className="mt-4 p-3 bg-white/50 rounded-lg text-sm text-green-700 font-bold border border-green-200">
+                      💡 الحكمة: {course.videoConcept.moralMessage}
+                    </div>
                   </div>
-                </div>
 
-                {hasVideos ? (
-                  <div className="space-y-6">
-                    {/* Display multiple videos if available */}
-                    {videos && videos.length > 0 ? (
-                      videos.map((video, index) => (
-                        <div key={index} className="space-y-3">
-                          <h4 className="text-xl font-bold text-green-700 flex items-center gap-2 flex-wrap">
-                            <Video className="w-6 h-6" />
-                            {video.title}
-                            {video.needsArabicDub && (
-                              <span className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">
-                                سيتم إضافة التعليق الصوتي العربي قريباً
-                              </span>
-                            )}
-                            {video.language !== 'ar' && (
-                              <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
-                                مع ترجمة عربية
-                              </span>
-                            )}
-                          </h4>
-                          <VideoPlayer
-                            videoUrl={video.url}
-                            onEnded={index === videos.length - 1 ? handleVideoEnd : undefined}
-                          />
+                  {hasVideos ? (
+                    <div className="space-y-6">
+                      {/* Display multiple videos if available */}
+                      {videos && videos.length > 0 ? (
+                        videos.map((video, index) => (
+                          <div key={index} className="space-y-3">
+                            <h4 className="text-xl font-bold text-green-700 flex items-center gap-2 flex-wrap">
+                              <Video className="w-6 h-6" />
+                              {video.title}
+                              {video.needsArabicDub && (
+                                <span className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">
+                                  سيتم إضافة التعليق الصوتي العربي قريباً
+                                </span>
+                              )}
+                              {video.language !== 'ar' && (
+                                <span className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+                                  مع ترجمة عربية
+                                </span>
+                              )}
+                            </h4>
+                            <VideoPlayer
+                              videoUrl={video.url}
+                              onEnded={index === videos.length - 1 ? handleVideoEnd : undefined}
+                            />
+                          </div>
+                        ))
+                      ) : videoUrl ? (
+                        <VideoPlayer
+                          videoUrl={videoUrl}
+                          onEnded={handleVideoEnd}
+                        />
+                      ) : null}
+
+                      {/* Instructions for students */}
+                      <div className="bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-xl p-6 flex items-center gap-4">
+                        <WiseGuide size="medium" emotion="happy" animation="nod" />
+                        <div>
+                          <p className="text-blue-800 font-bold text-lg mb-1">
+                            شاهد وتعلّم 🌱
+                          </p>
+                          <p className="text-blue-700 font-medium">
+                            استمتع بمشاهدة الفيديوهات التعليمية، ثم انتقل للتمارين والألعاب! ✨
+                          </p>
                         </div>
-                      ))
-                    ) : videoUrl ? (
-                      <VideoPlayer
-                        videoUrl={videoUrl}
-                        onEnded={handleVideoEnd}
-                      />
-                    ) : null}
-
-                    {/* Instructions for students */}
-                    <div className="bg-gradient-to-r from-blue-50 to-green-50 border-2 border-blue-200 rounded-xl p-6 flex items-center gap-4">
-                      <WiseGuide size="medium" emotion="happy" animation="nod" />
-                      <div>
-                        <p className="text-blue-800 font-bold text-lg mb-1">
-                          شاهد وتعلّم 🌱
-                        </p>
-                        <p className="text-blue-700 font-medium">
-                          استمتع بمشاهدة الفيديوهات التعليمية، ثم انتقل للتمارين والألعاب! ✨
-                        </p>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-amber-50 rounded-2xl border-4 border-dashed border-gray-200">
-                    <div className="flex flex-col items-center gap-4">
-                      <FriendlyAnimal type="rabbit" emotion="thinking" size="large" />
-                      <Video className="w-24 h-24 text-gray-300" />
-                      <p className="text-gray-700 text-xl font-bold">انتظرنا! الفيديو الكرتوني قيد التحضير 🎨</p>
-                      <p className="text-gray-600 mb-4">لا تقلق، يمكنك المتابعة للتمارين والألعاب مباشرة!</p>
-                      <Button onClick={handleVideoEnd} className="bg-green-600 hover:bg-green-700 text-white rounded-full px-8 py-3 text-lg font-bold">
-                        متابعة للتمارين ✨
-                      </Button>
+                  ) : (
+                    <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-amber-50 rounded-2xl border-4 border-dashed border-gray-200">
+                      <div className="flex flex-col items-center gap-4">
+                        <FriendlyAnimal type="rabbit" emotion="thinking" size="large" />
+                        <Video className="w-24 h-24 text-gray-300" />
+                        <p className="text-gray-700 text-xl font-bold">انتظرنا! الفيديو الكرتوني قيد التحضير 🎨</p>
+                        <p className="text-gray-600 mb-4">لا تقلق، يمكنك المتابعة للتمارين والألعاب مباشرة!</p>
+                        <Button onClick={handleVideoEnd} className="bg-green-600 hover:bg-green-700 text-white rounded-full px-8 py-3 text-lg font-bold">
+                          متابعة للتمارين ✨
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* Exercises Tab */}
@@ -369,7 +444,27 @@ export default function CourseDetailPage() {
                 <p className="text-green-600 font-medium">أجب عن الأسئلة لجمع النقاط والحصول على الأوسمة! 🏆</p>
               </CardHeader>
               <CardContent className="p-6">
-                {exercises.length > 0 ? (
+                {exercisesV2.length > 0 ? (
+                  <div className="space-y-8">
+                    {exercisesV2.map((exercise, index) => {
+                      const exerciseProgress = apiCourse?.progress?.exercisesStatus?.[exercise.id];
+                      const isCompleted = exerciseProgress?.status === 'completed';
+
+                      return (
+                        <div key={exercise.id} className="relative">
+                          <div className="absolute -right-3 -top-3 w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg z-10">
+                            {index + 1}
+                          </div>
+                          <ExerciseV2Renderer
+                            exercise={exercise as any}
+                            isCompleted={isCompleted}
+                            onComplete={(score, maxScore) => handleExerciseComplete(exercise.id, score, maxScore)}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : exercises.length > 0 ? (
                   <div className="space-y-8">
                     {exercises.map((exercise, index) => {
                       const exerciseProgress = apiCourse?.progress?.exercisesStatus?.[exercise.id];
@@ -383,7 +478,7 @@ export default function CourseDetailPage() {
                           <SimpleQuiz
                             exercise={exercise as any}
                             isCompleted={isCompleted}
-                            onComplete={(points) => handleExerciseComplete(exercise.id, points)}
+                            onComplete={(points) => handleExerciseComplete(exercise.id, points, points)}
                           />
                         </div>
                       );
@@ -615,14 +710,32 @@ export default function CourseDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
+                  {rewardMessages && isCourseCompletedLocal ? (
+                    <div className="bg-gradient-to-br from-amber-50 to-green-50 rounded-2xl p-6 border-4 border-amber-300">
+                      <h3 className="text-2xl font-extrabold text-amber-800 mb-2">🏆 مكافأة النهاية</h3>
+                      <p className="text-lg font-bold text-gray-800 mb-3 whitespace-pre-wrap">
+                        {rewardMessages.student}
+                      </p>
+                      <div className="bg-white rounded-2xl border-2 border-amber-200 p-4">
+                        <p className="font-extrabold text-gray-800 mb-1">Gold Badge</p>
+                        <p className="text-xl font-extrabold text-green-700">
+                          {rewardMessages.universalGoldBadge.icon} {rewardMessages.universalGoldBadge.name}
+                        </p>
+                        <p className="text-sm text-gray-600 mt-2">
+                          (سيصل إشعار لولي الأمر أيضاً)
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+
                   {/* Progress Overview */}
                   <div className="bg-gradient-to-br from-green-50 to-amber-50 rounded-xl p-6 border-2 border-green-200">
                     <div className="flex items-center gap-4 mb-4">
                       <TrendingUp className="w-8 h-8 text-green-600" />
                       <h3 className="text-xl font-bold">تقدمك في هذه الدورة</h3>
                     </div>
-                    <ProgressBar value={apiCourse?.progress?.progressPercent || 0} className="h-4 mb-2" />
-                    <p className="text-sm text-gray-600">{apiCourse?.progress?.progressPercent || 0}% مكتمل</p>
+                    <ProgressBar value={computedProgressPercent} className="h-4 mb-2" />
+                    <p className="text-sm text-gray-600">{computedProgressPercent}% مكتمل</p>
                   </div>
 
                   {/* Points Earned */}

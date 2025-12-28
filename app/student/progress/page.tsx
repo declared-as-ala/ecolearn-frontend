@@ -15,7 +15,7 @@ import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
 
 export default function ProgressPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
   const [progress, setProgress] = useState<Progress[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -38,6 +38,10 @@ export default function ProgressPage() {
   const loadData = async () => {
     try {
       setLoadingData(true);
+      
+      // Fetch fresh user data to ensure points are up to date
+      await refreshUser().catch(console.error);
+
       const progressData = await usersAPI.getProgress().catch(() => []);
       setProgress(progressData || []);
     } catch (error: any) {
@@ -241,6 +245,7 @@ export default function ProgressPage() {
     </div>
   );
 }
+
 
 
 

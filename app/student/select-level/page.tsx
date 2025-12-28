@@ -19,8 +19,20 @@ export default function SelectLevelPage() {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    if (user.role !== 'student') {
+      router.push(`/${user.role}/dashboard`);
+      return;
+    }
+
     // Check if user already has a level selected
-    if (user?.gradeLevel) {
+    if (user.gradeLevel) {
       // If level is already set, redirect to courses
       router.push('/student/courses');
       return;
@@ -33,7 +45,7 @@ export default function SelectLevelPage() {
     }
     
     setPageLoading(false);
-  }, [user, router]);
+  }, [user, authLoading, router]);
 
   const handleSelectLevel = async (level: 5 | 6) => {
     setSelectedLevel(level);

@@ -17,13 +17,15 @@ import { coursesData, Course as LocalCourse } from '@/lib/coursesData';
 
 export default function CoursesPage() {
   const router = useRouter();
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
+  const [loadingData, setLoadingData] = useState(true);
   const [courses, setCourses] = useState<LocalCourse[]>([]);
   const [apiCourses, setApiCourses] = useState<APICourse[]>([]);
 
   useEffect(() => {
     const loadCourses = async () => {
+      if (loading) return;
+
       if (!user || user.role !== 'student') {
         router.push('/login');
         return;
@@ -36,7 +38,7 @@ export default function CoursesPage() {
         return;
       }
 
-      setLoading(true);
+      setLoadingData(true);
       try {
         // Find local courses for this grade
         const filteredLocal = coursesData.filter(c => c.grade === gradeLevel);
@@ -48,14 +50,14 @@ export default function CoursesPage() {
       } catch (error: any) {
         console.error('Failed to load course progress:', error);
       } finally {
-        setLoading(false);
+        setLoadingData(false);
       }
     };
 
     loadCourses();
-  }, [user, router]);
+  }, [user, loading, router]);
 
-  if (loading || !user) {
+  if (loading || loadingData || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-sky-50 to-amber-50" dir="rtl">
         <StudentSidebar />
