@@ -23,7 +23,6 @@ export const ecoBalanceVideo: AnimatedVideoData = {
 تذكّروا: لا تقتل كائناً صغيراً… لا تقطع شجرة بلا سبب… لا تلوث تربة أو ماء.
 فبفعلك هذا، تحمي ليس الطبيعة فحسب… بل نفسك ومستقبلك! 🌍`,
       elements: [
-        { id: 'forest-bg', type: 'scene', props: {}, position: { x: '50%', y: '50%' }, delay: 0 },
         { id: 'trees', type: 'plant', props: { type: 'tree', size: 'large' }, position: { x: '20%', y: '55%' }, delay: 0.3 },
         { id: 'trees2', type: 'plant', props: { type: 'tree', size: 'medium' }, position: { x: '80%', y: '58%' }, delay: 0.6 },
         { id: 'river', type: 'water', props: { type: 'river', size: 'medium' }, position: { x: '60%', y: '85%' }, delay: 0.9 },

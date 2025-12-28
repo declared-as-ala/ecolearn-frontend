@@ -132,7 +132,7 @@ export const humanRoleGrade5: Course = {
   exercisesV2: [
     {
       id: 'ex1',
-      type: 'decision', // Fits "Quick Decision" - could be custom type or decision
+      type: 'scenario', // Fits "Quick Decision" - scenario works for this use case
       title: 'اتخاذ القرار السريع',
       points: 25,
       prompt: 'اختر الأداة الصحيحة لكل مشكلة بسرعة! (شجرة مقطوعة، نهر ملوث...)',

@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface FriendlyAnimalProps {
-  type?: 'bird' | 'rabbit' | 'turtle' | 'fish' | 'butterfly';
+  type?: 'bird' | 'rabbit' | 'turtle' | 'fish' | 'butterfly' | 'owl';
   emotion?: 'happy' | 'excited' | 'curious' | 'proud' | 'thinking' | 'celebrating';
   size?: 'small' | 'medium' | 'large';
   className?: string;
@@ -106,6 +106,25 @@ export default function FriendlyAnimal({
             {/* Wing spots */}
             <circle cx="22" cy="25" r="3" fill="#fff" />
             <circle cx="38" cy="25" r="3" fill="#fff" />
+          </svg>
+        );
+      case 'owl':
+        return (
+          <svg viewBox="0 0 60 60" className="w-full h-full">
+            {/* Body */}
+            <ellipse cx="30" cy="35" rx="14" ry="12" fill="#8b7355" />
+            {/* Head */}
+            <circle cx="30" cy="20" r="13" fill="#a08a6f" />
+            {/* Eyes */}
+            <circle cx="25" cy="20" r="5" fill="#fff" />
+            <circle cx="35" cy="20" r="5" fill="#fff" />
+            <circle cx="25" cy="20" r="3" fill="#000" />
+            <circle cx="35" cy="20" r="3" fill="#000" />
+            {/* Beak */}
+            <path d="M 30 22 L 28 26 L 32 26 Z" fill="#ffa500" />
+            {/* Ear tufts */}
+            <path d="M 20 12 L 18 8 L 22 10 Z" fill="#8b7355" />
+            <path d="M 40 12 L 42 8 L 38 10 Z" fill="#8b7355" />
           </svg>
         );
       default:

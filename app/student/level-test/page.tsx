@@ -164,8 +164,8 @@ export default function LevelTestPage() {
   const levelParam = searchParams.get('level');
   const normalizedLevel: LevelKey | null =
     levelParam === '5' || levelParam === '5eme' || levelParam === '5ème' ? '5eme' :
-    levelParam === '6' || levelParam === '6eme' || levelParam === '6ème' ? '6eme' :
-    null;
+      levelParam === '6' || levelParam === '6eme' || levelParam === '6ème' ? '6eme' :
+        null;
 
   const [statusLoading, setStatusLoading] = useState(true);
   const [testCompleted, setTestCompleted] = useState(false);
@@ -246,9 +246,9 @@ export default function LevelTestPage() {
       if (updateUser) {
         updateUser({
           levelTests: {
-            ...(user?.levelTests || {}),
-            [result.level]: result,
-          }
+            '5eme': result.level === '5eme' ? result : user?.levelTests?.['5eme'],
+            '6eme': result.level === '6eme' ? result : user?.levelTests?.['6eme'],
+          } as Record<'5eme' | '6eme', LevelTestStatus>
         });
       }
     } catch (e: any) {
@@ -359,13 +359,12 @@ export default function LevelTestPage() {
                       key={opt.id}
                       onClick={() => handleSelect(opt.id)}
                       disabled={!!currentAnswer}
-                      className={`w-full text-right border-2 rounded-2xl px-4 py-4 font-bold transition-all ${
-                        isSelected
+                      className={`w-full text-right border-2 rounded-2xl px-4 py-4 font-bold transition-all ${isSelected
                           ? isCorrect
                             ? 'border-green-500 bg-green-50 text-green-800'
                             : 'border-red-400 bg-red-50 text-red-700'
                           : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
-                      } ${!!currentAnswer ? 'cursor-not-allowed' : ''}`}
+                        } ${!!currentAnswer ? 'cursor-not-allowed' : ''}`}
                     >
                       <span className="mr-2 text-gray-600">({opt.id})</span>
                       {opt.text}
