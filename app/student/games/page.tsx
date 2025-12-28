@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { gamesAPI, usersAPI, Game, Progress } from '@/lib/api';
+import { gamesAPI, usersAPI, Game, Progress, levelTestAPI } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,25 @@ export default function GamesPage() {
       return;
     }
     
-    loadData();
+    const gradeLevel = user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
+    const levelKey = gradeLevel === 5 ? '5eme' : gradeLevel === 6 ? '6eme' : null;
+    if (!levelKey) {
+      router.push('/student/select-level');
+      return;
+    }
+
+    levelTestAPI.getStatus(levelKey)
+      .then(status => {
+        if (!status.completed) {
+          router.push(`/student/level-test?level=${levelKey}`);
+          return;
+        }
+        loadData();
+      })
+      .catch(err => {
+        console.error('Failed to check level test status', err);
+        loadData();
+      });
   }, [user, loading, router]);
 
   const loadData = async () => {
@@ -244,6 +262,7 @@ export default function GamesPage() {
     </div>
   );
 }
+
 
 
 

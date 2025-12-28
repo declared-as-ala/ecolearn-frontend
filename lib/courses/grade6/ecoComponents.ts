@@ -4,247 +4,201 @@ import type { AnimatedVideoData } from '@/components/animated-video/AnimatedCour
 // ============== ANIMATED VIDEO DATA ==============
 export const ecoComponentsVideo: AnimatedVideoData = {
   title: 'العائلة الخفية للطبيعة!',
-  totalDuration: 65,
+  totalDuration: 90,
   scenes: [
     {
-      id: 'scene-1-intro',
-      title: 'المشهد 1: اكتشاف البحيرة',
-      background: 'underwater',
-      duration: 10,
-      narratorText: 'مرحبًا أيها المكتشف الصغير! 🌊 اليوم سنزور بحيرة تونسية جميلة ونتعرف على "العائلة الخفية" من الكائنات الحية وغير الحية التي تعيش فيها!',
+      id: 'scene-1-lake-intro',
+      title: 'المشهد 1: بحيرة تونسية',
+      background: 'ocean', // Using ocean as close approximation for lake
+      duration: 15,
+      narratorText: 'مرحبًا أيها المكتشف الصغير! 🌊 هذه البحيرة ليست مجرد ماء… بل عائلة متكاملة! انظر: الماء، التربة، الهواء، والشمس هم العناصر غير الحية.',
       elements: [
-        { id: 'lake-surface', type: 'water', props: { type: 'wave', size: 'large' }, position: { x: '50%', y: '20%' }, delay: 0 },
-        { id: 'fish-1', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '30%', y: '55%' }, delay: 0.5 },
-        { id: 'fish-2', type: 'animal', props: { type: 'fish', size: 'small', moving: true }, position: { x: '70%', y: '60%' }, delay: 0.8 },
-        { id: 'algae-1', type: 'emoji', props: { emoji: '🌿', size: 40 }, position: { x: '20%', y: '80%' }, delay: 1 },
-        { id: 'algae-2', type: 'emoji', props: { emoji: '🌿', size: 35 }, position: { x: '80%', y: '85%' }, delay: 1.2 },
-        { id: 'sun-surface', type: 'sun', props: { size: 'small', glowing: true }, position: { x: '85%', y: '10%' }, delay: 1.5 },
-        { id: 'tunisia-flag', type: 'emoji', props: { emoji: '🇹🇳', size: 30 }, position: { x: '15%', y: '15%' }, delay: 1.8 },
-        { id: 'label-intro', type: 'text', props: { text: '🌊 بحيرة تونسية' }, position: { x: '50%', y: '90%' }, delay: 2 },
+        { id: 'lake-bg', type: 'water', props: { type: 'wave', size: 'large' }, position: { x: '50%', y: '80%' }, delay: 0 },
+        { id: 'sun', type: 'sun', props: { size: 'medium', glowing: true }, position: { x: '85%', y: '15%' }, delay: 0.5 },
+        { id: 'rock', type: 'emoji', props: { emoji: '🪨', size: 40 }, position: { x: '20%', y: '85%' }, delay: 1 },
+        { id: 'air-wind', type: 'emoji', props: { emoji: '💨', size: 40 }, position: { x: '70%', y: '30%' }, delay: 1.5 },
+        { id: 'label-abiotic', type: 'text', props: { text: 'عناصر غير حية' }, position: { x: '50%', y: '90%' }, delay: 2 },
       ],
-      soundEffects: ['تدفق الماء 💧', 'فقاعات 🫧', 'طيور البحيرة 🦆'],
-      educationalHighlight: 'الوسط البيئي: مجموعة من الكائنات الحية وغير الحية تعيش معاً',
+      soundEffects: ['تدفق الماء 💧', 'رياح خفيفة 🍃'],
+      educationalHighlight: 'الوسط البيئي يتكون من عناصر حية وغير حية',
       transition: 'fade',
     },
     {
-      id: 'scene-2-living',
-      title: 'المشهد 2: العناصر الحية',
-      background: 'underwater',
-      duration: 12,
-      narratorText: 'في هذه البحيرة، نجد عناصر حية كثيرة! الطحالب الخضراء تصنع الغذاء، الأسماك تسبح، الحلزون يتحرك ببطء، والبكتيريا الصغيرة تعمل في الخفاء! 🐟🐌🦠',
-      elements: [
-        { id: 'algae-living', type: 'emoji', props: { emoji: '🌿', size: 50 }, position: { x: '20%', y: '70%' }, delay: 0 },
-        { id: 'text-algae', type: 'text', props: { text: 'طحالب (منتج)' }, position: { x: '20%', y: '85%' }, delay: 0.3 },
-        { id: 'fish-living', type: 'animal', props: { type: 'fish', size: 'large', moving: true }, position: { x: '45%', y: '55%' }, delay: 0.5 },
-        { id: 'text-fish', type: 'text', props: { text: 'سمكة (مستهلك)' }, position: { x: '45%', y: '70%' }, delay: 0.8 },
-        { id: 'snail-living', type: 'emoji', props: { emoji: '🐌', size: 40 }, position: { x: '70%', y: '75%' }, delay: 1 },
-        { id: 'text-snail', type: 'text', props: { text: 'حلزون' }, position: { x: '70%', y: '88%' }, delay: 1.3 },
-        { id: 'bacteria-living', type: 'animal', props: { type: 'bacteria', size: 'small' }, position: { x: '85%', y: '65%' }, delay: 1.5 },
-        { id: 'text-bacteria', type: 'text', props: { text: 'بكتيريا (محلل)' }, position: { x: '85%', y: '80%' }, delay: 1.8 },
-        { id: 'label-living', type: 'text', props: { text: '🌿 العناصر الحية' }, position: { x: '50%', y: '90%' }, delay: 2.2 },
-      ],
-      soundEffects: ['فقاعات 🫧', 'أسماك تسبح 🐟', 'بكتيريا 🦠'],
-      educationalHighlight: 'العناصر الحية: طحالب (منتجون) + أسماك/حلزون (مستهلكون) + بكتيريا (محللون)',
-      transition: 'slide',
-    },
-    {
-      id: 'scene-3-nonliving',
-      title: 'المشهد 3: العناصر غير الحية',
+      id: 'scene-2-living-elements',
+      title: 'المشهد 2: الكائنات الحية',
       background: 'ocean',
-      duration: 10,
-      narratorText: 'لكن العائلة لا تكتمل بدون العناصر غير الحية! الماء يوفر البيئة، الشمس تعطي الطاقة، والتربة في القاع تحتوي على المعادن المهمة! ☀️💧🌍',
+      duration: 20,
+      narratorText: 'وهنا الأعضاء الحية: العوالق النباتية 🌿، الحلزون 🐌، السمكة 🐟، والبكتيريا الصغيرة 🦠. كل واحد منهم له دور لا يُعوَّض!',
       elements: [
-        { id: 'sun-nonliving', type: 'sun', props: { size: 'medium', glowing: true }, position: { x: '80%', y: '15%' }, delay: 0 },
-        { id: 'text-sun', type: 'text', props: { text: 'شمس (طاقة)' }, position: { x: '80%', y: '35%' }, delay: 0.3 },
-        { id: 'water-nonliving', type: 'water', props: { type: 'wave', size: 'large' }, position: { x: '50%', y: '50%' }, delay: 0.5 },
-        { id: 'text-water', type: 'text', props: { text: 'ماء (وسط)' }, position: { x: '50%', y: '65%' }, delay: 0.8 },
-        { id: 'soil-nonliving', type: 'soil', props: { size: 'large' }, position: { x: '50%', y: '85%' }, delay: 1 },
-        { id: 'text-soil', type: 'text', props: { text: 'تربة (معادن)' }, position: { x: '50%', y: '90%' }, delay: 1.3 },
-        { id: 'air-icon', type: 'emoji', props: { emoji: '💨', size: 35 }, position: { x: '25%', y: '30%' }, delay: 1.5 },
-        { id: 'text-air', type: 'text', props: { text: 'هواء' }, position: { x: '25%', y: '42%' }, delay: 1.8 },
+        { id: 'algae', type: 'plant', props: { type: 'flower', size: 'small' }, position: { x: '30%', y: '75%' }, delay: 0.5 }, // Using flower as generic plant if algae not avail
+        { id: 'snail', type: 'animal', props: { type: 'snail', size: 'small', moving: true }, position: { x: '40%', y: '80%' }, delay: 1 },
+        { id: 'fish', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '60%', y: '70%' }, delay: 1.5 },
+        { id: 'bacteria', type: 'animal', props: { type: 'bacteria', size: 'small' }, position: { x: '80%', y: '85%' }, delay: 2 },
+        { id: 'label-biotic', type: 'text', props: { text: 'كائنات حية' }, position: { x: '50%', y: '90%' }, delay: 2.5 },
       ],
-      soundEffects: ['شمس ساطعة ☀️', 'ماء يتدفق 💧'],
-      educationalHighlight: 'العناصر غير الحية: الماء، الشمس، التربة، الهواء - ضرورية للحياة',
+      soundEffects: ['فقاعات 🫧', 'حركة سمكة 🐟'],
+      educationalHighlight: 'لكل كائن حي دور في النظام البيئي',
       transition: 'slide',
     },
     {
-      id: 'scene-4-interactions',
-      title: 'المشهد 4: تفاعل العائلة',
-      background: 'underwater',
-      duration: 12,
-      narratorText: 'الآن شاهد كيف تتفاعل العائلة! الشمس تساعد الطحالب على النمو، الأسماك تأكل الطحالب، والبكتيريا تحلل الفضلات وتعيد المواد للتربة. دورة رائعة! 🔄',
+      id: 'scene-3-interaction',
+      title: 'المشهد 3: التفاعل العائلي',
+      background: 'ocean',
+      duration: 25,
+      narratorText: 'الطحالب تصنع الأكسجين… الحلزون يأكل الطحالب الزائدة… السمكة تأكل الحلزون… والبكتيريا تُعيد كل شيء إلى التربة! الوسط البيئي كعائلة مترابطة.',
       elements: [
-        { id: 'sun-interact', type: 'sun', props: { size: 'small', glowing: true }, position: { x: '10%', y: '15%' }, delay: 0 },
-        { id: 'arrow-sun', type: 'arrow', props: { direction: 'down', color: '#fbbf24', size: 'small', label: 'طاقة' }, position: { x: '15%', y: '35%' }, delay: 0.3 },
-        { id: 'algae-interact', type: 'emoji', props: { emoji: '🌿', size: 45 }, position: { x: '20%', y: '55%' }, delay: 0.5 },
-        { id: 'arrow-food', type: 'arrow', props: { direction: 'right', color: '#22c55e', size: 'small', label: 'غذاء' }, position: { x: '35%', y: '55%' }, delay: 0.8 },
-        { id: 'fish-interact', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '55%', y: '55%' }, delay: 1 },
-        { id: 'arrow-waste', type: 'arrow', props: { direction: 'down', color: '#8b4513', size: 'small', label: 'فضلات' }, position: { x: '55%', y: '70%' }, delay: 1.3 },
-        { id: 'bacteria-interact', type: 'animal', props: { type: 'bacteria', size: 'medium' }, position: { x: '55%', y: '85%' }, delay: 1.5 },
-        { id: 'arrow-cycle', type: 'arrow', props: { direction: 'left', color: '#8b4513', size: 'small', label: 'مواد' }, position: { x: '35%', y: '85%' }, delay: 1.8 },
-        { id: 'cycle-icon', type: 'emoji', props: { emoji: '🔄', size: 40 }, position: { x: '80%', y: '50%' }, delay: 2 },
+        { id: 'oxygen-bubble', type: 'emoji', props: { emoji: '🫧O2', size: 30 }, position: { x: '30%', y: '65%' }, delay: 0.5 },
+        { id: 'arrow1', type: 'arrow', props: { direction: 'right', size: 'small' }, position: { x: '35%', y: '75%' }, delay: 1.5 },
+        { id: 'arrow2', type: 'arrow', props: { direction: 'right', size: 'small' }, position: { x: '50%', y: '75%' }, delay: 3 },
+        { id: 'cycle', type: 'emoji', props: { emoji: '🔄', size: 60 }, position: { x: '50%', y: '50%' }, delay: 5 },
       ],
-      soundEffects: ['تفاعلات طبيعية 🔄', 'موسيقى هادئة 🎶'],
-      educationalHighlight: 'التفاعل: شمس ← طحالب ← أسماك ← بكتيريا ← مواد ← طحالب (دورة)',
-      transition: 'slide',
-    },
-    {
-      id: 'scene-5-complete-family',
-      title: 'المشهد 5: العائلة الكاملة',
-      background: 'underwater',
-      duration: 11,
-      narratorText: 'هذه هي العائلة الخفية للطبيعة! كل عنصر له دور: المنتجون يصنعون الغذاء، المستهلكون يأكلون، والمحللون يعيدون المواد. الجميع مهم! 👨‍👩‍👧‍👦🌿💧',
-      elements: [
-        { id: 'family-sun', type: 'sun', props: { size: 'small', glowing: true }, position: { x: '50%', y: '10%' }, delay: 0 },
-        { id: 'family-algae', type: 'emoji', props: { emoji: '🌿', size: 40 }, position: { x: '25%', y: '35%' }, delay: 0.3 },
-        { id: 'family-fish', type: 'emoji', props: { emoji: '🐟', size: 40 }, position: { x: '50%', y: '35%' }, delay: 0.5 },
-        { id: 'family-snail', type: 'emoji', props: { emoji: '🐌', size: 40 }, position: { x: '75%', y: '35%' }, delay: 0.7 },
-        { id: 'family-bacteria', type: 'emoji', props: { emoji: '🦠', size: 35 }, position: { x: '50%', y: '55%' }, delay: 0.9 },
-        { id: 'family-water', type: 'emoji', props: { emoji: '💧', size: 35 }, position: { x: '30%', y: '70%' }, delay: 1.1 },
-        { id: 'family-soil', type: 'emoji', props: { emoji: '🌍', size: 35 }, position: { x: '70%', y: '70%' }, delay: 1.3 },
-        { id: 'heart-family', type: 'emoji', props: { emoji: '❤️', size: 50 }, position: { x: '50%', y: '75%' }, delay: 1.6 },
-        { id: 'label-family', type: 'text', props: { text: '👨‍👩‍👧‍👦 عائلة الطبيعة' }, position: { x: '50%', y: '90%' }, delay: 2 },
-      ],
-      soundEffects: ['موسيقى هادئة 🎶', 'انسجام الطبيعة 🌿'],
-      educationalHighlight: 'مكونات الوسط البيئي: عناصر حية (منتجون، مستهلكون، محللون) + عناصر غير حية',
+      soundEffects: ['موسيقى هادئة ومتناغمة 🎶'],
+      educationalHighlight: 'العلاقات الغذائية والبيئية تربط جميع العناصر',
       transition: 'zoom',
     },
+    {
+      id: 'scene-4-disruption',
+      title: 'المشهد 4: ماذا لو؟',
+      background: 'desert', // Symbolizing loss
+      duration: 20,
+      narratorText: 'لكن ماذا لو اختفى الماء؟ تموت الطحالب… يجوع الحلزون… تختفي السمكة! إذا مرض أحد أفراد العائلة… مرضت كلها! أنت الآن جزء من هذه العائلة. هل ستحميها؟ 🌍',
+      elements: [
+        { id: 'no-water', type: 'emoji', props: { emoji: '🏜️', size: 60 }, position: { x: '50%', y: '70%' }, delay: 0.5 },
+        { id: 'sad-snail', type: 'emoji', props: { emoji: '🐌😢', size: 40 }, position: { x: '30%', y: '70%' }, delay: 1.5 },
+        { id: 'skeleton-fish', type: 'emoji', props: { emoji: '🐟💀', size: 40 }, position: { x: '70%', y: '70%' }, delay: 2.5 },
+        { id: 'question', type: 'emoji', props: { emoji: '❓', size: 80 }, position: { x: '50%', y: '40%' }, delay: 4 },
+      ],
+      soundEffects: ['رياح جافة 💨', 'موسيقى حزينة 🎻'],
+      educationalHighlight: 'التوازن هش ويعتمد على وجود جميع العناصر',
+      transition: 'fade',
+    },
   ],
-  finalMessage: 'أحسنت! أنت الآن عضو شرفي في عائلة الطبيعة! 🌍 تذكر أن كل عنصر مهم!',
+  finalMessage: 'أنت الآن جزء من هذه العائلة. هل ستحميها؟ 🌍❤️',
 };
 
 // ============== COURSE DATA ==============
 export const ecoComponentsCourse: Course = {
-  id: 'eco-components',
+  id: 'eco-components-6',
   title: 'مكونات الوسط البيئي',
   grade: 6,
-  icon: '🏞️',
-  color: 'bg-green-100',
-  badge: { name: 'عضو شرفي في عائلة الطبيعة', icon: '🌍' },
+  icon: '🌊',
+  color: 'bg-cyan-100',
+  badge: { name: 'عضو شرفي في عائلة الطبيعة', icon: '👨‍👩‍👧‍👦🌍' },
   rewardMessages: {
-    student: 'أنت الآن عضو في عائلة الطبيعة! تفهم كل مكوناتها!',
-    parent: 'طفلك تعلم عن مكونات الوسط البيئي وأهمية كل عنصر! 🌍',
-    universalGoldBadge: { name: 'البطل الشامل للبيئة', icon: '🌍' },
+    student: 'أنت فهمت أن كل عنصر، حتى الصامت، له صوت في عائلة الحياة!',
+    parent: 'ولدك يرى الطبيعة كعائلة… وليس كأشياء منعزلة! 🌿',
+    universalGoldBadge: { name: 'عضو شرفي في عائلة الطبيعة', icon: '🌍' },
   },
   videoConcept: {
-    title: 'العائلة الخفية للطبيعة! 👨‍👩‍👧‍👦🌿💧',
-    scenario: 'مرحبًا أيها المكتشف الصغير! 🌊 اليوم سنتعرف على العائلة الخفية في الوسط البيئي.',
-    moralMessage: 'كل عنصر في الطبيعة له دور مهم، ونحن جزء من هذه العائلة!',
+    title: 'العائلة الخفية للطبيعة!',
+    scenario: 'جولة في بحيرة تونسية لاستكشاف العلاقات بين العناصر الحية وغير الحية وكأنها عائلة.',
+    moralMessage: 'الوسط البيئي عائلة واحدة، وسلامة الفرد من سلامة الجميع.',
   },
   animatedVideo: ecoComponentsVideo,
   videoStoryboard: {
-    title: 'العائلة الخفية للطبيعة! 👨‍👩‍👧‍👦🌿💧',
-    scenes: 'بحيرة تونسية، طحالب، أسماك، حلزون، بكتيريا، شمس، حركة ديناميكية',
-    narratorText: 'مرحبًا أيها المكتشف الصغير! 🌊...',
-    soundEffects: [
-      'تدفق الماء 💧',
-      'فقاعات 🫧',
-      'طيور 🦆',
-      'بكتيريا 🦠',
-      'موسيقى متوترة ⚠️',
-      'انسجام هادئ 🎶',
-    ],
+    title: 'العائلة الخفية للطبيعة!',
+    scenes: 'بحيرة تونسية → عناصر حية وغير حية → سلسلة غذائية → اختفاء الماء → أهمية التوازن',
+    narratorText: 'مرحبًا أيها المكتشف الصغير! هذه البحيرة ليست مجرد ماء… بل عائلة متكاملة!',
+    soundEffects: ['ماء 💧', 'طيور 🦆', 'موسيقى هادئة 🎶'],
   },
   exercises: [],
   exercisesV2: [
     {
       id: 'ex1',
-      type: 'multi',
+      type: 'scenario', // "Who Belongs?" - effectively identifying eco elements
       title: 'من ينتمي إلى العائلة؟',
       points: 20,
-      prompt: 'اختر عناصر الوسط البيئي التي تنتمي إلى "عائلة الطبيعة" 🌍',
-      options: ['طحالب 🌿', 'أسماك 🐟', 'حلزون 🐌', 'بكتيريا 🦠', 'شمس ☀️', 'سيارة 🚗'],
-      correct: ['طحالب 🌿', 'أسماك 🐟', 'حلزون 🐌', 'بكتيريا 🦠', 'شمس ☀️'],
-      successMessage: '✅ ممتاز! هذه مكونات مهمة للوسط البيئي 🌍',
-      errorMessage: '❌ انتبه: السيارة ليست عنصرًا طبيعيًا من مكونات الوسط البيئي هنا 🚗',
-      rewardBadge: { name: 'خبير العناصر', icon: '🌿' },
+      prompt: 'حدد العنصر الذي لا ينتمي إلى الوسط البيئي الطبيعي للبحيرة 🌊',
+      scenario: 'أمامك مجموعة عناصر، أحدها دخيل:',
+      options: [
+        'سمكة 🐟',
+        'طحالب 🌿',
+        'قارورة بلاستيك 🗑️ (دخيل)',
+        'بكتيريا 🦠',
+      ],
+      correct: 'قارورة بلاستيك 🗑️ (دخيل)',
+      successMessage: 'أحسنت! البلاستيك غريب عن عائلة الطبيعة! 👏',
+      errorMessage: 'أنظر جيداً… هل البلاستيك كائن حي أو عنصر طبيعي؟',
+      rewardBadge: { name: 'عضو شرفي', icon: '👨‍👩‍👧‍👦' },
     },
     {
       id: 'ex2',
-      type: 'short',
+      type: 'scenario', // "Why Important?" - Choosing correct importance statement
       title: 'لماذا هذا العنصر مهم؟',
       points: 20,
-      prompt: 'اكتب جملة قصيرة تشرح لماذا عنصر واحد (تختاره) مهم في الوسط البيئي ✍️',
-      placeholder: 'مثال: البكتيريا مهمة لأنها تحلل... 🦠',
-      requiredKeywords: ['مهم', 'لأن'],
-      successMessage: '✅ رائع! جملتك توضّح أهمية العنصر داخل العائلة 🌿',
-      errorMessage: '❌ حاول إضافة سبب واضح (لأن...) يشرح أهمية العنصر 💡',
-      rewardBadge: { name: 'كاتب البيئة', icon: '✍️' },
+      prompt: 'اختر الجملة الصحيحة التي تشرح أهمية البكتيريا 🦠',
+      scenario: 'لماذا لا يمكننا الاستغناء عن البكتيريا في التربة؟',
+      options: [
+        'لأنها تعيد العناصر والمواد إلى التربة بعد موت الكائنات ✅',
+        'لأنها تأكل الأسماك الكبيرة',
+        'لأنها تلوث المياه',
+      ],
+      correct: 'لأنها تعيد العناصر والمواد إلى التربة بعد موت الكائنات ✅',
+      successMessage: 'صحيح! البكتيريا هي مهندسة إعادة التدوير! ♻️',
+      errorMessage: 'البكتيريا المفككة لها دور حيوي في التخلص من البقايا.',
+      rewardBadge: { name: 'حكيم العناصر', icon: '📜' },
     },
     {
       id: 'ex3',
-      type: 'sticker-repair',
+      type: 'sticker-repair', // "Fix Broken Family"
       title: 'صلّح العائلة المفككة',
       points: 25,
-      prompt: 'استخدم الملصقات لإرجاع العناصر الناقصة إلى مكانها الصحيح 👨‍👩‍👧‍👦🌿💧',
-      sceneTitle: '🌊 وسط بيئي ناقص',
+      prompt: 'أعد العناصر المفقودة إلى البحيرة لتكتمل العائلة 🧩',
+      sceneTitle: 'بحيرة ناقصة الحياة',
       slots: [
-        { id: 'slot1', label: 'عنصر حي صغير' },
-        { id: 'slot2', label: 'عنصر غير حي (طاقة)' },
-        { id: 'slot3', label: 'محلّل' },
+        { id: 's1', label: 'مصدر طاقة' },
+        { id: 's2', label: 'وسط العيش' },
+        { id: 's3', label: 'مفكك' },
       ],
       stickers: [
-        { id: 'st1', label: 'حلزون', emoji: '🐌', slotId: 'slot1' },
-        { id: 'st2', label: 'شمس', emoji: '☀️', slotId: 'slot2' },
-        { id: 'st3', label: 'بكتيريا', emoji: '🦠', slotId: 'slot3' },
+        { id: 'st1', label: 'الشمس', emoji: '☀️', slotId: 's1' },
+        { id: 'st2', label: 'الماء', emoji: '💧', slotId: 's2' },
+        { id: 'st3', label: 'بكتيريا', emoji: '🦠', slotId: 's3' },
       ],
-      successMessage: '✅ أحسنت! العائلة عادت كاملة 🌍',
-      errorMessage: '❌ ليس بعد… ضع كل عنصر في المكان الأنسب داخل الوسط البيئي 🌿',
-      rewardBadge: { name: 'مُصلح العائلة', icon: '🔧' },
+      successMessage: 'رائع! عادت الحياة إلى البحيرة! 🌊☀️',
+      errorMessage: 'تذكر: الشمس، الماء، والمفككات أساس النظام.',
+      rewardBadge: { name: 'مصلح الروابط', icon: '🔗' },
     },
   ],
   games: [
     {
       id: 'g1',
-      type: 'runner',
-      title: 'سباق أعد العائلة!',
-      description: 'اجمع عناصر الوسط البيئي قبل أن تختفي! 🫧',
+      type: 'runner', // "Restore Family Race"
+      title: 'سباق "أعد العائلة!"',
+      description: 'اجمع العناصر الطبيعية (ماء، شمس، نبات) وتجنب النفايات الدخيلة!',
       points: 35,
       gameData: {
-        collectItems: ['🌿', '🐟', '🐌', '🦠', '☀️'],
-        hazardItems: ['⚠️', '💨', '🚗'],
-        lives: 3,
-        timeLimitSec: 35,
-        rewardBadgeName: 'جامع العناصر 🏆',
+        collectItems: ['💧', '☀️', '🌿', '🪨'],
+        hazardItems: ['🥤', '🛍️', '🛢️'], // Plastic, bag, oil
+        timeLimitSec: 40,
+        rewardBadgeName: 'جامع العائلة',
       },
     },
     {
       id: 'g2',
-      type: 'scenario',
-      title: 'مهمة راقب تفاعل العائلة',
-      description: 'راقب تفاعل عناصر الوسط البيئي واختر ما يحدث بينها 🌊🌿',
+      type: 'decision', // "Observe Interaction" - simulating monitoring
+      title: 'مهمة مراقبة التفاعل',
+      description: 'اضغط على العناصر لترى كيف تتفاعل مع بعضها (لعبة محاكاة بسيطة).',
       points: 30,
       gameData: {
-        scenario: 'في بحيرة تونسية 🌊: الطحالب 🌿 تنمو تحت الشمس ☀️، الأسماك 🐟 تأكل، والبكتيريا 🦠 تحلل. ماذا تلاحظ؟',
-        choices: [
-          { id: 'c1', text: 'الشمس ☀️ تساعد الطحالب 🌿 على النمو', impact: 10, explanation: '✅ صحيح: الطاقة تبدأ من الشمس ☀️' },
-          { id: 'c2', text: 'البكتيريا 🦠 تُفسد الوسط دائمًا', impact: -5, explanation: '❌ لا: البكتيريا مهمة للتحلل وإعادة المواد' },
-          { id: 'c3', text: 'الأسماك 🐟 جزء من العائلة لأنها كائن حي', impact: 10, explanation: '✅ صحيح: عنصر حي داخل الوسط' },
+        interactions: [
+          { trigger: 'الماء 💧', effect: 'نمو الطحالب 🌿' },
+          { trigger: 'البكتيريا 🦠', effect: 'خصوبة التربة 🪨' },
         ],
-        rewardBadgeName: 'مراقب التفاعلات 👁️',
+        rewardBadgeName: 'مُدرِك الروابط الخفية',
       },
     },
     {
       id: 'g3',
-      type: 'construction',
+      type: 'construction', // "Build Eco Family"
       title: 'بناء عائلتك البيئية',
-      description: 'اختر وسطًا بيئيًا وأضف 3 عناصر حية + 3 عناصر غير حية 🌍',
+      description: 'اختر بيئة (غابة، بحيرة...) وضع فيها 3 كائنات حية و3 عناصر غير حية متوافقة.',
       points: 35,
       gameData: {
-        availableElements: [
-          { id: 'l1', name: 'طحالب', type: 'producer', icon: '🌿' },
-          { id: 'l2', name: 'سمكة', type: 'consumer', icon: '🐟' },
-          { id: 'l3', name: 'حلزون', type: 'consumer', icon: '🐌' },
-          { id: 'l4', name: 'بكتيريا', type: 'decomposer', icon: '🦠' },
-          { id: 'n1', name: 'شمس', type: 'sun', icon: '☀️' },
-          { id: 'n2', name: 'ماء', type: 'water', icon: '💧' },
-          { id: 'n3', name: 'تربة', type: 'soil', icon: '🌍' },
-        ],
-        constraints: {
-          minLiving: 3,
-          minNonLiving: 3,
-        },
-        rewardBadgeName: 'بانٍ العائلة البيئية 🏗️',
+        environments: ['desert', 'forest', 'lake'],
+        elements: ['جمل', 'سمكة', 'شجرة', 'رمل', 'ماء', 'شمس'],
+        logic: 'matching-habitat', // Logic check: Fish needs Water, Camel needs Desert
+        rewardBadgeName: 'مؤسس العائلات البيئية',
       },
     },
   ],

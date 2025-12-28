@@ -22,7 +22,7 @@ import EcoHero from '@/components/cartoons/EcoHero';
 import WiseGuide from '@/components/cartoons/WiseGuide';
 import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
 import Link from 'next/link';
-import { coursesAPI, Course as APICourse } from '@/lib/api';
+import { coursesAPI, Course as APICourse, levelTestAPI } from '@/lib/api';
 import { coursesData, Course as LocalCourse } from '@/lib/coursesData';
 import useWindowSize from '@/lib/hooks/useWindowSize';
 import SimpleQuiz from '@/components/SimpleQuiz';
@@ -60,6 +60,18 @@ export default function CourseDetailPage() {
       if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
         router.push('/student/select-level');
         return;
+      }
+
+      // Enforce diagnostic test completion
+      try {
+        const levelKey = gradeLevel === 5 ? '5eme' : '6eme';
+        const testStatus = await levelTestAPI.getStatus(levelKey);
+        if (!testStatus.completed) {
+          router.push(`/student/level-test?level=${levelKey}`);
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to check level test status', e);
       }
 
       // Find local course data

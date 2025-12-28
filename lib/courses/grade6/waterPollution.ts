@@ -4,272 +4,193 @@ import type { AnimatedVideoData } from '@/components/animated-video/AnimatedCour
 // ============== ANIMATED VIDEO DATA ==============
 export const waterPollutionVideo: AnimatedVideoData = {
   title: 'النهر يبكي… والمحيط يصرخ!',
-  totalDuration: 70,
+  totalDuration: 90,
   scenes: [
     {
-      id: 'scene-1-intro',
-      title: 'المشهد 1: النهر الجميل',
-      background: 'ocean',
-      duration: 10,
-      narratorText: 'مرحبًا أيها المنقذ! 🌊 انظر إلى هذا النهر الجميل. الماء صافٍ، الأسماك سعيدة، والطيور تشرب. هذا ما يجب أن تكون عليه مياهنا!',
+      id: 'scene-1-river-pollution',
+      title: 'المشهد 1: دموع النهر',
+      background: 'ocean', // River/Ocean mix
+      duration: 20,
+      narratorText: 'مرحبًا أيها المنقذ! 🌊 هذا النهر كان يومًا مصدر حياة… واليوم… يذرف دموعًا من التلوث! المنظفات 🧴 تقتل الأسماك، والمبيدات 🧪 تصل من الحقول.',
       elements: [
-        { id: 'sun-river', type: 'sun', props: { size: 'medium', glowing: true }, position: { x: '85%', y: '15%' }, delay: 0 },
-        { id: 'clean-water', type: 'water', props: { type: 'wave', size: 'large' }, position: { x: '50%', y: '70%' }, delay: 0.3 },
-        { id: 'fish-happy-1', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '35%', y: '65%' }, delay: 0.6 },
-        { id: 'fish-happy-2', type: 'animal', props: { type: 'fish', size: 'small', moving: true }, position: { x: '65%', y: '70%' }, delay: 0.9 },
-        { id: 'turtle-happy', type: 'animal', props: { type: 'turtle', size: 'medium', moving: true }, position: { x: '50%', y: '75%' }, delay: 1.2 },
-        { id: 'bird-drink', type: 'animal', props: { type: 'bird', size: 'small', moving: true }, position: { x: '25%', y: '50%' }, delay: 1.5 },
-        { id: 'sparkle', type: 'emoji', props: { emoji: '✨', size: 30 }, position: { x: '45%', y: '60%' }, delay: 1.8 },
-        { id: 'label-clean', type: 'text', props: { text: '🌊 نهر نظيف وجميل' }, position: { x: '50%', y: '90%' }, delay: 2.1 },
+        { id: 'river', type: 'water', props: { type: 'river', size: 'large' }, position: { x: '50%', y: '80%' }, delay: 0 },
+        { id: 'detergent', type: 'emoji', props: { emoji: '🧴', size: 40 }, position: { x: '25%', y: '60%' }, delay: 1 },
+        { id: 'pesticide', type: 'emoji', props: { emoji: '🧪', size: 40 }, position: { x: '75%', y: '60%' }, delay: 2 },
+        { id: 'dead-fish', type: 'emoji', props: { emoji: '🐟💀', size: 30 }, position: { x: '50%', y: '70%' }, delay: 3 },
       ],
-      soundEffects: ['تدفق النهر 💧', 'أسماك سعيدة 🐟', 'طيور 🐦'],
-      educationalHighlight: 'الماء النظيف ضروري لحياة جميع الكائنات',
+      soundEffects: ['جريان ماء ملوث 💧', 'موسيقى حزينة 🎻'],
+      educationalHighlight: 'المواد الكيميائية المنزلية والزراعية تقتل الحياة المائية',
       transition: 'fade',
     },
     {
-      id: 'scene-2-pollution-sources',
-      title: 'المشهد 2: مصادر التلوث',
-      background: 'city',
-      duration: 12,
-      narratorText: 'لكن التلوث يأتي من مصادر كثيرة! 😢 المصانع تلقي مخلفاتها، الناس يرمون البلاستيك، والنفط يتسرب. كل هذا يسمم الماء!',
-      elements: [
-        { id: 'factory-pollute', type: 'emoji', props: { emoji: '🏭', size: 55 }, position: { x: '20%', y: '45%' }, delay: 0 },
-        { id: 'factory-waste', type: 'pollution', props: { type: 'smoke', size: 'medium' }, position: { x: '25%', y: '60%' }, delay: 0.3 },
-        { id: 'plastic-1', type: 'emoji', props: { emoji: '🛍️', size: 35 }, position: { x: '45%', y: '70%' }, delay: 0.6 },
-        { id: 'plastic-2', type: 'emoji', props: { emoji: '🥤', size: 30 }, position: { x: '55%', y: '75%' }, delay: 0.9 },
-        { id: 'trash', type: 'pollution', props: { type: 'trash', size: 'medium' }, position: { x: '70%', y: '65%' }, delay: 1.2 },
-        { id: 'oil-spill', type: 'pollution', props: { type: 'oil', size: 'medium' }, position: { x: '80%', y: '70%' }, delay: 1.5 },
-        { id: 'dirty-water', type: 'emoji', props: { emoji: '🟤', size: 50 }, position: { x: '50%', y: '85%' }, delay: 1.8 },
-        { id: 'warning', type: 'emoji', props: { emoji: '⚠️', size: 40 }, position: { x: '50%', y: '40%' }, delay: 2.1 },
-        { id: 'label-sources', type: 'text', props: { text: '⚠️ مصادر التلوث' }, position: { x: '50%', y: '90%' }, delay: 2.4 },
-      ],
-      soundEffects: ['مصنع 🏭', 'تلوث ⚠️', 'موسيقى حزينة 😢'],
-      educationalHighlight: 'مصادر التلوث: مصانع (كيميائي)، بلاستيك (صلب)، نفط (تسرب زيتي)',
-      transition: 'slide',
-    },
-    {
-      id: 'scene-3-turtle-choking',
-      title: 'المشهد 3: السلحفاة تختنق',
-      background: 'underwater',
-      duration: 12,
-      narratorText: 'انظر إلى هذه السلحفاة المسكينة! 🐢😢 تظن أن الكيس البلاستيكي طعام فتأكله وتختنق. ملايين الحيوانات البحرية تموت بسبب البلاستيك!',
-      elements: [
-        { id: 'turtle-choke', type: 'animal', props: { type: 'turtle', size: 'large' }, position: { x: '40%', y: '50%' }, delay: 0 },
-        { id: 'plastic-bag', type: 'emoji', props: { emoji: '🛍️', size: 40 }, position: { x: '50%', y: '55%' }, delay: 0.5 },
-        { id: 'sad-turtle-face', type: 'emoji', props: { emoji: '😵', size: 30 }, position: { x: '35%', y: '45%' }, delay: 1 },
-        { id: 'fish-scared', type: 'animal', props: { type: 'fish', size: 'small', moving: true, direction: 'left' }, position: { x: '70%', y: '60%' }, delay: 1.3 },
-        { id: 'plastic-float-1', type: 'emoji', props: { emoji: '🥤', size: 25 }, position: { x: '25%', y: '40%' }, delay: 1.6 },
-        { id: 'plastic-float-2', type: 'emoji', props: { emoji: '🛍️', size: 25 }, position: { x: '75%', y: '45%' }, delay: 1.9 },
-        { id: 'sad-face', type: 'emoji', props: { emoji: '😢', size: 40 }, position: { x: '50%', y: '25%' }, delay: 2.2 },
-        { id: 'label-turtle', type: 'text', props: { text: '🐢😢 السلحفاة تختنق بالبلاستيك' }, position: { x: '50%', y: '90%' }, delay: 2.5 },
-      ],
-      soundEffects: ['سلحفاة تختنق 🐢', 'فقاعات 🫧', 'موسيقى حزينة 😢'],
-      educationalHighlight: 'البلاستيك يقتل: الحيوانات البحرية تظنه طعاماً فتختنق',
-      transition: 'slide',
-    },
-    {
-      id: 'scene-4-home-water',
-      title: 'المشهد 4: ماء البيت',
-      background: 'park',
-      duration: 10,
-      narratorText: 'التلوث يصل إلى بيوتنا أيضاً! 🏡😷 إذا شربنا ماء ملوثاً، نمرض. يجب أن نحمي ماء البيت بطرق صحيحة!',
-      elements: [
-        { id: 'house', type: 'emoji', props: { emoji: '🏡', size: 60 }, position: { x: '30%', y: '50%' }, delay: 0 },
-        { id: 'tap-water', type: 'emoji', props: { emoji: '🚰', size: 45 }, position: { x: '50%', y: '55%' }, delay: 0.4 },
-        { id: 'dirty-glass', type: 'emoji', props: { emoji: '🥛🟤', size: 40 }, position: { x: '70%', y: '50%' }, delay: 0.8 },
-        { id: 'sick-child', type: 'emoji', props: { emoji: '😷', size: 45 }, position: { x: '75%', y: '65%' }, delay: 1.2 },
-        { id: 'warning-health', type: 'emoji', props: { emoji: '⚠️', size: 35 }, position: { x: '60%', y: '40%' }, delay: 1.6 },
-        { id: 'bacteria', type: 'animal', props: { type: 'bacteria', size: 'small' }, position: { x: '55%', y: '60%' }, delay: 2 },
-        { id: 'label-home', type: 'text', props: { text: '🏡 الماء الملوث يصل للبيت' }, position: { x: '50%', y: '90%' }, delay: 2.4 },
-      ],
-      soundEffects: ['ماء ملوث 🟤', 'طفل مريض 😷'],
-      educationalHighlight: 'الماء الملوث يسبب أمراضاً خطيرة للإنسان',
-      transition: 'slide',
-    },
-    {
-      id: 'scene-5-solutions',
-      title: 'المشهد 5: الحلول',
-      background: 'farm',
-      duration: 14,
-      narratorText: 'لكننا نستطيع حل المشكلة! 💪 لا ترمِ النفايات، استخدم فلتر في البيت، نظّف الشواطئ، ومنع التلوث من المصدر. أنت جزء من الحل! 🌊✨',
-      elements: [
-        { id: 'no-littering', type: 'emoji', props: { emoji: '🚫🗑️', size: 45 }, position: { x: '20%', y: '40%' }, delay: 0 },
-        { id: 'text-no-litter', type: 'text', props: { text: 'لا ترمِ النفايات' }, position: { x: '20%', y: '55%' }, delay: 0.3 },
-        { id: 'filter', type: 'emoji', props: { emoji: '🧰💧', size: 45 }, position: { x: '45%', y: '40%' }, delay: 0.6 },
-        { id: 'text-filter', type: 'text', props: { text: 'استخدم فلتر' }, position: { x: '45%', y: '55%' }, delay: 0.9 },
-        { id: 'clean-beach', type: 'emoji', props: { emoji: '🧹🏖️', size: 45 }, position: { x: '70%', y: '40%' }, delay: 1.2 },
-        { id: 'text-clean', type: 'text', props: { text: 'نظّف الشواطئ' }, position: { x: '70%', y: '55%' }, delay: 1.5 },
-        { id: 'happy-fish', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '35%', y: '75%' }, delay: 1.8 },
-        { id: 'happy-turtle', type: 'animal', props: { type: 'turtle', size: 'medium', moving: true }, position: { x: '65%', y: '75%' }, delay: 2.1 },
-        { id: 'clean-water-result', type: 'water', props: { type: 'wave', size: 'medium' }, position: { x: '50%', y: '85%' }, delay: 2.4 },
-        { id: 'checkmark', type: 'emoji', props: { emoji: '✅', size: 40 }, position: { x: '50%', y: '30%' }, delay: 2.7 },
-      ],
-      soundEffects: ['تنظيف 🧹', 'ماء نظيف 💧', 'موسيقى أمل 🎶'],
-      educationalHighlight: 'الحلول: لا ترمِ النفايات + فلتر + تنظيف = ماء نظيف',
-      transition: 'slide',
-    },
-    {
-      id: 'scene-6-clean-future',
-      title: 'المشهد 6: مستقبل نظيف',
+      id: 'scene-2-ocean-danger',
+      title: 'المشهد 2: صرخة المحيط',
       background: 'ocean',
-      duration: 7,
-      narratorText: 'هذا هو المستقبل الذي نريده! 🌊✨ نهر نظيف، محيط صافٍ، أسماك وسلاحف سعيدة. أنت منقذ الأنهار! 💙',
+      duration: 25,
+      narratorText: 'النفط 🛢️ يخنق السلحفاة، والبلاستيك 🥤 يُخطئه الطير لقنصٍ! والأخطر… الماء الذي تشربه قد يحمل أمراضاً خطيرة!',
       elements: [
-        { id: 'sun-clean', type: 'sun', props: { size: 'medium', glowing: true }, position: { x: '80%', y: '15%' }, delay: 0 },
-        { id: 'clean-ocean', type: 'water', props: { type: 'wave', size: 'large' }, position: { x: '50%', y: '75%' }, delay: 0.3 },
-        { id: 'fish-future-1', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '30%', y: '65%' }, delay: 0.6 },
-        { id: 'fish-future-2', type: 'animal', props: { type: 'fish', size: 'small', moving: true }, position: { x: '55%', y: '70%' }, delay: 0.9 },
-        { id: 'turtle-future', type: 'animal', props: { type: 'turtle', size: 'large', moving: true }, position: { x: '70%', y: '60%' }, delay: 1.2 },
-        { id: 'heart-water', type: 'emoji', props: { emoji: '💙', size: 40 }, position: { x: '50%', y: '45%' }, delay: 1.5 },
-        { id: 'sparkles', type: 'emoji', props: { emoji: '✨', size: 30 }, position: { x: '40%', y: '55%' }, delay: 1.8 },
-        { id: 'rainbow', type: 'emoji', props: { emoji: '🌈', size: 50 }, position: { x: '50%', y: '25%' }, delay: 2.1 },
-        { id: 'label-future', type: 'text', props: { text: '🌊✨ مستقبل نظيف' }, position: { x: '50%', y: '90%' }, delay: 2.4 },
+        { id: 'oil-spill', type: 'pollution', props: { type: 'oil', size: 'large' }, position: { x: '50%', y: '60%' }, delay: 0.5 },
+        { id: 'turtle', type: 'animal', props: { type: 'turtle', size: 'medium', moving: true }, position: { x: '40%', y: '60%' }, delay: 1.5 },
+        { id: 'plastic', type: 'emoji', props: { emoji: '🥤', size: 30 }, position: { x: '60%', y: '50%' }, delay: 2.5 },
+        { id: 'danger', type: 'emoji', props: { emoji: '☣️', size: 40 }, position: { x: '80%', y: '30%' }, delay: 4 },
       ],
-      soundEffects: ['موج هادئ 🌊', 'أسماك سعيدة 🐟', 'موسيقى أمل 🎶'],
-      educationalHighlight: 'المستقبل النظيف يبدأ بك! كل فعل صغير يصنع فرقاً كبيراً',
+      soundEffects: ['اختناق سلحفاة 🐢', 'تحذير خطر ⚠️'],
+      educationalHighlight: 'التلوث النفطي والبلاستيكي يهدد الكائنات والبشر',
+      transition: 'slide',
+    },
+    {
+      id: 'scene-3-solutions',
+      title: 'المشهد 3: الحلول الممكنة',
+      background: 'city',
+      duration: 25,
+      narratorText: 'لكن هناك أمل… لا تلقِ الزيت في المصرف، استخدم منظفات بيولوجية، غطّ البئر، وفرّز نفاياتك. الماء النظيف… مسؤولية!',
+      elements: [
+        { id: 'no-oil', type: 'emoji', props: { emoji: '🚫🛢️', size: 40 }, position: { x: '20%', y: '60%' }, delay: 1 },
+        { id: 'bio-soap', type: 'emoji', props: { emoji: '🧼🌿', size: 40 }, position: { x: '50%', y: '60%' }, delay: 2.5 },
+        { id: 'recycle-bin', type: 'emoji', props: { emoji: '♻️', size: 40 }, position: { x: '80%', y: '60%' }, delay: 4 },
+      ],
+      soundEffects: ['صوت محطة تصفية 🏭', 'ماء نقي يتدفق 🚰'],
+      educationalHighlight: 'سلوكياتنا اليومية يمكن أن تنقذ المياه',
       transition: 'zoom',
     },
+    {
+      id: 'scene-4-call-to-action',
+      title: 'المشهد 4: كن صوت الماء',
+      background: 'ocean',
+      duration: 20,
+      narratorText: 'هل أنت مستعد أن تكون صوت الماء الصامت؟ 💧 احمِ كل قطرة، لتحمي حياتك وحياة الكائنات!',
+      elements: [
+        { id: 'clean-water', type: 'water', props: { type: 'wave', size: 'large' }, position: { x: '50%', y: '80%' }, delay: 0 },
+        { id: 'hero', type: 'emoji', props: { emoji: '🦸💧', size: 60 }, position: { x: '50%', y: '50%' }, delay: 1 },
+        { id: 'happy-fish', type: 'animal', props: { type: 'fish', size: 'medium', moving: true }, position: { x: '20%', y: '70%' }, delay: 2 },
+        { id: 'happy-turtle', type: 'animal', props: { type: 'turtle', size: 'medium', moving: true }, position: { x: '80%', y: '60%' }, delay: 3 },
+      ],
+      soundEffects: ['موسيقى أمل وانتصار 🎵', 'صوت بحر هادئ 🌊'],
+      educationalHighlight: 'حماية المياه هي حماية للحياة',
+      transition: 'fade',
+    },
   ],
-  finalMessage: 'أحسنت! أنت الآن منقذ الأنهار! 🌊💙 احمِ مياهنا من التلوث!',
+  finalMessage: 'أنت صوت الماء الصامت! أنقذت النهر! 💧💙',
 };
 
 // ============== COURSE DATA ==============
 export const waterPollutionCourse: Course = {
-  id: 'water-pollution',
+  id: 'water-pollution-6',
   title: 'تلوث الأوساط المائية',
   grade: 6,
-  icon: '🌊',
-  color: 'bg-blue-100',
-  badge: { name: 'منقذ الأنهار', icon: '🌊' },
+  icon: '🚰',
+  color: 'bg-indigo-100',
+  badge: { name: 'بطل المياه النظيفة', icon: '💧🌊' },
   rewardMessages: {
-    student: 'أنت الآن منقذ الأنهار! تعرف كيف تحمي الماء من التلوث!',
-    parent: 'طفلك تعلم عن تلوث المياه وكيفية حمايتها! 🌊',
-    universalGoldBadge: { name: 'البطل الشامل للبيئة', icon: '🌍' },
+    student: 'أنت لم تنظّف نهرًا… بل أنقذت حياة!',
+    parent: 'ولدك يحمي قطرة الماء… كما يحمي نفسه! 🌿',
+    universalGoldBadge: { name: 'بطل المياه النظيفة', icon: '💧' },
   },
   videoConcept: {
-    title: 'النهر يبكي… والمحيط يصرخ! 😢🌊',
-    scenario: 'مرحبًا أيها المنقذ! 🌊 سنتعلم عن تلوث المياه وكيف نحميها.',
-    moralMessage: 'الماء حياة، احمِه من التلوث!',
+    title: 'النهر يبكي… والمحيط يصرخ!',
+    scenario: 'عرض لمصادر تلوث المياه (نفط، بلاستيك، كيميائيات) وتأثيرها المدمر، والحلول المتاحة.',
+    moralMessage: 'الماء هو الحياة، وتلويثه يعني تدمير الحياة. الحماية مسؤوليتنا جميعاً.',
   },
   animatedVideo: waterPollutionVideo,
   videoStoryboard: {
-    title: 'النهر يبكي… والمحيط يصرخ! 😢🌊',
-    scenes: 'نهر ملوث، محيط ملوث، سلحفاة تأكل بلاستيك، تسرب نفط، تلوث بيتي',
-    narratorText: 'مرحبًا أيها المنقذ! 🌊...',
-    soundEffects: [
-      'سلحفاة تختنق 🐢',
-      'تدفق النهر 💧',
-      'طفل مريض 😷',
-      'صوت ترشيح 🏭',
-      'موسيقى أمل 🎶',
-    ],
+    title: 'النهر يبكي… والمحيط يصرخ!',
+    scenes: 'نهر ملوث → اختناق كائنات → حلول منزلية وصناعية → مياه نظيفة',
+    narratorText: 'مرحبًا أيها المنقذ! هذا النهر كان يومًا مصدر حياة… واليوم يذرف دموعًا!',
+    soundEffects: ['بحر 🌊', 'سعال 😷', 'محطة تصفية 🏭'],
   },
   exercises: [],
   exercisesV2: [
     {
       id: 'ex1',
-      type: 'matching',
+      type: 'matching', // "Where Pollution Comes From?" - Connection
       title: 'من أين يأتي التلوث؟',
       points: 20,
-      prompt: 'اربط مصدر التلوث بنوعه الصحيح 🔗',
+      prompt: 'صل كل مصدر بنوع التلوث الذي يسببه 🏭🏠',
       pairs: [
-        { left: 'مصنع 🏭', right: 'تلوث كيميائي' },
-        { left: 'بلاستيك 🛍️', right: 'تلوث صلب' },
-        { left: 'مياه صرف 🚽', right: 'تلوث جرثومي 🦠' },
-        { left: 'نفط 🛢️', right: 'تسرب زيتي' },
+        { left: 'منزل (منظفات)', right: 'تلوث كيميائي' },
+        { left: 'مزرعة (فضلات)', right: 'تلوث عضوي' },
+        { left: 'ناقلة نفط', right: 'تلوث نفطي' },
       ],
-      successMessage: '✅ ممتاز! عرفت مصادر التلوث وأنواعه 🌊',
-      errorMessage: '❌ جرّب مجددًا: كل مصدر له نوع تلوث مختلف ⚠️',
-      rewardBadge: { name: 'خبير مصادر التلوث', icon: '🔍' },
+      successMessage: 'تحليل دقيق! معرفة المصدر هي بداية الحل! 🔍',
+      errorMessage: 'تذكر: الزيت والمبيدات مواد كيميائية، والفضلات عضوية.',
+      rewardBadge: { name: 'محلل المصادر', icon: '🔍' },
     },
     {
       id: 'ex2',
-      type: 'multi',
+      type: 'scenario', // "How to Protect Water?"
       title: 'كيف تحمي ماءك؟',
       points: 20,
-      prompt: 'اختر السلوكيات الصحيحة لحماية ماء البيت 💧🏡',
+      prompt: 'ما هو السلوك الصحيح للتخلص من زيت القلي المستعمل؟ 🍳',
+      scenario: 'لديك كمية من الزيت المستعمل، ماذا تفعل؟',
       options: [
-        'عدم رمي الزيوت في المغسلة 🛢️🚫',
-        'إغلاق الصنبور عند عدم الحاجة 💧',
-        'رمي النفايات في الوادي 🗑️',
-        'استعمال فلتر عند الحاجة 🏭',
+        'أجمعه في قارورة وأسلمه لنقاط التجميع (أو أتخلص منه في القمامة المغلقة) ✅',
+        'أسكبه في حوض الغسيل (المصرف)',
+        'أرميه في الحديقة',
       ],
-      correct: ['عدم رمي الزيوت في المغسلة 🛢️🚫', 'إغلاق الصنبور عند عدم الحاجة 💧', 'استعمال فلتر عند الحاجة 🏭'],
-      successMessage: '✅ رائع! هذه سلوكيات تحمي الماء في البيت 💧',
-      errorMessage: '❌ انتبه: رمي النفايات في الوادي يلوث الماء 🌊⚠️',
-      rewardBadge: { name: 'حامي ماء البيت', icon: '🏡' },
+      correct: 'أجمعه في قارورة وأسلمه لنقاط التجميع (أو أتخلص منه في القمامة المغلقة) ✅',
+      successMessage: 'أحسنت! الزيت في المصرف يلوث آلاف اللترات من الماء! 🚰',
+      errorMessage: 'سكب الزيت في المصرف يلوث النهر ويصعب تصفيته.',
+      rewardBadge: { name: 'حارس الماء المنزلي', icon: '🚰' },
     },
     {
       id: 'ex3',
-      type: 'choice',
+      type: 'scenario', // "Choose Smart Solution"
       title: 'اختَر الحل الأذكى!',
-      points: 20,
-      prompt: 'اختر الحل الأذكى لنهر ملوّث 🌊',
+      points: 25,
+      prompt: 'ما هو الحل الأفضل لمعالجة تلوث مياه الصرف الصحي؟ 💡',
+      scenario: 'النهر ملوث بمياه المجاري، ماذا نفعل؟',
       options: [
-        'تنظيم حملات تنظيف + منع مصادر التلوث 🚫🗑️',
-        'صبّ مواد مجهولة في النهر 🧪',
-        'تجاهل المشكلة',
+        'بناء محطة تصفية لمعالجة المياه قبل طرحها ✅',
+        'بناء سد لمنع جريان النهر',
+        'منع الناس من استخدام الماء',
       ],
-      correct: 'تنظيم حملات تنظيف + منع مصادر التلوث 🚫🗑️',
-      successMessage: '✅ صحيح! الحل الذكي يجمع بين الوقاية والتنظيف 🌊',
-      errorMessage: '❌ الحل الذكي لا يزيد التلوث ولا يتجاهله ⚠️',
-      rewardBadge: { name: 'صاحب الحلول الذكية', icon: '💡' },
+      correct: 'بناء محطة تصفية لمعالجة المياه قبل طرحها ✅',
+      successMessage: 'تفكير علمي! التصفية تعيد الحياة للماء! 🏭✨',
+      errorMessage: 'السد يجمع التلوث ولا يعالجه... الحل في التصفية.',
+      rewardBadge: { name: 'مبتكر الحلول', icon: '💡' },
     },
   ],
   games: [
     {
       id: 'g1',
-      type: 'runner',
-      title: 'سباق نظّف النهر!',
-      description: 'اجمع النفايات من النهر وتجنّب الأفعال الخاطئة ⚠️',
+      type: 'runner', // "Clean the River Race"
+      title: 'سباق "نظّف النهر!"',
+      description: 'استخدم الشبكة لجمع النفايات وقارب الكشط لجمع الزيت. تجنب المواد الكيميائية!',
       points: 35,
       gameData: {
-        collectItems: ['🛍️', '🥤', '🧴', '🗑️'],
-        hazardItems: ['🏭⚠️', '🛢️', '⚠️'],
-        lives: 3,
+        collectItems: ['نفايات 🗑️', 'زيت 🛢️'], // Mapping conceptual tools to items or actions
+        tools: ['شبكة', 'قارب'],
+        hazardItems: ['كلور ☠️', 'مبيد 🧪'],
         timeLimitSec: 40,
-        rewardBadgeName: 'عدّاء تنظيف النهر 🏃',
+        rewardBadgeName: 'منقذ الأنهار',
       },
     },
     {
       id: 'g2',
-      type: 'lab',
-      title: 'مهمة افحص ماءك!',
-      description: 'افحص عينات الماء (pH، بكتيريا، معادن) 🧪',
-      points: 35,
+      type: 'lab', // "Test Your Water" - lab simulation
+      title: 'مهمة "افحص ماءك!"',
+      description: 'مختبر افتراضي: استخدم الأدوات (مجهر، كاشف) لفحص عينات الماء وتحديد صلاحيتها.',
+      points: 30,
       gameData: {
+        tools: ['مجهر 🔬', 'ورق pH 🧪', 'كاشف معادن 💎'],
         samples: [
-          { id: 's1', name: 'ماء الصنبور', ph: 7, bacteria: 'قليلة', minerals: 'عادية' },
-          { id: 's2', name: 'ماء النهر', ph: 6, bacteria: 'متوسطة', minerals: 'عالية' },
-          { id: 's3', name: 'ماء ملوث', ph: 4, bacteria: 'كثيرة', minerals: 'سامة' },
+          { type: 'bacterial', result: 'polluted' },
+          { type: 'clean', result: 'safe' },
+          { type: 'chemical', result: 'polluted' },
         ],
-        correctAnswers: {
-          's1': 'صالح للشرب',
-          's2': 'يحتاج ترشيح',
-          's3': 'ملوث - لا تشرب',
-        },
-        rewardBadgeName: 'عالِم المياه 🔬',
+        rewardBadgeName: 'خبير جودة المياه',
       },
     },
     {
       id: 'g3',
-      type: 'construction',
+      type: 'construction', // "Build Clean System"
       title: 'بناء نظامك النظيف',
-      description: 'اختر أدوات تحافظ على ماء البيت نظيفًا 💧🏡',
-      points: 30,
+      description: 'جهز منزلك لحماية المياه: وعاء زيت، غطاء بئر، فرز نفايات.',
+      points: 35,
       gameData: {
-        availableElements: [
-          { id: 'f1', name: 'فلتر ماء', type: 'water', icon: '🧰💧' },
-          { id: 'f2', name: 'تنظيف الخزان', type: 'soil', icon: '🧽' },
-          { id: 'f3', name: 'رمي زيت', type: 'soil', icon: '🛢️⚠️' },
-          { id: 'f4', name: 'غلق الصنبور', type: 'water', icon: '🚰✅' },
-          { id: 'f5', name: 'تخزين آمن', type: 'soil', icon: '🫙✅' },
-        ],
-        constraints: {
-          avoidAny: ['🛢️⚠️'],
-          minElements: 3,
-        },
-        rewardBadgeName: 'بانٍ النظام النظيف 🏗️',
+        elements: ['وعاء زيت', 'غطاء بئر', 'سلة فرز', 'فلتر'],
+        scenario: 'home-protection',
+        rewardBadgeName: 'مهندس البيئة المنزلية',
       },
     },
   ],

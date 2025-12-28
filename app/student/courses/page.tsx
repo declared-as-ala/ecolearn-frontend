@@ -12,7 +12,7 @@ import Link from 'next/link';
 import StudentSidebar from '@/components/navigation/StudentSidebar';
 import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
 import EcoLoading from '@/components/ui/EcoLoading';
-import { coursesAPI, Course as APICourse } from '@/lib/api';
+import { coursesAPI, Course as APICourse, levelTestAPI } from '@/lib/api';
 import { coursesData, Course as LocalCourse } from '@/lib/coursesData';
 
 export default function CoursesPage() {
@@ -36,6 +36,18 @@ export default function CoursesPage() {
       if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
         router.push('/student/select-level');
         return;
+      }
+
+      // Ensure diagnostic test completed
+      try {
+        const levelKey = gradeLevel === 5 ? '5eme' : '6eme';
+        const testStatus = await levelTestAPI.getStatus(levelKey);
+        if (!testStatus.completed) {
+          router.push(`/student/level-test?level=${levelKey}`);
+          return;
+        }
+      } catch (e) {
+        console.error('Failed to check level test status', e);
       }
 
       setLoadingData(true);

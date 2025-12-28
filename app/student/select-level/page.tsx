@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
 import EcoLoading from '@/components/ui/EcoLoading';
-import { usersAPI } from '@/lib/api';
+import { usersAPI, levelTestAPI } from '@/lib/api';
 import { Leaf, Sun, Droplet, Flower2, Sprout } from 'lucide-react';
 import Link from 'next/link';
 
@@ -68,8 +68,14 @@ export default function SelectLevelPage() {
       // Small delay for visual feedback
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Redirect to courses page
-      router.push('/student/courses');
+      // Check mandatory diagnostic test
+      const levelKey = level === 5 ? '5eme' : '6eme';
+      const status = await levelTestAPI.getStatus(levelKey);
+      if (!status.completed) {
+        router.push(`/student/level-test?level=${levelKey}`);
+      } else {
+        router.push('/student/courses');
+      }
     } catch (error: any) {
       console.error('Failed to save level:', error);
       alert(error.message || '❌ فشل حفظ المستوى الدراسي. يرجى المحاولة مرة أخرى.');

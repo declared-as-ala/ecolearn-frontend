@@ -14,6 +14,15 @@ export interface User {
   level?: number;
   badges?: string[];
   gradeLevel?: 5 | 6; // Year 5 or Year 6
+  levelTests?: Record<'5eme' | '6eme', LevelTestStatus>;
+}
+
+export interface LevelTestStatus {
+  completed: boolean;
+  score?: number;
+  category?: string | null;
+  level: '5eme' | '6eme';
+  completedAt?: string | null;
 }
 
 export interface AuthResponse {
@@ -493,6 +502,44 @@ export const coursesAPI = {
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || 'Failed to submit game');
     return result;
+  },
+};
+
+// Level Test API
+export const levelTestAPI = {
+  getStatus: async (level: '5eme' | '6eme'): Promise<LevelTestStatus> => {
+    const response = await apiRequest(`/level-test/status?level=${level}`);
+    const result = await response.json();
+    return {
+      completed: !!result.completed,
+      score: result.score,
+      category: result.category,
+      level: result.level || level,
+      completedAt: result.completedAt || null,
+    };
+  },
+
+  submit: async (data: {
+    level: '5eme' | '6eme';
+    answers: any[];
+    score: number;
+    category: string;
+  }): Promise<LevelTestStatus> => {
+    const response = await apiRequest('/level-test/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to submit level test');
+    }
+    return {
+      completed: !!result.completed,
+      score: result.score,
+      category: result.category,
+      level: result.level,
+      completedAt: result.completedAt || null,
+    };
   },
 };
 
