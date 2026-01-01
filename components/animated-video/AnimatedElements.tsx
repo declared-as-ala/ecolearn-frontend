@@ -74,7 +74,7 @@ export const AnimatedPlant: React.FC<{
 }> = ({ type = 'flower', size = 'medium', className = '', swaying = true }) => {
   const sizeMap = { small: 40, medium: 70, large: 120 };
   const s = sizeMap[size];
-  
+
   const plantEmojis = {
     flower: '🌸',
     tree: '🌳',
@@ -113,7 +113,7 @@ export const AnimatedAnimal: React.FC<{
 }> = ({ type, size = 'medium', className = '', moving = true, direction = 'right' }) => {
   const sizeMap = { small: 40, medium: 60, large: 90 };
   const s = sizeMap[size];
-  
+
   const animalEmojis: Record<string, string> = {
     rabbit: '🐰',
     lion: '🦁',
@@ -148,8 +148,8 @@ export const AnimatedAnimal: React.FC<{
   return (
     <motion.div
       className={`inline-block ${className}`}
-      style={{ 
-        fontSize: s, 
+      style={{
+        fontSize: s,
         transform: direction === 'left' ? 'scaleX(-1)' : 'none',
       }}
       animate={getAnimation()}
@@ -398,7 +398,7 @@ export const AnimatedFire: React.FC<{
     <motion.div
       className={className}
       style={{ fontSize: s }}
-      animate={{ 
+      animate={{
         scale: [1, 1.1, 0.95, 1.05, 1],
         rotate: [-2, 2, -2, 2, 0],
       }}
@@ -463,7 +463,7 @@ export const AnimatedPollution: React.FC<{
 
 // ============== SCENE BACKGROUND COMPONENT ==============
 export const SceneBackground: React.FC<{
-  type: 'forest' | 'ocean' | 'city' | 'farm' | 'desert' | 'sky' | 'underwater' | 'park';
+  type: 'forest' | 'ocean' | 'city' | 'farm' | 'desert' | 'sky' | 'underwater' | 'park' | 'school';
   children: React.ReactNode;
   className?: string;
 }> = ({ type, children, className = '' }) => {
@@ -476,13 +476,14 @@ export const SceneBackground: React.FC<{
     sky: 'linear-gradient(180deg, #1e3a8a 0%, #3b82f6 40%, #87CEEB 100%)',
     underwater: 'linear-gradient(180deg, #00CED1 0%, #008B8B 50%, #004D4D 100%)',
     park: 'linear-gradient(180deg, #87CEEB 0%, #98FB98 60%, #228B22 100%)',
+    school: 'linear-gradient(180deg, #F0F8FF 0%, #E6E6FA 40%, #D8BFD8 70%, #FFE4E1 100%)', // School classroom vibe
   };
 
   return (
     <div
       className={`relative overflow-visible rounded-2xl ${className}`}
-      style={{ 
-        background: backgrounds[type] || backgrounds.forest, 
+      style={{
+        background: backgrounds[type] || backgrounds.forest,
         minHeight: 300
       }}
     >

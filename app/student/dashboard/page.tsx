@@ -1,4 +1,5 @@
-'use client';
+'use client'; // Force rebuild
+
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -60,7 +61,7 @@ export default function StudentDashboard() {
       console.error('Failed to load data:', error);
     } finally {
       if (showLoading) {
-      setLoadingData(false);
+        setLoadingData(false);
       }
     }
   }, [user, updateUser]);
@@ -72,12 +73,12 @@ export default function StudentDashboard() {
       router.push('/login');
       return;
     }
-    
+
     if (user.role !== 'student') {
       router.push(`/${user.role}/dashboard`);
       return;
     }
-    
+
     const gradeLevel = user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
     if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
       router.push('/student/select-level');
@@ -160,10 +161,10 @@ export default function StudentDashboard() {
                 تغيير المستوى
               </Button>
             </Link>
-              </div>
+          </div>
           <div className="flex items-center gap-3">
             {user && <NotificationCenter />}
-            <Button 
+            <Button
               variant="ghost"
               onClick={logout}
               className="text-gray-600 hover:bg-green-50 hover:text-green-600 rounded-xl"
@@ -245,9 +246,9 @@ export default function StudentDashboard() {
                   />
                 </div>
               </div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Points Card - Leaf Icon */}
         <Card className="mb-6 bg-white/80 backdrop-blur-sm border-2 border-amber-200/50 shadow-md rounded-3xl overflow-hidden">
@@ -291,7 +292,7 @@ export default function StudentDashboard() {
                   >
                     <Award className="w-8 h-8 text-amber-500 mx-auto mb-2" />
                     <p className="font-bold text-gray-800 text-sm">{badge}</p>
-                            </div>
+                  </div>
                 ))}
               </div>
             </CardContent>

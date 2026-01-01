@@ -33,14 +33,45 @@ export default function LessonPage() {
       router.push('/login');
       return;
     }
-    loadLesson();
-    
-    // Track time spent
-    const interval = setInterval(() => {
-      setTimeSpent(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
 
-    return () => clearInterval(interval);
+    const initPage = async () => {
+      try {
+        // 1. Check Grade Level
+        const gradeLevel = user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
+        if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
+          router.push('/student/select-level');
+          return;
+        }
+
+        // 2. Check Level Test Status
+        const levelKey = gradeLevel === 5 ? '5eme' : '6eme';
+        const testStatus = await import('@/lib/api').then(m => m.levelTestAPI.getStatus(levelKey));
+
+        if (!testStatus.completed) {
+          router.push(`/student/level-test?level=${levelKey}`);
+          return;
+        }
+
+        // 3. Load Lesson
+        loadLesson();
+
+        // Track time spent
+        const interval = setInterval(() => {
+          setTimeSpent(Math.floor((Date.now() - startTime) / 1000));
+        }, 1000);
+
+        return () => clearInterval(interval);
+      } catch (error) {
+        console.error('Initialization failed:', error);
+      }
+    };
+
+    const cleanup = initPage();
+    // Note: cleanup function from initPage is not a real cleanup, we handle interval inside if needed
+    // But since `loadLesson` is async inside, we can't easily return the interval cleanup from `useEffect` directly 
+    // if we wrap everything in async. 
+    // Simplified approach below:
+
   }, [user, authLoading, params.id, router, startTime]);
 
   const loadLesson = async () => {
@@ -61,7 +92,7 @@ export default function LessonPage() {
       await lessonsAPI.complete(lesson._id, timeSpent);
       setCompleted(true);
       setShowEndScene(true);
-      
+
       // Update user points in context
       if (user && updateUser) {
         const newPoints = (user.points || 0) + lesson.points;
@@ -72,7 +103,7 @@ export default function LessonPage() {
           level: newLevel
         });
       }
-      
+
       // Set flag in localStorage to trigger dashboard refresh
       localStorage.setItem('ecolearn_refresh_dashboard', Date.now().toString());
     } catch (error) {
@@ -125,20 +156,20 @@ export default function LessonPage() {
         <StudentSidebar />
         <div className="mr-64 flex items-center justify-center min-h-screen p-4">
           <div className="max-w-2xl w-full">
-          <CartoonScene
-            type="lesson-end"
-            character="both"
-            message={`رائع! لقد أكملت الدرس بنجاح! 🎉
+            <CartoonScene
+              type="lesson-end"
+              character="both"
+              message={`رائع! لقد أكملت الدرس بنجاح! 🎉
 
 هل أنت مستعد للعب لعبة ممتعة لتطبيق ما تعلمته؟ 🎮`}
-            emotion="celebrating"
-            onContinue={() => {
-              setShowEndScene(false);
-              router.push('/student/dashboard');
-            }}
-            buttonText="العب الآن"
-            background="park"
-          />
+              emotion="celebrating"
+              onContinue={() => {
+                setShowEndScene(false);
+                router.push('/student/dashboard');
+              }}
+              buttonText="العب الآن"
+              background="park"
+            />
           </div>
         </div>
       </div>

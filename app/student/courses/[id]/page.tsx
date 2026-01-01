@@ -210,7 +210,7 @@ export default function CourseDetailPage() {
       try {
         const updatedCourse = await coursesAPI.getOne(courseId);
         setApiCourse(updatedCourse);
-      } catch (e) {}
+      } catch (e) { }
 
       // Refresh user data to update points
       if (refreshUser) {

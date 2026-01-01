@@ -106,7 +106,21 @@ export default function LevelTestContent() {
     const handleSubmit = async () => {
         if (answers.length !== totalQuestions || !normalizedLevel) return;
         setSubmitting(true); setError(null);
+
         const score = answers.filter(a => a.correct).length;
+        const passingScore = normalizedLevel === '5eme' ? 5 : 6;
+
+        if (score < passingScore) {
+            setSubmitting(false);
+            setResult({
+                level: normalizedLevel,
+                completed: false,
+                score: score,
+                category: 'مبتدئ بحاجة للمراجعة'
+            } as any);
+            return;
+        }
+
         const category = normalizedLevel === '5eme' ? computeCategory5(score) : computeCategory6(score);
         try {
             const result = await levelTestAPI.submit({ level: normalizedLevel, answers, score, category });
@@ -118,11 +132,53 @@ export default function LevelTestContent() {
         finally { setSubmitting(false); }
     };
 
+    const handleRetry = () => {
+        setResult(null);
+        setTestCompleted(false);
+        setAnswers([]);
+        setCurrentIdx(0);
+        setError(null);
+        window.scrollTo(0, 0);
+    };
+
     const progressPercent = totalQuestions > 0 ? Math.round(((currentIdx) / totalQuestions) * 100) : 0;
+
+    // Auto-redirect effect for success
+    useEffect(() => {
+        if (testCompleted && result && result.completed) {
+            const timer = setTimeout(() => {
+                router.replace('/student/courses');
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [testCompleted, result, router]);
 
     if (loading || statusLoading || !normalizedLevel || !user) return <EcoLoading message="تحميل الاختبار التشخيصي..." />;
 
+    if (result && !testCompleted) {
+        // Failure Screen - this happens when score < 50%, we set result but kept completed=false
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 flex items-center justify-center p-4" dir="rtl">
+                <Card className="w-full max-w-2xl border-4 border-red-200 shadow-2xl rounded-3xl overflow-hidden">
+                    <CardHeader className="bg-red-100 border-b-2 border-red-200 text-center">
+                        <ShieldAlert className="w-16 h-16 text-red-600 mx-auto mb-2" />
+                        <CardTitle className="text-2xl text-red-800">عذراً! لم تجتز الاختبار</CardTitle>
+                        <p className="text-red-700 font-semibold">يجب الحصول على 50% على الأقل للمرور</p>
+                    </CardHeader>
+                    <CardContent className="p-6 text-center space-y-6">
+                        <div className="py-4">
+                            <p className="text-lg text-gray-700">نتيجتك: <span className="font-bold text-red-600 text-2xl">{result.score}</span> / {normalizedLevel === '5eme' ? 10 : 12}</p>
+                            <p className="text-gray-500 mt-2">لا تقلق، يمكنك المحاولة مرة أخرى! 💪</p>
+                        </div>
+                        <Button onClick={handleRetry} className="w-full py-4 rounded-2xl font-bold text-lg bg-orange-500 hover:bg-orange-600 text-white shadow-lg">إعادة الاختبار 🔄</Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     if (testCompleted && result) {
+        // Success Screen
         return (
             <div className="min-h-screen bg-gradient-to-br from-green-50 via-amber-50 to-sky-50 flex items-center justify-center p-4" dir="rtl">
                 <Card className="w-full max-w-3xl border-4 border-green-200 shadow-2xl rounded-3xl overflow-hidden">
@@ -131,7 +187,7 @@ export default function LevelTestContent() {
                             <FriendlyAnimal type="owl" emotion="proud" size="medium" />
                             <div>
                                 <CardTitle className="text-2xl text-gray-800">✅ تم إنهاء الاختبار التشخيصي</CardTitle>
-                                <p className="text-sm text-gray-600 font-semibold">يمكنك الآن متابعة الدروس والألعاب.</p>
+                                <p className="text-sm text-gray-600 font-semibold">جاري نقلك إلى لوحة التحكم خلال ثوانٍ... ⏳</p>
                             </div>
                         </div>
                     </CardHeader>
@@ -142,7 +198,10 @@ export default function LevelTestContent() {
                             <div><p className="text-sm text-gray-600">التصنيف</p><p className="text-xl font-bold text-amber-700">{result.category}</p></div>
                         </div>
                         <div className="flex items-center gap-3 text-sm text-gray-600"><Trophy className="w-5 h-5 text-amber-500" /><span>يمكنك تغيير المستوى لاحقاً من الإعدادات لإعادة الاختبار لمستوى آخر.</span></div>
-                        <div className="flex justify-end"><Button className="rounded-2xl px-6 py-3 font-bold bg-green-600 hover:bg-green-700 text-white" onClick={() => router.replace('/student/courses')}>الانتقال إلى الدروس</Button></div>
+                        <div className="flex justify-end gap-3">
+                            <Button variant="outline" className="rounded-2xl px-6 py-3 font-bold border-green-500 text-green-600 hover:bg-green-50" onClick={handleRetry}>إعادة الاختبار 🔄</Button>
+                            <Button className="rounded-2xl px-6 py-3 font-bold bg-green-600 hover:bg-green-700 text-white" onClick={() => router.replace('/student/courses')}>الانتقال إلى الدروس 📚</Button>
+                        </div>
                     </CardContent>
                 </Card>
             </div>

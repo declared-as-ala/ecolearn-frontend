@@ -22,18 +22,44 @@ export default function LessonsPage() {
 
   useEffect(() => {
     if (loading) return;
-    
+
     if (!user) {
       router.push('/login');
       return;
     }
-    
+
     if (user.role !== 'student') {
       router.push(`/${user.role}/dashboard`);
       return;
     }
-    
-    loadData();
+
+    // Check level test status
+    const checkLevelTest = async () => {
+      try {
+        const gradeLevel = user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
+
+        if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
+          router.push('/student/select-level');
+          return;
+        }
+
+        // Verify level test completion
+        const levelKey = gradeLevel === 5 ? '5eme' : '6eme';
+        // Only checking status, assuming API handles the caching/fetching optimization
+        const testStatus = await import('@/lib/api').then(m => m.levelTestAPI.getStatus(levelKey));
+
+        if (!testStatus.completed) {
+          router.push(`/student/level-test?level=${levelKey}`);
+          return;
+        }
+
+        loadData();
+      } catch (error) {
+        console.error('Failed to check level test:', error);
+      }
+    };
+
+    checkLevelTest();
   }, [user, loading, router]);
 
   const loadData = async () => {
@@ -43,7 +69,7 @@ export default function LessonsPage() {
         lessonsAPI.getAll().catch(() => []),
         usersAPI.getProgress().catch(() => []),
       ]);
-      
+
       setLessons(lessonsData || []);
       setProgress(progressData || []);
     } catch (error: any) {
@@ -72,7 +98,7 @@ export default function LessonsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-amber-50 to-[#f5e6d3]" dir="rtl">
       <StudentSidebar />
-      
+
       <main className="mr-64 p-6">
         {/* Header Section with Cartoon */}
         <div className="mb-8">
@@ -105,15 +131,14 @@ export default function LessonsPage() {
             {lessons.map((lesson) => {
               const lessonProgress = getProgressForLesson(lesson._id);
               const isCompleted = lessonProgress?.status === 'completed';
-              
+
               return (
                 <Card
                   key={lesson._id}
-                  className={`border-2 rounded-2xl hover:shadow-2xl transition-all hover:scale-105 overflow-hidden ${
-                    isCompleted 
-                      ? 'border-green-400 bg-green-50' 
+                  className={`border-2 rounded-2xl hover:shadow-2xl transition-all hover:scale-105 overflow-hidden ${isCompleted
+                      ? 'border-green-400 bg-green-50'
                       : 'border-gray-200 bg-white hover:border-green-300'
-                  }`}
+                    }`}
                 >
                   <CardHeader className="bg-gradient-to-r from-green-100 to-amber-50 border-b-2 border-green-200">
                     <div className="flex items-center justify-between">
@@ -125,20 +150,20 @@ export default function LessonsPage() {
                       ) : null}
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent className="pt-4">
                     {/* Cartoon placeholder */}
                     <div className="mb-4 flex items-center justify-center h-32 bg-gradient-to-br from-green-100 to-amber-100 rounded-xl">
-                      <EcoHero 
-                        size="large" 
-                        emotion={isCompleted ? 'celebrating' : 'happy'} 
-                        animation={isCompleted ? 'jump' : 'idle'} 
+                      <EcoHero
+                        size="large"
+                        emotion={isCompleted ? 'celebrating' : 'happy'}
+                        animation={isCompleted ? 'jump' : 'idle'}
                       />
                     </div>
-                    
+
                     <div className="space-y-3">
                       <p className="text-sm text-gray-600 line-clamp-2">{lesson.description}</p>
-                      
+
                       <div className="flex items-center gap-2 flex-wrap">
                         <Badge variant="secondary" className="bg-blue-100 text-blue-700">
                           {lesson.category}
@@ -150,9 +175,9 @@ export default function LessonsPage() {
                           +{lesson.points} نقطة
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center justify-between pt-2">
-                        <Badge 
+                        <Badge
                           variant={isCompleted ? 'default' : 'secondary'}
                           className={isCompleted ? 'bg-green-500' : 'bg-gray-300'}
                         >
@@ -168,14 +193,13 @@ export default function LessonsPage() {
                             </>
                           )}
                         </Badge>
-                        
+
                         <Link href={`/student/lessons/${lesson._id}`}>
-                          <Button 
-                            className={`${
-                              isCompleted 
-                                ? 'bg-green-600 hover:bg-green-700' 
+                          <Button
+                            className={`${isCompleted
+                                ? 'bg-green-600 hover:bg-green-700'
                                 : 'bg-green-500 hover:bg-green-600'
-                            } text-white rounded-xl`}
+                              } text-white rounded-xl`}
                           >
                             {isCompleted ? (
                               <>
@@ -202,6 +226,7 @@ export default function LessonsPage() {
     </div>
   );
 }
+
 
 
 

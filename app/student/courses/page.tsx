@@ -23,50 +23,48 @@ export default function CoursesPage() {
   const [apiCourses, setApiCourses] = useState<APICourse[]>([]);
 
   useEffect(() => {
-    const loadCourses = async () => {
-      if (loading) return;
+    // Strict Route Guard: Always redirect to Level Test
+    if (loading) return;
 
-      if (!user || user.role !== 'student') {
-        router.push('/login');
-        return;
-      }
+    if (!user || user.role !== 'student') {
+      router.push('/login');
+      return;
+    }
 
-      // Check if grade level is set
-      const gradeLevel = user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
-      if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
-        router.push('/student/select-level');
-        return;
-      }
+    // Check if grade level is set
+    const gradeLevel = user.gradeLevel || (typeof window !== 'undefined' ? parseInt(localStorage.getItem('gradeLevel') || '0') : 0);
+    if (!gradeLevel || (gradeLevel !== 5 && gradeLevel !== 6)) {
+      router.push('/student/select-level');
+      return;
+    }
 
-      // Ensure diagnostic test completed
+    const checkAccess = async () => {
       try {
         const levelKey = gradeLevel === 5 ? '5eme' : '6eme';
+        // Check status from API
         const testStatus = await levelTestAPI.getStatus(levelKey);
+
         if (!testStatus.completed) {
-          router.push(`/student/level-test?level=${levelKey}`);
+          router.replace(`/student/level-test?level=${levelKey}`);
           return;
         }
-      } catch (e) {
-        console.error('Failed to check level test status', e);
-      }
 
-      setLoadingData(true);
-      try {
-        // Find local courses for this grade
+        // If completed, proceed to load courses
+        setLoadingData(true);
         const filteredLocal = coursesData.filter(c => c.grade === gradeLevel);
         setCourses(filteredLocal);
 
-        // Fetch progress from API
         const apiData = await coursesAPI.getAll(gradeLevel as 5 | 6);
         setApiCourses(apiData);
-      } catch (error: any) {
-        console.error('Failed to load course progress:', error);
+      } catch (e) {
+        console.error('Failed to load courses:', e);
       } finally {
         setLoadingData(false);
       }
     };
 
-    loadCourses();
+    checkAccess();
+
   }, [user, loading, router]);
 
   if (loading || loadingData || !user) {
@@ -139,11 +137,10 @@ export default function CoursesPage() {
               return (
                 <Card
                   key={course.id}
-                  className={`border-2 rounded-3xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl overflow-hidden bg-white/80 backdrop-blur-sm ${
-                    isCompleted
-                      ? 'border-green-400 shadow-md'
-                      : 'border-green-200 hover:border-green-300'
-                  }`}
+                  className={`border-2 rounded-3xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl overflow-hidden bg-white/80 backdrop-blur-sm ${isCompleted
+                    ? 'border-green-400 shadow-md'
+                    : 'border-green-200 hover:border-green-300'
+                    }`}
                 >
                   <CardHeader className={`relative pb-3 ${course.color} rounded-t-3xl`}>
                     <div className="absolute top-3 right-3 z-10">
@@ -177,18 +174,17 @@ export default function CoursesPage() {
                           {progress.progressPercent || 0}%
                         </span>
                       </div>
-                      <ProgressBar 
-                        value={progress.progressPercent || 0} 
-                        className="h-2.5 rounded-full bg-green-100" 
+                      <ProgressBar
+                        value={progress.progressPercent || 0}
+                        className="h-2.5 rounded-full bg-green-100"
                       />
                     </div>
                     <Link href={`/student/courses/${course.id}`}>
                       <Button
-                        className={`w-full py-4 rounded-2xl text-base font-bold shadow-md hover:shadow-lg transition-all ${
-                          isCompleted
-                            ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
-                            : 'bg-gradient-to-r from-green-400 to-sky-400 hover:from-green-500 hover:to-sky-500'
-                        } text-white`}
+                        className={`w-full py-4 rounded-2xl text-base font-bold shadow-md hover:shadow-lg transition-all ${isCompleted
+                          ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
+                          : 'bg-gradient-to-r from-green-400 to-sky-400 hover:from-green-500 hover:to-sky-500'
+                          } text-white`}
                       >
                         <PlayCircle className="w-5 h-5 ml-2" />
                         {isCompleted ? 'مراجعة الدورة' : 'ابدأ الدورة'}

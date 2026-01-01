@@ -28,20 +28,21 @@ export interface Exercise {
 export interface Game {
     id: string;
     type:
-        | 'simulation'
-        | 'roleplay'
-        | 'construction'
-        | 'matching'
-        | 'audio'
-        | 'decision'
-        | 'sticker'
-        | 'rescue'
-        | 'dragdrop'
-        | 'scenario'
-        | 'runner'
-        | 'map'
-        | 'flow'
-        | 'lab';
+    | 'simulation'
+    | 'roleplay'
+    | 'construction'
+    | 'matching'
+    | 'audio'
+    | 'decision'
+    | 'sticker'
+    | 'rescue'
+    | 'dragdrop'
+    | 'scenario'
+    | 'runner'
+    | 'map'
+    | 'flow'
+    | 'lab'
+    | 'water-lab';
     title: string;
     description: string;
     points?: number;

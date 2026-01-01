@@ -43,7 +43,7 @@ export interface SceneElement {
 export interface VideoScene {
   id: string;
   title: string;
-  background: 'forest' | 'ocean' | 'city' | 'farm' | 'desert' | 'sky' | 'underwater' | 'park';
+  background: 'forest' | 'ocean' | 'city' | 'farm' | 'desert' | 'sky' | 'underwater' | 'park' | 'school';
   duration: number; // Scene duration in seconds
   narratorText: string;
   elements: SceneElement[];
@@ -149,9 +149,8 @@ const SoundEffectsDisplay: React.FC<{ effects: string[]; isMuted: boolean }> = (
       {effects.map((effect, idx) => (
         <motion.div
           key={idx}
-          className={`px-3 py-1 rounded-full text-sm font-bold ${
-            isMuted ? 'bg-gray-200 text-gray-500' : 'bg-amber-100 text-amber-700'
-          }`}
+          className={`px-3 py-1 rounded-full text-sm font-bold ${isMuted ? 'bg-gray-200 text-gray-500' : 'bg-amber-100 text-amber-700'
+            }`}
           animate={!isMuted ? { scale: [1, 1.05, 1] } : {}}
           transition={{ duration: 1, repeat: Infinity, delay: idx * 0.2 }}
         >
@@ -334,7 +333,7 @@ export default function AnimatedCourseVideo({
     audio.muted = isMuted;
 
     if (isPlaying && !isMuted) {
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
     } else {
       audio.pause();
     }
@@ -452,9 +451,8 @@ export default function AnimatedCourseVideo({
 
             <Button
               onClick={handlePlayPause}
-              className={`rounded-full w-16 h-16 ${
-                isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-green-500 hover:bg-green-600'
-              }`}
+              className={`rounded-full w-16 h-16 ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-green-500 hover:bg-green-600'
+                }`}
             >
               {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 mr-1" />}
             </Button>
@@ -499,13 +497,12 @@ export default function AnimatedCourseVideo({
                   setCurrentSceneIndex(idx);
                   setSceneProgress(0);
                 }}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  idx === currentSceneIndex
+                className={`w-3 h-3 rounded-full transition-all ${idx === currentSceneIndex
                     ? 'bg-green-500 scale-125'
                     : idx < currentSceneIndex
-                    ? 'bg-green-300'
-                    : 'bg-gray-300'
-                }`}
+                      ? 'bg-green-300'
+                      : 'bg-gray-300'
+                  }`}
                 title={scene.title}
               />
             ))}

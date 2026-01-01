@@ -2,6 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export interface User {
   id: string;
+  _id?: string;
   username: string;
   email: string;
   role: 'student' | 'teacher' | 'parent';
@@ -127,6 +128,57 @@ export interface Notification {
   message: string;
   isRead: boolean;
   createdAt: string;
+}
+
+export interface QuizQuestion {
+  _id?: string;
+  text: string;
+  image?: string;
+  type: 'mcq' | 'truefalse' | 'multiple' | 'image' | 'scenario';
+  options: Array<{
+    text: string;
+    isCorrect: boolean;
+  }>;
+  explanation?: string;
+  points: number;
+  order: number;
+}
+
+export interface Quiz {
+  _id: string;
+  title: string;
+  description: string;
+  gradeLevel: 5 | 6;
+  courseId: string;
+  totalPoints: number;
+  timeLimit?: number | null;
+  passScore: number;
+  status: 'draft' | 'published';
+  version: number;
+  questions: QuizQuestion[];
+  teacher: string;
+  startDate?: string;
+  endDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface QuizAttempt {
+  _id: string;
+  user: string | any;
+  quiz: string | Quiz;
+  quizVersion: number;
+  score: number;
+  percentage: number;
+  results: Array<{
+    questionId: string;
+    studentAnswer: any;
+    isCorrect: boolean;
+    pointsEarned: number;
+  }>;
+  timeSpent: number;
+  status: 'pass' | 'fail';
+  attemptedAt: string;
 }
 
 // Get auth token from localStorage
@@ -503,7 +555,138 @@ export const coursesAPI = {
     if (!response.ok) throw new Error(result.message || 'Failed to submit game');
     return result;
   },
+
+  // Management
+  addExercise: async (courseId: string, data: any): Promise<any> => {
+    const response = await apiRequest(`/courses/${courseId}/exercises`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+  updateExercise: async (courseId: string, exerciseId: string, data: any): Promise<any> => {
+    const response = await apiRequest(`/courses/${courseId}/exercises/${exerciseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+  deleteExercise: async (courseId: string, exerciseId: string): Promise<any> => {
+    const response = await apiRequest(`/courses/${courseId}/exercises/${exerciseId}`, {
+      method: 'DELETE',
+    });
+    return await response.json();
+  },
+  addGame: async (courseId: string, data: any): Promise<any> => {
+    const response = await apiRequest(`/courses/${courseId}/games`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+  updateGame: async (courseId: string, gameId: string, data: any): Promise<any> => {
+    const response = await apiRequest(`/courses/${courseId}/games/${gameId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+  deleteGame: async (courseId: string, gameId: string): Promise<any> => {
+    const response = await apiRequest(`/courses/${courseId}/games/${gameId}`, {
+      method: 'DELETE',
+    });
+    return await response.json();
+  },
+
+  addCourse: async (data: any): Promise<Course> => {
+    const response = await apiRequest('/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+
+  deleteCourse: async (id: string): Promise<any> => {
+    const response = await apiRequest(`/courses/${id}`, {
+      method: 'DELETE',
+    });
+    return await response.json();
+  },
 };
+
+// Quizzes API
+export const quizzesAPI = {
+  getAll: async (params?: { gradeLevel?: number; status?: string }): Promise<Quiz[]> => {
+    const query = new URLSearchParams(params as any).toString();
+    const response = await apiRequest(`/quizzes${query ? `?${query}` : ''}`);
+    return await response.json();
+  },
+
+  getOne: async (id: string): Promise<Quiz> => {
+    const response = await apiRequest(`/quizzes/${id}`);
+    return await response.json();
+  },
+
+  create: async (data: Partial<Quiz>): Promise<Quiz> => {
+    const response = await apiRequest('/quizzes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+
+  update: async (id: string, data: Partial<Quiz>): Promise<Quiz> => {
+    const response = await apiRequest(`/quizzes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+
+  delete: async (id: string): Promise<any> => {
+    const response = await apiRequest(`/quizzes/${id}`, {
+      method: 'DELETE',
+    });
+    return await response.json();
+  },
+
+  addQuestion: async (quizId: string, data: Partial<QuizQuestion>): Promise<Quiz> => {
+    const response = await apiRequest(`/quizzes/${quizId}/questions`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+
+  updateQuestion: async (quizId: string, questionId: string, data: Partial<QuizQuestion>): Promise<Quiz> => {
+    const response = await apiRequest(`/quizzes/${quizId}/questions/${questionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+
+  deleteQuestion: async (quizId: string, questionId: string): Promise<Quiz> => {
+    const response = await apiRequest(`/quizzes/${quizId}/questions/${questionId}`, {
+      method: 'DELETE',
+    });
+    return await response.json();
+  },
+
+  getResults: async (id: string): Promise<QuizAttempt[]> => {
+    const response = await apiRequest(`/quizzes/${id}/results`);
+    return await response.json();
+  },
+
+  submitAttempt: async (data: any): Promise<QuizAttempt> => {
+    const response = await apiRequest('/quizzes/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return await response.json();
+  },
+};
+
 
 // Level Test API
 export const levelTestAPI = {
@@ -680,8 +863,9 @@ export const teachersAPI = {
     }
   },
 
-  getStudents: async (): Promise<any[]> => {
-    const response = await apiRequest('/teachers/students');
+  getStudents: async (params?: { level?: number }): Promise<any[]> => {
+    const query = params?.level ? `?level=${params.level}` : '';
+    const response = await apiRequest(`/teachers/students${query}`);
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || 'Failed to get students');
     return result;
@@ -708,6 +892,82 @@ export const teachersAPI = {
     });
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || 'Failed to assign activity');
+    return result;
+  },
+
+  // Messaging
+  getParents: async (): Promise<any[]> => {
+    const response = await apiRequest('/teachers/parents');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch parents');
+    return result;
+  },
+
+  getMessages: async (parentId: string): Promise<any[]> => {
+    const response = await apiRequest(`/teachers/messages/${parentId}`);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch messages');
+    return result;
+  },
+
+  sendMessage: async (parentId: string, message: string): Promise<any> => {
+    const response = await apiRequest('/teachers/messages', {
+      method: 'POST',
+      body: JSON.stringify({ parentId, message }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to send message');
+    return result;
+  },
+};
+
+// Parent API
+export const parentAPI = {
+  getLinkedStudents: async (): Promise<any[]> => {
+    const response = await apiRequest('/parent/students');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch linked students');
+    return result;
+  },
+
+  getStudentProfile: async (studentId: string): Promise<any> => {
+    const response = await apiRequest(`/parent/students/${studentId}/profile`);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch student profile');
+    return result;
+  },
+
+  linkStudent: async (studentIdentifier: string): Promise<any> => {
+    const response = await apiRequest('/parent/link-student', {
+      method: 'POST',
+      body: JSON.stringify({ studentIdentifier }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to link student');
+    return result;
+  },
+
+  getTeachers: async (): Promise<any[]> => {
+    const response = await apiRequest('/parent/teachers');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch teachers');
+    return result;
+  },
+
+  sendMessage: async (teacherId: string, message: string): Promise<any> => {
+    const response = await apiRequest('/parent/messages', {
+      method: 'POST',
+      body: JSON.stringify({ teacherId, message }),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to send message');
+    return result;
+  },
+
+  getMessages: async (teacherId: string): Promise<any[]> => {
+    const response = await apiRequest(`/parent/messages/${teacherId}`);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch messages');
     return result;
   },
 };

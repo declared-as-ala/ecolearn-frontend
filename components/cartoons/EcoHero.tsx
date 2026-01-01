@@ -3,9 +3,9 @@
 import React from 'react';
 
 interface EcoHeroProps {
-  emotion?: 'happy' | 'thinking' | 'sad' | 'celebrating' | 'neutral' | 'encouraging';
+  emotion?: 'happy' | 'thinking' | 'sad' | 'celebrating' | 'neutral' | 'encouraging' | 'worried';
   size?: 'small' | 'medium' | 'large';
-  animation?: 'idle' | 'bounce' | 'wave' | 'jump';
+  animation?: 'idle' | 'bounce' | 'wave' | 'jump' | 'pulse';
   className?: string;
 }
 
@@ -25,7 +25,8 @@ export default function EcoHero({
     idle: 'animate-[float_2s_ease-in-out_infinite]',
     bounce: 'animate-[bounce_0.5s_ease-in-out_3]',
     wave: 'animate-[wave_0.5s_ease-in-out_2]',
-    jump: 'animate-[jump_0.4s_ease-in-out_2]'
+    jump: 'animate-[jump_0.4s_ease-in-out_2]',
+    pulse: 'animate-pulse'
   };
 
   const getFaceExpression = () => {
@@ -58,6 +59,17 @@ export default function EcoHero({
             <circle cx="48" cy="30" r="3" fill="#000" />
             {/* Frown */}
             <path d="M 30 46 Q 40 40 50 46" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
+          </>
+        );
+      case 'worried':
+        return (
+          <>
+            {/* Eyes - worried (wide) */}
+            <circle cx="32" cy="32" r="4" fill="#000" />
+            <circle cx="48" cy="32" r="4" fill="#000" />
+            {/* Wavy mouth */}
+            <path d="M 30 44 Q 35 40, 40 44 T 50 44" stroke="#000" strokeWidth="2" fill="none" strokeLinecap="round" />
+            {/* Sweat drop optional but kept simple */}
           </>
         );
       case 'celebrating':

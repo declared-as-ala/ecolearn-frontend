@@ -63,6 +63,7 @@ export default function NotificationCenter({ userId }: NotificationCenterProps) 
       case 'badge_earned':
         return <Award className="w-5 h-5 text-yellow-500" />;
       case 'feedback':
+      case 'message':
         return <MessageSquare className="w-5 h-5 text-blue-500" />;
       default:
         return <Bell className="w-5 h-5 text-gray-500" />;
