@@ -142,6 +142,17 @@ export const getVideoUrl = (
 export const GRADE_6_COURSES: CourseMetadata[] = [
   {
     level: '6eme',
+    courseId: 1,
+    order: 1,
+    title: 'Ecosystem Components',
+    titleAr: 'مكوّنات الوسط البيئي',
+    icon: '🌊',
+    color: 'bg-cyan-50',
+    videoUrl: '/videos/6eme-1.mp4',
+    badge: { name: 'حارس التوازن البيئي', icon: '⚖️' },
+  },
+  {
+    level: '6eme',
     courseId: 2,
     order: 2,
     title: 'Food Chains',
@@ -150,6 +161,17 @@ export const GRADE_6_COURSES: CourseMetadata[] = [
     color: 'bg-amber-50',
     videoUrl: '/videos/6eme-2.mp4',
     badge: { name: 'حارس الدورة الأبدية', icon: '🔄🌍' },
+  },
+  {
+    level: '6eme',
+    courseId: 3,
+    order: 3,
+    title: 'Environmental Balance',
+    titleAr: 'التوازن البيئي',
+    icon: '⚖️',
+    color: 'bg-lime-50',
+    videoUrl: '/videos/6eme-3.mp4',
+    badge: { name: 'حامي التوازن المتكامل', icon: '🌍⚖️' },
   },
   {
     level: '6eme',

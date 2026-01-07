@@ -18,6 +18,7 @@ export const ecoComponentsCourse: Course = {
     scenario: 'استكشاف لغز التوازن بين الكائنات الحية والمحيط الجغرافي.',
     moralMessage: 'سلامة الوسط البيئي تبدأ بفهم أفراده.',
   },
+  videoUrl: '/videos/6eme-1.mp4',
   exercises: [],
   exercisesV2: [
     {

@@ -518,8 +518,8 @@ export default function CourseDetailPage() {
                         <EnhancedVideoPlayer
                           videoUrl={videoUrl}
                           courseId={courseId}
-                          lessonTitle={`درس ${apiCourse?.order || 1} – ${course.title}`}
-                          onProgressUpdate={handleVideoProgressUpdate}
+                          lessonTitle={`درس ${apiCourse?.order || course.id || 1} – ${course.title}`}
+                          onProgressUpdate={(progress, timeSpent) => handleVideoProgressUpdate(progress, timeSpent)}
                           onEnded={handleVideoEnd}
                           initialProgress={apiCourse?.progress?.videoProgress?.videoProgressPercent || 0}
                         />

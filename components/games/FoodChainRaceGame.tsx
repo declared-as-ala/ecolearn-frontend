@@ -38,8 +38,14 @@ export default function FoodChainRaceGame({ game, onComplete }: FoodChainRaceGam
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [errorCountdown, setErrorCountdown] = useState(0);
 
+  interface Chain {
+    id?: string;
+    label?: string;
+    links: ChainLink[];
+  }
+
   const data = game.gameData || {};
-  const chains = data.chains || [
+  const chains: Chain[] = data.chains || [
     {
       links: [
         { id: 'grass', label: 'العشب', icon: '🌿', type: 'producer', order: 1 },

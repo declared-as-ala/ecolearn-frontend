@@ -34,6 +34,13 @@ interface Action {
   correct: boolean;
 }
 
+interface Scenario {
+  id: string;
+  title: string;
+  description: string;
+  actions: Action[];
+}
+
 export default function GuardianOfBalanceGame({ game, onComplete }: GuardianOfBalanceGameProps) {
   const [ecosystem, setEcosystem] = useState<EcosystemState>({
     plants: 60,
@@ -47,7 +54,7 @@ export default function GuardianOfBalanceGame({ game, onComplete }: GuardianOfBa
   const [showImpact, setShowImpact] = useState(false);
 
   const data = game.gameData || {};
-  const scenarios = data.scenarios || [
+  const scenarios: Scenario[] = data.scenarios || [
     {
       id: 's1',
       title: 'النظام البيئي متضرر!',

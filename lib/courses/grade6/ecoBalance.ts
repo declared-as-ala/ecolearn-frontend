@@ -74,6 +74,7 @@ export const ecoBalanceCourse: Course = {
     scenario: 'مشهد لغابة متوازنة تنهار تدريجياً بسبب أفعال الإنسان، ثم يبدأ الحارس الصغير في إصلاحها.',
     moralMessage: 'سلامة النظام البيئي تعني سلامتنا جميعاً.',
   },
+  videoUrl: '/videos/6eme-3.mp4',
   animatedVideo: ecoBalanceVideo,
   videoStoryboard: {
     title: 'التوازن البيئي: معادلة الحياة!',
