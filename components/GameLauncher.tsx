@@ -296,8 +296,10 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
 
     if (isPlaying) {
         return (
-            <div ref={gameContainerRef} className="w-full h-full" dir="rtl">
-                {renderGame()}
+            <div ref={gameContainerRef} className="w-full h-full overflow-hidden flex flex-col" dir="rtl">
+                <div className="flex-1 overflow-auto">
+                    {renderGame()}
+                </div>
             </div>
         );
     }

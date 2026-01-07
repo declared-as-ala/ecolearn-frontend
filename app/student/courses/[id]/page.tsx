@@ -43,7 +43,27 @@ export default function CourseDetailPage() {
   const [showIntro, setShowIntro] = useState(true);
   const [selectedGame, setSelectedGame] = useState<LocalCourse['games'][number] | null>(null);
   const [isGameDialogOpen, setIsGameDialogOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   useWindowSize(); // keep hook side-effects (if any), avoid unused vars lint
+
+  // Monitor fullscreen state
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement || !!(document as any).webkitFullscreenElement || !!(document as any).mozFullScreenElement || !!(document as any).msFullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
 
   // Get courseId from params and store in ref
   const courseId = params.id as string;
@@ -943,14 +963,27 @@ export default function CourseDetailPage() {
           }
         }}
       >
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-green-50 to-amber-50 border-4 border-green-300 rounded-3xl" dir="rtl">
-          <DialogHeader>
-            <DialogTitle className="text-3xl font-bold text-green-700 text-center mb-4">
-              {selectedGame && `🎮 ${selectedGame.title}`}
+        <DialogContent 
+          className={`max-w-full w-full h-screen max-h-screen p-0 overflow-hidden bg-gradient-to-br from-green-50 to-amber-50 border-4 border-green-300 ${isFullscreen ? 'rounded-none' : 'rounded-3xl'}`}
+          style={isFullscreen ? { 
+            top: 0, 
+            left: 0, 
+            right: 0, 
+            bottom: 0, 
+            transform: 'none',
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            margin: 0
+          } : {}}
+          dir="rtl"
+        >
+          <DialogHeader className="sr-only">
+            <DialogTitle>
+              {selectedGame ? `🎮 ${selectedGame.title}` : 'لعبة تعليمية'}
             </DialogTitle>
           </DialogHeader>
           {selectedGame && (
-            <div className="mt-4">
+            <div className="w-full h-full flex flex-col overflow-hidden">
               <GameLauncher
                 game={selectedGame}
                 onComplete={(points) => {
