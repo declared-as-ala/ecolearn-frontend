@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlayCircle, Trophy, RefreshCcw } from 'lucide-react';
@@ -76,6 +76,55 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
     const [earnedPoints, setEarnedPoints] = useState(0);
+    const gameContainerRef = useRef<HTMLDivElement>(null);
+
+    // Request fullscreen when game starts
+    const requestFullscreen = () => {
+        const element = gameContainerRef.current || document.documentElement;
+        if (element.requestFullscreen) {
+            element.requestFullscreen().catch((err) => {
+                console.log('Fullscreen request failed:', err);
+            });
+        } else if ((element as any).webkitRequestFullscreen) {
+            (element as any).webkitRequestFullscreen();
+        } else if ((element as any).mozRequestFullScreen) {
+            (element as any).mozRequestFullScreen();
+        } else if ((element as any).msRequestFullscreen) {
+            (element as any).msRequestFullscreen();
+        }
+    };
+
+    // Exit fullscreen when game completes
+    const exitFullscreen = () => {
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch((err) => {
+                console.log('Exit fullscreen failed:', err);
+            });
+        } else if ((document as any).webkitFullscreenElement) {
+            (document as any).webkitExitFullscreen();
+        } else if ((document as any).mozFullScreenElement) {
+            (document as any).mozCancelFullScreen();
+        } else if ((document as any).msFullscreenElement) {
+            (document as any).msExitFullscreen();
+        }
+    };
+
+    // Request fullscreen when isPlaying becomes true
+    useEffect(() => {
+        if (isPlaying) {
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                requestFullscreen();
+            }, 100);
+        }
+    }, [isPlaying]);
+
+    // Exit fullscreen when game finishes
+    useEffect(() => {
+        if (isFinished) {
+            exitFullscreen();
+        }
+    }, [isFinished]);
 
     const startGame = () => {
         setIsPlaying(true);
@@ -247,7 +296,7 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
 
     if (isPlaying) {
         return (
-            <div className="w-full" dir="rtl">
+            <div ref={gameContainerRef} className="w-full h-full" dir="rtl">
                 {renderGame()}
             </div>
         );

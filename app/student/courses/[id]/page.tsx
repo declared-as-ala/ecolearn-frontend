@@ -933,7 +933,16 @@ export default function CourseDetailPage() {
       </main>
 
       {/* Game Dialog/Modal */}
-      <Dialog open={isGameDialogOpen} onOpenChange={setIsGameDialogOpen}>
+      <Dialog 
+        open={isGameDialogOpen} 
+        onOpenChange={(open) => {
+          setIsGameDialogOpen(open);
+          // Exit fullscreen when dialog closes
+          if (!open && document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+          }
+        }}
+      >
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-green-50 to-amber-50 border-4 border-green-300 rounded-3xl" dir="rtl">
           <DialogHeader>
             <DialogTitle className="text-3xl font-bold text-green-700 text-center mb-4">
