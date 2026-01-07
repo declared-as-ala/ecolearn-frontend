@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import EcoLoading from '@/components/ui/EcoLoading';
 import StudentSidebar from '@/components/navigation/StudentSidebar';
 import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
 
-export default function PostTestVideoPage() {
+function PostTestVideoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
@@ -208,3 +208,10 @@ export default function PostTestVideoPage() {
   );
 }
 
+export default function PostTestVideoPage() {
+  return (
+    <Suspense fallback={<EcoLoading message="جاري التحميل..." />}>
+      <PostTestVideoContent />
+    </Suspense>
+  );
+}
