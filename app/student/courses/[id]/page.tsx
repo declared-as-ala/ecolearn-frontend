@@ -230,8 +230,14 @@ export default function CourseDetailPage() {
           maxScore,
         });
       } catch (err: any) {
-        // If course not found in backend, use the fallback points endpoint
-        if (err.message?.includes('404') || err.message?.includes('not found')) {
+        // If course not found in backend (404), use the fallback points endpoint
+        const is404 = err.status === 404 || 
+                     err.message?.includes('404') || 
+                     err.message?.includes('not found') ||
+                     err.message?.includes('Course not found') ||
+                     err.message?.includes('Exercise not found');
+        
+        if (is404) {
           console.warn('⚠️ Course not found in backend, using fallback addPoints API');
           result = await usersAPI.addPoints({
             points: score,

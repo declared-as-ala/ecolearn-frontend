@@ -264,7 +264,9 @@ const apiRequest = async (
   // Allow 304 (Not Modified) as a valid response
   if (!response.ok && response.status !== 304) {
     const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
-    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    const error = new Error(errorData.message || `HTTP error! status: ${response.status}`);
+    (error as any).status = response.status;
+    throw error;
   }
 
   return response;
@@ -556,7 +558,11 @@ export const coursesAPI = {
       body: JSON.stringify(data),
     });
     const result = await response.json();
-    if (!response.ok) throw new Error(result.message || 'Failed to submit exercise');
+    if (!response.ok) {
+      const error = new Error(result.message || 'Failed to submit exercise');
+      (error as any).status = response.status;
+      throw error;
+    }
     return result;
   },
 

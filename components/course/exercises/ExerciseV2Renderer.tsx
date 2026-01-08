@@ -29,47 +29,30 @@ export default function ExerciseV2Renderer({
   isCompleted?: boolean;
   onComplete: (score: number, maxScore: number) => void;
 }) {
-  // Completed view (server says completed)
-  if (isCompleted) {
-    return (
-      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
-        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
-          <div className="flex items-center gap-4">
-            <CheckCircle2 className="w-10 h-10 text-green-500" />
-            <div>
-              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
-              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
-            </div>
-          </div>
-          <EcoHero size="medium" emotion="happy" animation="bounce" />
-        </CardContent>
-      </Card>
-    );
-  }
-
   // Render per-type component to respect hooks rules
+  // Always render the exercise component to ensure hooks are called consistently
   if (exercise.type === 'choice') {
-    return <ChoiceExercise exercise={exercise} onComplete={onComplete} />;
+    return <ChoiceExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
   if (exercise.type === 'multi') {
-    return <MultiExercise exercise={exercise} onComplete={onComplete} />;
+    return <MultiExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
   if (exercise.type === 'short') {
-    return <ShortExercise exercise={exercise} onComplete={onComplete} />;
+    return <ShortExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
   if (exercise.type === 'matching') {
-    return <MatchingExercise exercise={exercise} onComplete={onComplete} />;
+    return <MatchingExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
   if (exercise.type === 'drag-sequence') {
-    return <DragSequenceExercise exercise={exercise} onComplete={onComplete} />;
+    return <DragSequenceExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
   if (exercise.type === 'mcq-set') {
-    return <McqSetExercise exercise={exercise} onComplete={onComplete} />;
+    return <McqSetExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
   if (exercise.type === 'scenario') {
-    return <ScenarioExercise exercise={exercise} onComplete={onComplete} />;
+    return <ScenarioExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
   }
-  return <StickerRepairExercise exercise={exercise} onComplete={onComplete} />;
+  return <StickerRepairExercise exercise={exercise} isCompleted={isCompleted} onComplete={onComplete} />;
 }
 
 function ResultCard({
@@ -119,11 +102,34 @@ function ResultCard({
   );
 }
 
-function ChoiceExercise({ exercise, onComplete }: { exercise: ChoiceExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+// Helper function to remove checkmarks and other answer indicators from option text for display
+function cleanOptionText(text: string): string {
+  return text.replace(/\s*✅\s*/g, '').replace(/\s*✓\s*/g, '').trim();
+}
+
+function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: ChoiceExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
   const correct = selected === exercise.correct;
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -153,7 +159,7 @@ function ChoiceExercise({ exercise, onComplete }: { exercise: ChoiceExerciseV2; 
               className={`p-4 rounded-2xl border-4 font-bold text-right transition-all active:scale-95 ${selected === opt ? 'border-blue-500 bg-blue-50 text-blue-900' : 'border-gray-100 bg-white hover:border-blue-300'
                 }`}
             >
-              {opt}
+              {cleanOptionText(opt)}
             </button>
           ))}
         </div>
@@ -178,12 +184,30 @@ function ChoiceExercise({ exercise, onComplete }: { exercise: ChoiceExerciseV2; 
   );
 }
 
-function MultiExercise({ exercise, onComplete }: { exercise: MultiSelectExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function MultiExercise({ exercise, isCompleted, onComplete }: { exercise: MultiSelectExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [selected, setSelected] = useState<string[]>([]);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
   const correctSet = useMemo(() => new Set(exercise.correct), [exercise.correct]);
   const toggle = (opt: string) => setSelected(prev => prev.includes(opt) ? prev.filter(x => x !== opt) : [...prev, opt]);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -238,10 +262,28 @@ function MultiExercise({ exercise, onComplete }: { exercise: MultiSelectExercise
   );
 }
 
-function ShortExercise({ exercise, onComplete }: { exercise: ShortAnswerExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function ShortExercise({ exercise, isCompleted, onComplete }: { exercise: ShortAnswerExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [text, setText] = useState('');
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -302,7 +344,7 @@ function stableHash(input: string): number {
   return h >>> 0;
 }
 
-function MatchingExercise({ exercise, onComplete }: { exercise: MatchingExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function MatchingExercise({ exercise, isCompleted, onComplete }: { exercise: MatchingExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [matched, setMatched] = useState<string[]>([]);
@@ -316,6 +358,24 @@ function MatchingExercise({ exercise, onComplete }: { exercise: MatchingExercise
     return items.sort((a, b) => stableHash(`${exercise.id}:${a}`) - stableHash(`${exercise.id}:${b}`));
   }, [exercise.id, exercise.pairs]);
   const isMatched = (x: string) => matched.includes(x);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -407,11 +467,29 @@ function MatchingExercise({ exercise, onComplete }: { exercise: MatchingExercise
   );
 }
 
-function StickerRepairExercise({ exercise, onComplete }: { exercise: StickerRepairExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function StickerRepairExercise({ exercise, isCompleted, onComplete }: { exercise: StickerRepairExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [dragId, setDragId] = useState<string | null>(null);
   const [placements, setPlacements] = useState<Record<string, string>>({});
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -511,11 +589,44 @@ function StickerRepairExercise({ exercise, onComplete }: { exercise: StickerRepa
   );
 }
 
-function DragSequenceExercise({ exercise, onComplete }: { exercise: DragSequenceExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function DragSequenceExercise({ exercise, isCompleted, onComplete }: { exercise: DragSequenceExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
-  const [order, setOrder] = useState<string[]>(exercise.items.map((i) => i.id));
+  
+  // ALL hooks must be called before any conditional returns
+  const byId = useMemo(() => new Map(exercise.items.map((i) => [i.id, i])), [exercise.items]);
+  
+  // Shuffle initial order using deterministic hash (same shuffle every render for same exercise)
+  const initialOrder = useMemo(() => {
+    const items = [...exercise.items];
+    // Use exercise ID for deterministic shuffle
+    return items.sort((a, b) => {
+      const hashA = stableHash(`${exercise.id}:${a.id}`);
+      const hashB = stableHash(`${exercise.id}:${b.id}`);
+      return hashA - hashB;
+    }).map(i => i.id);
+  }, [exercise.id, exercise.items]);
+  
+  const [order, setOrder] = useState<string[]>(initialOrder);
   const [dragId, setDragId] = useState<string | null>(null);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -525,12 +636,10 @@ function DragSequenceExercise({ exercise, onComplete }: { exercise: DragSequence
         maxScore={maxScore}
         feedback={result.feedback}
         rewardBadge={exercise.rewardBadge}
-        onRetry={() => { setResult(null); setOrder(exercise.items.map((i) => i.id)); setDragId(null); }}
+        onRetry={() => { setResult(null); setOrder(initialOrder); setDragId(null); }}
       />
     );
   }
-
-  const byId = useMemo(() => new Map(exercise.items.map((i) => [i.id, i])), [exercise.items]);
 
   const move = (sourceId: string, targetId: string) => {
     if (sourceId === targetId) return;
@@ -596,10 +705,28 @@ function DragSequenceExercise({ exercise, onComplete }: { exercise: DragSequence
   );
 }
 
-function McqSetExercise({ exercise, onComplete }: { exercise: McqSetExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function McqSetExercise({ exercise, isCompleted, onComplete }: { exercise: McqSetExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -666,10 +793,28 @@ function McqSetExercise({ exercise, onComplete }: { exercise: McqSetExerciseV2; 
   );
 }
 
-function ScenarioExercise({ exercise, onComplete }: { exercise: ScenarioExerciseV2; onComplete: (score: number, maxScore: number) => void }) {
+function ScenarioExercise({ exercise, isCompleted, onComplete }: { exercise: ScenarioExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [selected, setSelected] = useState<string | null>(null);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
+
+  // Completed view (server says completed)
+  if (isCompleted) {
+    return (
+      <Card className="border-2 border-green-500 bg-green-50 rounded-2xl overflow-hidden" dir="rtl">
+        <CardContent className="p-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            <CheckCircle2 className="w-10 h-10 text-green-500" />
+            <div>
+              <p className="text-xl font-bold text-green-800">أحسنت! لقد أكملت هذا التمرين بنجاح</p>
+              <p className="text-green-600 font-bold">حصلت على {exercise.points} نقطة ✨</p>
+            </div>
+          </div>
+          <EcoHero size="medium" emotion="happy" animation="bounce" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (result) {
     return (
@@ -712,7 +857,7 @@ function ScenarioExercise({ exercise, onComplete }: { exercise: ScenarioExercise
                 selected === opt ? 'border-emerald-500 bg-emerald-50 text-emerald-900' : 'border-gray-100 bg-white hover:border-emerald-300'
               }`}
             >
-              {opt}
+              {cleanOptionText(opt)}
             </button>
           ))}
         </div>
