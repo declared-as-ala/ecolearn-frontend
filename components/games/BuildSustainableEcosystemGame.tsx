@@ -271,9 +271,7 @@ export default function BuildSustainableEcosystemGame({ game, onComplete }: Buil
                       ? component.sustainable
                         ? 'border-green-500 bg-green-100 shadow-lg ring-4 ring-green-300'
                         : 'border-red-500 bg-red-100 shadow-lg ring-4 ring-red-300'
-                      : component.sustainable
-                      ? 'border-green-300 bg-white hover:border-green-400 hover:shadow-lg cursor-pointer'
-                      : 'border-red-300 bg-white hover:border-red-400 hover:shadow-lg cursor-pointer'
+                      : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-lg cursor-pointer'
                   }`}
                 >
                   <div className="text-4xl mb-2">{component.icon}</div>
