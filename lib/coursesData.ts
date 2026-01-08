@@ -47,6 +47,7 @@ export interface Game {
     | 'decision-maker'
     | 'climate-balance'
     | 'who-can-live-here'
+    | 'creatures-journey'
     | 'junior-weather-observer'
     | 'balance-of-life'
     | 'broken-chain'
@@ -71,7 +72,8 @@ export interface Game {
     | 'without-decomposers'
     | 'pollution-source'
     | 'water-quality-test'
-    | 'smart-cleanup';
+    | 'smart-cleanup'
+    | 'river-cleanup-mission';
     title: string;
     description: string;
     points?: number;

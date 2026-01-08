@@ -257,60 +257,44 @@ export const waterPollutionCourse: Course = {
       },
     },
 
-    // 🎮 GAME 3: "نظّف بذكاء"
+    // 🎮 GAME 3: "مهمة تنظيف النهر" - لعبة تفاعلية احترافية للأطفال
     {
       id: 'g3',
-      type: 'smart-cleanup',
-      title: 'نظّف بذكاء',
-      description: 'أدوات صحيحة وأخرى خاطئة! استعمال أداة خاطئة يزيد التلوث. النجاح يحتاج تسلسل صحيح! 🧹✨',
-      points: 50,
+      type: 'river-cleanup-mission',
+      title: 'مهمة تنظيف النهر',
+      description: 'انقذ النهر! نظف مصادر التلوث باستخدام الأدوات الصحيحة. عندما يصبح النهر نظيفاً، ستعود الحيوانات المائية! 🌊🐟✨',
+      points: 60,
       gameData: {
-        rounds: 3,
+        maxLevels: 3,
+        sourcesPerLevel: 4,
         tools: [
           {
             id: 'filter',
             label: 'فلترة الماء',
             icon: '🔍',
-            correct: true,
-            order: 1,
             description: 'إزالة الشوائب الكبيرة',
-            impact: -20,
+            color: 'bg-blue-500',
           },
           {
             id: 'chemical',
             label: 'معالجة كيميائية',
             icon: '⚗️',
-            correct: true,
-            order: 2,
             description: 'قتل البكتيريا والجراثيم',
-            impact: -30,
+            color: 'bg-purple-500',
           },
           {
             id: 'aeration',
             label: 'تهوية الماء',
             icon: '💨',
-            correct: true,
-            order: 3,
             description: 'إضافة الأكسجين',
-            impact: -25,
+            color: 'bg-cyan-500',
           },
           {
-            id: 'wrong1',
-            label: 'صب مواد سامة',
-            icon: '☠️',
-            correct: false,
-            order: 0,
-            description: 'يزيد التلوث!',
-            impact: +30,
-          },
-          {
-            id: 'wrong2',
-            label: 'خلط مع مياه ملوثة',
-            icon: '💧',
-            correct: false,
-            order: 0,
-            description: 'يزيد التلوث!',
-            impact: +25,
+            id: 'plant',
+            label: 'زرع نباتات مائية',
+            icon: '🌿',
+            description: 'تنظيف طبيعي',
+            color: 'bg-green-500',
           },
         ],
       },

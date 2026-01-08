@@ -35,6 +35,7 @@ import GuardianOfBalanceGame from './games/GuardianOfBalanceGame';
 import FoodWebBuilderGame from './games/FoodWebBuilderGame';
 import ClimateBalanceGame from './games/ClimateBalanceGame';
 import WhoCanLiveHereGame from './games/WhoCanLiveHereGame';
+import CreaturesJourneyGame from './games/CreaturesJourneyGame';
 import JuniorWeatherObserverGame from './games/JuniorWeatherObserverGame';
 import BalanceOfLifeGame from './games/BalanceOfLifeGame';
 import BrokenChainGame from './games/BrokenChainGame';
@@ -57,6 +58,7 @@ import StabilityOrChaosGame from './games/StabilityOrChaosGame';
 import PollutionSourceGame from './games/PollutionSourceGame';
 import WaterQualityTestGame from './games/WaterQualityTestGame';
 import SmartCleanupGame from './games/SmartCleanupGame';
+import RiverCleanupMissionGame from './games/RiverCleanupMissionGame';
 
 interface Game {
     id: string;
@@ -228,6 +230,8 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
                 return <ClimateBalanceGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'who-can-live-here':
                 return <WhoCanLiveHereGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'creatures-journey':
+                return <CreaturesJourneyGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'junior-weather-observer':
                 return <JuniorWeatherObserverGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'balance-of-life':
@@ -272,6 +276,8 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
                 return <WaterQualityTestGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'smart-cleanup':
                 return <SmartCleanupGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'river-cleanup-mission':
+                return <RiverCleanupMissionGame game={gameObj as any} onComplete={handleGameComplete} />;
             default:
                 return <DragDropGame game={gameObj as any} onComplete={handleGameComplete} />;
         }
