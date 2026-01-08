@@ -369,9 +369,7 @@ export default function StabilityOrChaosGame({ game, onComplete }: StabilityOrCh
                         : 'border-red-500 bg-red-100 shadow-lg ring-4 ring-red-300'
                       : selectedAction !== null
                       ? 'border-gray-300 bg-gray-100 opacity-50'
-                      : action.correct
-                      ? 'border-green-300 bg-white hover:border-green-400 hover:shadow-lg cursor-pointer'
-                      : 'border-red-300 bg-white hover:border-red-400 hover:shadow-lg cursor-pointer'
+                      : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-lg cursor-pointer'
                   }`}
                 >
                   <div className="text-4xl mb-3">{action.icon}</div>

@@ -313,7 +313,7 @@ export default function WaterQualityTestGame({ game, onComplete }: WaterQualityT
                     ? 'border-green-500 bg-green-100 shadow-lg ring-4 ring-green-300'
                     : selectedVerdict !== null
                     ? 'border-gray-300 bg-gray-100 opacity-50'
-                    : 'border-green-300 bg-white hover:border-green-400 hover:shadow-lg cursor-pointer'
+                    : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-lg cursor-pointer'
                 }`}
               >
                 <div className="text-5xl mb-3">✅</div>
@@ -329,7 +329,7 @@ export default function WaterQualityTestGame({ game, onComplete }: WaterQualityT
                     ? 'border-red-500 bg-red-100 shadow-lg ring-4 ring-red-300'
                     : selectedVerdict !== null
                     ? 'border-gray-300 bg-gray-100 opacity-50'
-                    : 'border-red-300 bg-white hover:border-red-400 hover:shadow-lg cursor-pointer'
+                    : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-lg cursor-pointer'
                 }`}
               >
                 <div className="text-5xl mb-3">❌</div>

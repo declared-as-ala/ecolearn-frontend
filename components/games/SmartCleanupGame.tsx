@@ -295,17 +295,12 @@ export default function SmartCleanupGame({ game, onComplete }: SmartCleanupGameP
                   className={`p-4 rounded-xl border-2 transition-all ${
                     isUsed
                       ? 'border-gray-300 bg-gray-100 opacity-50'
-                      : tool.correct
-                      ? 'border-green-300 bg-white hover:border-green-400 hover:shadow-lg cursor-pointer'
-                      : 'border-red-300 bg-white hover:border-red-400 hover:shadow-lg cursor-pointer'
+                      : 'border-gray-300 bg-white hover:border-gray-400 hover:shadow-lg cursor-pointer'
                   }`}
                 >
                   <div className="text-4xl mb-2">{tool.icon}</div>
                   <div className="text-sm font-bold text-gray-800 mb-1">{tool.label}</div>
                   <div className="text-xs text-gray-600">{tool.description}</div>
-                  {tool.correct && (
-                    <div className="text-xs text-green-600 mt-1">✅ صحيح</div>
-                  )}
                   {!tool.correct && (
                     <div className="text-xs text-red-600 mt-1">❌ خاطئ</div>
                   )}

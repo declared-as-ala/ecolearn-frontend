@@ -325,11 +325,7 @@ export default function SaveEcosystemGame({ game, onComplete }: SaveEcosystemGam
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSolutionSelect(solution)}
-                className={`p-6 rounded-xl border-2 transition-all ${
-                  solution.correct
-                    ? 'border-green-400 bg-green-50 hover:bg-green-100 hover:border-green-500 hover:shadow-lg'
-                    : 'border-red-300 bg-red-50 hover:bg-red-100 hover:border-red-400 hover:shadow-lg'
-                }`}
+                className={`p-6 rounded-xl border-2 transition-all border-gray-300 bg-white hover:border-gray-400 hover:shadow-lg cursor-pointer`}
               >
                 <div className="text-4xl mb-3">{solution.icon}</div>
                 <div className="font-bold text-gray-800 text-lg">{solution.label}</div>
