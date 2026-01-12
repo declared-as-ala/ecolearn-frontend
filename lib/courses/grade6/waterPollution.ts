@@ -257,45 +257,27 @@ export const waterPollutionCourse: Course = {
       },
     },
 
-    // 🎮 GAME 3: "مهمة تنظيف النهر" - لعبة تفاعلية احترافية للأطفال
+    // 🎮 GAME 3: "ما الذي يلوث البحر؟" - لعبة بسيطة وتعليمية للأطفال
     {
       id: 'g3',
-      type: 'river-cleanup-mission',
-      title: 'مهمة تنظيف النهر',
-      description: 'انقذ النهر! نظف مصادر التلوث باستخدام الأدوات الصحيحة. عندما يصبح النهر نظيفاً، ستعود الحيوانات المائية! 🌊🐟✨',
-      points: 60,
+      type: 'sea-pollution-quiz',
+      title: 'ما الذي يلوث البحر؟',
+      description: 'شاهد كل عنصر وقرر: هل يلوث البحر أم لا؟ ✅ / ❌ 🌊',
+      points: 50,
       gameData: {
-        maxLevels: 3,
-        sourcesPerLevel: 4,
-        tools: [
-          {
-            id: 'filter',
-            label: 'فلترة الماء',
-            icon: '🔍',
-            description: 'إزالة الشوائب الكبيرة',
-            color: 'bg-blue-500',
-          },
-          {
-            id: 'chemical',
-            label: 'معالجة كيميائية',
-            icon: '⚗️',
-            description: 'قتل البكتيريا والجراثيم',
-            color: 'bg-purple-500',
-          },
-          {
-            id: 'aeration',
-            label: 'تهوية الماء',
-            icon: '💨',
-            description: 'إضافة الأكسجين',
-            color: 'bg-cyan-500',
-          },
-          {
-            id: 'plant',
-            label: 'زرع نباتات مائية',
-            icon: '🌿',
-            description: 'تنظيف طبيعي',
-            color: 'bg-green-500',
-          },
+        items: [
+          { id: '1', name: 'زجاجة بلاستيكية', icon: '🥤', pollutes: true },
+          { id: '2', name: 'سمكة', icon: '🐟', pollutes: false },
+          { id: '3', name: 'كيس بلاستيك', icon: '🛍️', pollutes: true },
+          { id: '4', name: 'نبات بحري', icon: '🌿', pollutes: false },
+          { id: '5', name: 'زيت', icon: '🛢️', pollutes: true },
+          { id: '6', name: 'قنديل البحر', icon: '🪼', pollutes: false },
+          { id: '7', name: 'علبة معدنية', icon: '🥫', pollutes: true },
+          { id: '8', name: 'نجم البحر', icon: '⭐', pollutes: false },
+          { id: '9', name: 'منظفات كيميائية', icon: '🧴', pollutes: true },
+          { id: '10', name: 'سلحفاة بحرية', icon: '🐢', pollutes: false },
+          { id: '11', name: 'نفايات صناعية', icon: '🏭', pollutes: true },
+          { id: '12', name: 'أعشاب بحرية', icon: '🌊', pollutes: false },
         ],
       },
     },

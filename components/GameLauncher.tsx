@@ -58,7 +58,7 @@ import StabilityOrChaosGame from './games/StabilityOrChaosGame';
 import PollutionSourceGame from './games/PollutionSourceGame';
 import WaterQualityTestGame from './games/WaterQualityTestGame';
 import SmartCleanupGame from './games/SmartCleanupGame';
-import RiverCleanupMissionGame from './games/RiverCleanupMissionGame';
+import SeaPollutionQuizGame from './games/SeaPollutionQuizGame';
 
 interface Game {
     id: string;
@@ -276,8 +276,8 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
                 return <WaterQualityTestGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'smart-cleanup':
                 return <SmartCleanupGame game={gameObj as any} onComplete={handleGameComplete} />;
-            case 'river-cleanup-mission':
-                return <RiverCleanupMissionGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'sea-pollution-quiz':
+                return <SeaPollutionQuizGame game={gameObj as any} onComplete={handleGameComplete} />;
             default:
                 return <DragDropGame game={gameObj as any} onComplete={handleGameComplete} />;
         }

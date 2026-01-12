@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import EcoHero from '../cartoons/EcoHero';
+import { playSuccessSound, playErrorSound, playCompletionSound } from '@/lib/sounds';
 
 interface Game {
   _id: string;
@@ -93,6 +94,7 @@ export default function StabilityOrChaosGame({ game, onComplete }: StabilityOrCh
     // Check if target reached
     if (newStability >= targetStability && selectedAction) {
       setScore(score + 20);
+      playSuccessSound();
       setFeedback({ type: 'success', message: 'ممتاز! النظام مستقر الآن! 🟢✨' });
       
       setTimeout(() => {
@@ -101,6 +103,7 @@ export default function StabilityOrChaosGame({ game, onComplete }: StabilityOrCh
           setRound(round + 1);
         } else {
           setCompleted(true);
+          playCompletionSound();
           onComplete?.(game.points || 50);
         }
       }, 2000);
@@ -156,6 +159,7 @@ export default function StabilityOrChaosGame({ game, onComplete }: StabilityOrCh
     }));
 
     if (!action.correct) {
+      playErrorSound();
       setFeedback({ type: 'error', message: '❌ هذا الإجراء يسبب فوضى! النظام غير مستقر 🔴💔' });
       setTimeout(() => {
         setFeedback(null);

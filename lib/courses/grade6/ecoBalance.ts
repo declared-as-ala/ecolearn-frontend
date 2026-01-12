@@ -86,8 +86,23 @@ export const ecoBalanceCourse: Course = {
   exercisesV2: [
     {
       id: 'ex1_eco_balance',
+      type: 'choice',
+      title: 'التمرين الأول: حيّ أم لا حيّ؟',
+      points: 20,
+      prompt: 'اختر: هل هذا العنصر حيّ أم لا حيّ؟ 🌿💧',
+      options: [
+        'حيّ',
+        'لا حيّ',
+      ],
+      correct: 'حيّ',
+      successMessage: 'إجابة صحيحة 🎉',
+      errorMessage: 'حاول مرة أخرى ❌',
+      rewardBadge: { name: 'خبير التصنيف', icon: '🔬' },
+    },
+    {
+      id: 'ex1_eco_balance_2',
       type: 'matching',
-      title: 'التمرين 1: ما نوع الاختلال؟',
+      title: 'التمرين 2: ما نوع الاختلال؟',
       points: 20,
       prompt: 'صنّف كل مشكلة بيئية إلى نوع الاختلال الصحيح (حيوي أو لاحيوي) ⚖️🔍',
       pairs: [

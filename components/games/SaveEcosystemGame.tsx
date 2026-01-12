@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import EcoHero from '../cartoons/EcoHero';
+import { playSuccessSound, playErrorSound, playCompletionSound } from '@/lib/sounds';
 
 interface Game {
   _id: string;
@@ -134,12 +135,14 @@ export default function SaveEcosystemGame({ game, onComplete }: SaveEcosystemGam
     if (solution.correct) {
       setScore(score + 10 + Math.floor(timeLeft / 3)); // Bonus for speed
       setProblemsSolved(prev => prev + 1);
+      playSuccessSound();
       setFeedback({ type: 'success', message: 'صحيح! أنقذت النظام ✨' });
       
       setTimeout(() => {
         setFeedback(null);
         if (problemsSolved + 1 >= targetProblems) {
           setCompleted(true);
+          playCompletionSound();
           onComplete?.(game.points || 50);
         } else {
           // Show next problem
@@ -148,6 +151,7 @@ export default function SaveEcosystemGame({ game, onComplete }: SaveEcosystemGam
         }
       }, 1500);
     } else {
+      playErrorSound();
       setFeedback({ type: 'error', message: '❌ حل خاطئ! فكر بسرعة 💔' });
       setTimeout(() => {
         setFeedback(null);

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, TestTube, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import EcoHero from '../cartoons/EcoHero';
+import { playSuccessSound, playErrorSound, playCompletionSound } from '@/lib/sounds';
 
 interface Game {
   _id: string;
@@ -112,6 +113,7 @@ export default function WaterQualityTestGame({ game, onComplete }: WaterQualityT
 
   const handleVerdictSelect = (verdict: 'safe' | 'unsafe') => {
     if (!currentSample || testsCompleted < 3) {
+      playErrorSound();
       setFeedback({ type: 'error', message: '❌ يجب إجراء جميع الاختبارات أولاً! 💔' });
       setTimeout(() => setFeedback(null), 2000);
       return;
@@ -123,6 +125,7 @@ export default function WaterQualityTestGame({ game, onComplete }: WaterQualityT
 
     if (isCorrect) {
       setScore(score + 20);
+      playSuccessSound();
       setFeedback({ type: 'success', message: 'ممتاز! قرار صحيح! الماء ' + (currentSample.isSafe ? 'صالح' : 'غير صالح') + ' للشرب! ✨' });
       
       setTimeout(() => {
@@ -131,10 +134,12 @@ export default function WaterQualityTestGame({ game, onComplete }: WaterQualityT
           setRound(round + 1);
         } else {
           setCompleted(true);
+          playCompletionSound();
           onComplete?.(game.points || 45);
         }
       }, 2000);
     } else {
+      playErrorSound();
       setFeedback({ type: 'error', message: '❌ خطأ! الماء ' + (currentSample.isSafe ? 'صالح' : 'غير صالح') + ' للشرب! 💔' });
       setTimeout(() => {
         setFeedback(null);

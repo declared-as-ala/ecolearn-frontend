@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Trophy, CheckCircle2, RefreshCcw } from 'lucide-react';
 import EcoHero from '@/components/cartoons/EcoHero';
 import FriendlyAnimal from '@/components/cartoons/FriendlyAnimal';
+import { playSuccessSound, playErrorSound, playCompletionSound } from '@/lib/sounds';
 import type {
   ChoiceExerciseV2,
   DragSequenceExerciseV2,
@@ -110,8 +111,38 @@ function cleanOptionText(text: string): string {
 function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: ChoiceExerciseV2; isCompleted?: boolean; onComplete: (score: number, maxScore: number) => void }) {
   const maxScore = exercise.points;
   const [selected, setSelected] = useState<string | null>(null);
+  const [isLocked, setIsLocked] = useState(false);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
-  const correct = selected === exercise.correct;
+  // Strict comparison: only exact match is correct
+  const correct = selected !== null && selected.trim() === exercise.correct?.trim();
+
+  // Handle option selection with immediate feedback and locking
+  const handleOptionClick = (opt: string) => {
+    if (isLocked) return; // Prevent changes after selection
+    
+    setSelected(opt);
+    setIsLocked(true);
+    
+    // Strict validation: only exact match (with trim) is correct
+    // Wrong answers are NEVER marked as correct
+    const isCorrect = opt.trim() === exercise.correct?.trim();
+    const score = isCorrect ? maxScore : 0;
+    const passed = score >= maxScore * 0.7;
+    
+    // Play sound immediately
+    if (passed) {
+      playSuccessSound();
+    } else {
+      playErrorSound();
+    }
+    
+    // Show result after a delay so student can see the visual feedback
+    setTimeout(() => {
+      const feedback = isCorrect ? exercise.successMessage : exercise.errorMessage;
+      setResult({ passed, score, feedback });
+      onComplete(score, maxScore);
+    }, 1500);
+  };
 
   // Completed view (server says completed)
   if (isCompleted) {
@@ -139,10 +170,33 @@ function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: Choic
         maxScore={maxScore}
         feedback={result.feedback}
         rewardBadge={exercise.rewardBadge}
-        onRetry={() => setResult(null)}
+        onRetry={() => { setResult(null); setSelected(null); setIsLocked(false); }}
       />
     );
   }
+
+  // Filter to show ONLY the 2 required options: حيّ and لا حيّ
+  // This ensures we never show more than 2 options, even if the data has more
+  const validOptions = exercise.options.filter(opt => 
+    opt.trim() === 'حيّ' || opt.trim() === 'لا حيّ'
+  ).slice(0, 2);
+  
+  // If we don't have exactly 2 valid options, use first 2 from the array as fallback
+  const displayOptions = validOptions.length === 2 ? validOptions : exercise.options.slice(0, 2);
+
+  // Determine button styling based on selection and correctness
+  const getButtonStyle = (opt: string) => {
+    if (!selected || selected !== opt) {
+      return 'border-gray-100 bg-white hover:border-blue-300';
+    }
+    // Selected option - show green if correct, red if wrong
+    // Strict validation: only exact match with correct answer is correct
+    if (opt.trim() === exercise.correct?.trim()) {
+      return 'border-green-500 bg-green-50 text-green-900';
+    } else {
+      return 'border-red-500 bg-red-50 text-red-900';
+    }
+  };
 
   return (
     <Card className="border-4 border-blue-200 rounded-3xl overflow-hidden shadow-xl" dir="rtl">
@@ -151,33 +205,52 @@ function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: Choic
       </CardHeader>
       <CardContent className="p-6">
         <p className="text-lg font-bold text-gray-800 mb-5 whitespace-pre-wrap">{exercise.prompt}</p>
-        <div className="grid grid-cols-1 gap-3">
-          {exercise.options.map((opt: string) => (
-            <button
-              key={opt}
-              onClick={() => setSelected(opt)}
-              className={`p-4 rounded-2xl border-4 font-bold text-right transition-all active:scale-95 ${selected === opt ? 'border-blue-500 bg-blue-50 text-blue-900' : 'border-gray-100 bg-white hover:border-blue-300'
-                }`}
-            >
-              {cleanOptionText(opt)}
-            </button>
-          ))}
+        
+        {/* Show ONLY 2 options - حيّ and لا حيّ */}
+        <div className="grid grid-cols-1 gap-4 mb-5">
+          {displayOptions.map((opt: string) => {
+            const isSelected = selected === opt;
+            const isCorrectOption = opt.trim() === exercise.correct?.trim();
+            const showFeedback = isLocked && isSelected;
+            
+            return (
+              <button
+                key={opt}
+                onClick={() => handleOptionClick(opt)}
+                disabled={isLocked}
+                className={`p-6 rounded-2xl border-4 font-bold text-right text-xl transition-all ${
+                  isLocked ? 'cursor-not-allowed' : 'active:scale-95 cursor-pointer'
+                } ${getButtonStyle(opt)}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{cleanOptionText(opt)}</span>
+                  {showFeedback && (
+                    <span className="text-2xl">
+                      {isCorrectOption ? '✅' : '❌'}
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Feedback message when locked */}
+        {isLocked && selected && (
+          <div className={`mb-5 p-4 rounded-2xl border-2 text-center font-bold text-lg ${
+            correct 
+              ? 'bg-green-100 border-green-300 text-green-700' 
+              : 'bg-red-100 border-red-300 text-red-700'
+          }`}>
+            {correct ? 'إجابة صحيحة 🎉' : 'حاول مرة أخرى ❌'}
+          </div>
+        )}
+
         <div className="mt-5 flex items-center justify-between gap-3 flex-wrap">
           <p className="font-bold text-amber-700">+{exercise.points} نقطة</p>
-          <Button
-            onClick={() => {
-              const score = correct ? maxScore : 0;
-              const passed = score >= maxScore * 0.7;
-              const feedback = correct ? exercise.successMessage : exercise.errorMessage;
-              setResult({ passed, score, feedback });
-              onComplete(score, maxScore);
-            }}
-            disabled={!selected}
-            className="rounded-2xl bg-green-600 hover:bg-green-700 text-white font-bold"
-          >
-            تحقّق ✅
-          </Button>
+          {!isLocked && (
+            <p className="text-gray-600 font-bold">اختر إجابة واحدة فقط</p>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -248,6 +321,11 @@ function MultiExercise({ exercise, isCompleted, onComplete }: { exercise: MultiS
           <Button
             onClick={() => {
               const feedback = passed ? exercise.successMessage : exercise.errorMessage;
+              if (passed) {
+                playSuccessSound();
+              } else {
+                playErrorSound();
+              }
               setResult({ passed, score, feedback });
               onComplete(score, maxScore);
             }}
@@ -321,6 +399,11 @@ function ShortExercise({ exercise, isCompleted, onComplete }: { exercise: ShortA
           <Button
             onClick={() => {
               const feedback = passed ? exercise.successMessage : exercise.errorMessage;
+              if (passed) {
+                playSuccessSound();
+              } else {
+                playErrorSound();
+              }
               setResult({ passed, score, feedback });
               onComplete(score, maxScore);
             }}
@@ -394,6 +477,7 @@ function MatchingExercise({ exercise, isCompleted, onComplete }: { exercise: Mat
     const score = maxScore;
     const passed = true;
     const fb = exercise.successMessage;
+    playCompletionSound();
     setResult({ passed, score, feedback: fb });
     onComplete(score, maxScore);
   };
@@ -523,6 +607,11 @@ function StickerRepairExercise({ exercise, isCompleted, onComplete }: { exercise
     const score = Math.round((correct / Math.max(1, exercise.slots.length)) * maxScore);
     const passed = score >= maxScore * 0.7;
     const fb = passed ? exercise.successMessage : exercise.errorMessage;
+    if (passed) {
+      playSuccessSound();
+    } else {
+      playErrorSound();
+    }
     setResult({ passed, score, feedback: fb });
     onComplete(score, maxScore);
   };
@@ -659,6 +748,11 @@ function DragSequenceExercise({ exercise, isCompleted, onComplete }: { exercise:
     const score = Math.round((correctPositions / Math.max(1, exercise.correctOrder.length)) * maxScore);
     const passed = score >= maxScore * 0.7;
     const fb = passed ? exercise.successMessage : exercise.errorMessage;
+    if (passed) {
+      playSuccessSound();
+    } else {
+      playErrorSound();
+    }
     setResult({ passed, score, feedback: fb });
     onComplete(score, maxScore);
   };
@@ -747,6 +841,11 @@ function McqSetExercise({ exercise, isCompleted, onComplete }: { exercise: McqSe
 
   const submit = () => {
     const fb = passed ? exercise.successMessage : exercise.errorMessage;
+    if (passed) {
+      playSuccessSound();
+    } else {
+      playErrorSound();
+    }
     setResult({ passed, score, feedback: fb });
     onComplete(score, maxScore);
   };
@@ -834,6 +933,11 @@ function ScenarioExercise({ exercise, isCompleted, onComplete }: { exercise: Sce
     const score = correct ? maxScore : 0;
     const passed = score >= maxScore * 0.7;
     const fb = correct ? exercise.successMessage : exercise.errorMessage;
+    if (passed) {
+      playSuccessSound();
+    } else {
+      playErrorSound();
+    }
     setResult({ passed, score, feedback: fb });
     onComplete(score, maxScore);
   };

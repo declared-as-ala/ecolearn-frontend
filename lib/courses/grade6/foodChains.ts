@@ -188,56 +188,33 @@ export const foodChainsCourse: Course = {
       },
     },
 
-    // 🎮 GAME 3: "بدون مفككات؟"
+    // 🎮 GAME 3: "من يأكل ماذا؟"
     {
       id: 'g3',
       type: 'without-decomposers',
-      title: 'بدون مفككات؟',
-      description: 'جثة حيوان تظهر! إن لم تضيف البكتيريا: تتراكم الجثث. عند إضافتها → تعود المعادن 🦠💀🌍',
+      title: 'من يأكل ماذا؟',
+      description: 'لعبة بسيطة وممتعة! اربط كل حيوان بطعامه المفضل 🐰🥕',
       points: 50,
       gameData: {
-        scenarios: [
-          {
-            id: 's1',
-            title: 'جثة حيوان في الغابة',
-            deadAnimal: { label: 'أرنب ميت', icon: '🐰' },
-            hasDecomposer: false,
-            consequences: [
-              '💀 الجثة تتراكم',
-              '💀 المزيد من الجثث',
-              '🌍 التربة لا تحصل على معادن',
-              '🌿 النباتات لا تنمو',
-              '💔 النظام البيئي يختل',
-            ],
-            mineralsReturned: false,
-          },
-          {
-            id: 's2',
-            title: 'سمكة ميتة في البحر',
-            deadAnimal: { label: 'سمكة ميتة', icon: '🐟' },
-            hasDecomposer: false,
-            consequences: [
-              '💀 الجثة تتراكم',
-              '🌊 المياه تتلوث',
-              '🌊 المعادن لا تعود',
-              '🌿 الطحالب لا تنمو',
-              '💔 النظام المائي ينهار',
-            ],
-            mineralsReturned: false,
-          },
-          {
-            id: 's3',
-            title: 'طائر ميت على الأرض',
-            deadAnimal: { label: 'طائر ميت', icon: '🐦' },
-            hasDecomposer: false,
-            consequences: [
-              '💀 الجثة تتراكم',
-              '🌍 التربة لا تحصل على غذاء',
-              '🌿 النباتات تضعف',
-              '💔 النظام البيئي يختل',
-            ],
-            mineralsReturned: false,
-          },
+        rounds: [
+          // Round 1: Simple pairs
+          [
+            { id: 'p1', animal: { label: 'أرنب', icon: '🐰' }, food: { label: 'جزر', icon: '🥕' } },
+            { id: 'p2', animal: { label: 'قطة', icon: '🐱' }, food: { label: 'سمك', icon: '🐟' } },
+            { id: 'p3', animal: { label: 'بقرة', icon: '🐄' }, food: { label: 'عشب', icon: '🌿' } },
+          ],
+          // Round 2: More pairs
+          [
+            { id: 'p4', animal: { label: 'دب', icon: '🐻' }, food: { label: 'عسل', icon: '🍯' } },
+            { id: 'p5', animal: { label: 'طائر', icon: '🐦' }, food: { label: 'حبوب', icon: '🌾' } },
+            { id: 'p6', animal: { label: 'أسد', icon: '🦁' }, food: { label: 'غزال', icon: '🦌' } },
+          ],
+          // Round 3: Final round
+          [
+            { id: 'p7', animal: { label: 'فيل', icon: '🐘' }, food: { label: 'أوراق', icon: '🍃' } },
+            { id: 'p8', animal: { label: 'باندا', icon: '🐼' }, food: { label: 'خيزران', icon: '🎋' } },
+            { id: 'p9', animal: { label: 'نمر', icon: '🐯' }, food: { label: 'لحم', icon: '🥩' } },
+          ],
         ],
       },
     },

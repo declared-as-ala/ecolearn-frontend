@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, CheckCircle2, XCircle, Leaf } from 'lucide-react';
 import EcoHero from '../cartoons/EcoHero';
+import { playSuccessSound, playErrorSound, playCompletionSound } from '@/lib/sounds';
 
 interface Game {
   _id: string;
@@ -79,6 +80,7 @@ export default function BuildSustainableEcosystemGame({ game, onComplete }: Buil
     // Check if target reached
     if (newSustainability >= targetSustainability && totalSelected >= 4) {
       setScore(score + 20);
+      playSuccessSound();
       setFeedback({ type: 'success', message: 'ممتاز! نظام مستدام! 🌱✨' });
       
       setTimeout(() => {
@@ -88,6 +90,7 @@ export default function BuildSustainableEcosystemGame({ game, onComplete }: Buil
           setSelectedComponents([]);
         } else {
           setCompleted(true);
+          playCompletionSound();
           onComplete?.(game.points || 50);
         }
       }, 2000);
@@ -99,6 +102,7 @@ export default function BuildSustainableEcosystemGame({ game, onComplete }: Buil
       setSelectedComponents(selectedComponents.filter(id => id !== componentId));
     } else {
       if (selectedComponents.length >= 6) {
+        playErrorSound();
         setFeedback({ type: 'error', message: '❌ لا يمكن إضافة المزيد! اختر بعناية 💔' });
         setTimeout(() => setFeedback(null), 2000);
         return;
