@@ -36,7 +36,12 @@ export default function AnimalFoodQuizGame({ game, onComplete }: AnimalFoodQuizG
   const [completed, setCompleted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
-  const data = game.gameData || {};
+  const data = game.gameData || {} as { questions?: Array<{
+    id: string;
+    animal: { label: string; icon: string };
+    correctFood: { label: string; icon: string };
+    wrongFoods: Array<{ label: string; icon: string }>;
+  }> };
   const questions = data.questions || [
     { id: 'q1', animal: { label: 'أرنب', icon: '🐰' }, correctFood: { label: 'جزر', icon: '🥕' }, wrongFoods: [{ label: 'سمك', icon: '🐟' }, { label: 'عسل', icon: '🍯' }] },
     { id: 'q2', animal: { label: 'قطة', icon: '🐱' }, correctFood: { label: 'سمك', icon: '🐟' }, wrongFoods: [{ label: 'جزر', icon: '🥕' }, { label: 'عشب', icon: '🌿' }] },
