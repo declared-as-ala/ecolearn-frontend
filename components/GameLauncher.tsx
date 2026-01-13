@@ -59,6 +59,7 @@ import PollutionSourceGame from './games/PollutionSourceGame';
 import WaterQualityTestGame from './games/WaterQualityTestGame';
 import SmartCleanupGame from './games/SmartCleanupGame';
 import SeaPollutionQuizGame from './games/SeaPollutionQuizGame';
+import AnimalFoodQuizGame from './games/AnimalFoodQuizGame';
 
 interface Game {
     id: string;
@@ -278,6 +279,8 @@ export default function GameLauncher({ game, onComplete }: GameLauncherProps) {
                 return <SmartCleanupGame game={gameObj as any} onComplete={handleGameComplete} />;
             case 'sea-pollution-quiz':
                 return <SeaPollutionQuizGame game={gameObj as any} onComplete={handleGameComplete} />;
+            case 'animal-food-quiz':
+                return <AnimalFoodQuizGame game={gameObj as any} onComplete={handleGameComplete} />;
             default:
                 return <DragDropGame game={gameObj as any} onComplete={handleGameComplete} />;
         }

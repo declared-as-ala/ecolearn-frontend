@@ -73,7 +73,8 @@ export interface Game {
     | 'pollution-source'
     | 'water-quality-test'
     | 'smart-cleanup'
-    | 'sea-pollution-quiz';
+    | 'sea-pollution-quiz'
+    | 'animal-food-quiz';
     title: string;
     description: string;
     points?: number;

@@ -111,10 +111,10 @@ export const foodChainsCourse: Course = {
       points: 20,
       prompt: 'رتب مراحل إعادة تدوير المادة في الطبيعة من موت الكائن إلى حياته من جديد 🔄',
       items: [
-        { id: 'm1', label: '1️⃣ حيوان ميت (جثة) 🦴', emoji: '🦴' },
-        { id: 'm2', label: '2️⃣ تفكيك البكتيريا للجثة 🦠', emoji: '🦠' },
-        { id: 'm3', label: '3️⃣ تحول المادة إلى أملاح معدنية 🧂', emoji: '🧂' },
-        { id: 'm4', label: '4️⃣ امتصاص النبات للأملاح والنمو 🌱', emoji: '🌱' },
+        { id: 'm1', label: 'حيوان ميت (جثة)', emoji: '🦴' },
+        { id: 'm2', label: 'تفكيك البكتيريا للجثة', emoji: '🦠' },
+        { id: 'm3', label: 'تحول المادة إلى أملاح معدنية', emoji: '🧂' },
+        { id: 'm4', label: 'امتصاص النبات للأملاح والنمو', emoji: '🌱' },
       ],
       correctOrder: ['m1', 'm2', 'm3', 'm4'],
       successMessage: 'أحسنت! أنت "خبير إعادة التدوير الطبيعي" ♻️. البكتيريا هي سر استمرار الحياة.',
@@ -129,11 +129,11 @@ export const foodChainsCourse: Course = {
       prompt: 'حدد السلسلة الغذائية العلمية الكاملة والمرتبة بشكل صحيح 🧬',
       scenario: 'أي من هذه السلاسل تمثل واقع الغابة؟',
       options: [
-        'نبات 🌿 ← فأر 🐭 ← بومة 🦉 ← بكتيريا 🦠 ✅',
+        'نبات 🌿 ← فأر 🐭 ← بومة 🦉 ← بكتيريا 🦠',
         'شمس ☀️ ← نبات 🌿 ← بومة 🦉 (السلسلة لا تبدأ بالشمس ككائن)',
         'بكتيريا 🦠 ← نبات 🌿 ← فأر 🐭 (المفكك يظهر في النهاية)',
       ],
-      correct: 'نبات 🌿 ← فأر 🐭 ← بومة 🦉 ← بكتيريا 🦠 ✅',
+      correct: 'نبات 🌿 ← فأر 🐭 ← بومة 🦉 ← بكتيريا 🦠',
       successMessage: 'مبدع! أنت "حِرفي السلاسل الغذائية" 🧵. لقد ربطت الحلقات ببراعة.',
       errorMessage: 'تذكر: السلسلة تبدأ بمنتج (نبات) وتمر بمستهلكين وتنتهي بمفكك. ❌',
       rewardBadge: { name: 'حِرفي السلاسل الغذائية', icon: '🧵' },
@@ -188,33 +188,22 @@ export const foodChainsCourse: Course = {
       },
     },
 
-    // 🎮 GAME 3: "من يأكل ماذا؟"
+    // 🎮 GAME 3: "من يأكل ماذا؟" - لعبة بسيطة وممتعة للأطفال
     {
       id: 'g3',
-      type: 'without-decomposers',
+      type: 'animal-food-quiz',
       title: 'من يأكل ماذا؟',
-      description: 'لعبة بسيطة وممتعة! اربط كل حيوان بطعامه المفضل 🐰🥕',
+      description: 'لعبة بسيطة وممتعة! اختر الطعام الصحيح لكل حيوان 🐰🥕',
       points: 50,
       gameData: {
-        rounds: [
-          // Round 1: Simple pairs
-          [
-            { id: 'p1', animal: { label: 'أرنب', icon: '🐰' }, food: { label: 'جزر', icon: '🥕' } },
-            { id: 'p2', animal: { label: 'قطة', icon: '🐱' }, food: { label: 'سمك', icon: '🐟' } },
-            { id: 'p3', animal: { label: 'بقرة', icon: '🐄' }, food: { label: 'عشب', icon: '🌿' } },
-          ],
-          // Round 2: More pairs
-          [
-            { id: 'p4', animal: { label: 'دب', icon: '🐻' }, food: { label: 'عسل', icon: '🍯' } },
-            { id: 'p5', animal: { label: 'طائر', icon: '🐦' }, food: { label: 'حبوب', icon: '🌾' } },
-            { id: 'p6', animal: { label: 'أسد', icon: '🦁' }, food: { label: 'غزال', icon: '🦌' } },
-          ],
-          // Round 3: Final round
-          [
-            { id: 'p7', animal: { label: 'فيل', icon: '🐘' }, food: { label: 'أوراق', icon: '🍃' } },
-            { id: 'p8', animal: { label: 'باندا', icon: '🐼' }, food: { label: 'خيزران', icon: '🎋' } },
-            { id: 'p9', animal: { label: 'نمر', icon: '🐯' }, food: { label: 'لحم', icon: '🥩' } },
-          ],
+        questions: [
+          { id: 'q1', animal: { label: 'أرنب', icon: '🐰' }, correctFood: { label: 'جزر', icon: '🥕' }, wrongFoods: [{ label: 'سمك', icon: '🐟' }, { label: 'عسل', icon: '🍯' }] },
+          { id: 'q2', animal: { label: 'قطة', icon: '🐱' }, correctFood: { label: 'سمك', icon: '🐟' }, wrongFoods: [{ label: 'جزر', icon: '🥕' }, { label: 'عشب', icon: '🌿' }] },
+          { id: 'q3', animal: { label: 'بقرة', icon: '🐄' }, correctFood: { label: 'عشب', icon: '🌿' }, wrongFoods: [{ label: 'لحم', icon: '🥩' }, { label: 'عسل', icon: '🍯' }] },
+          { id: 'q4', animal: { label: 'دب', icon: '🐻' }, correctFood: { label: 'عسل', icon: '🍯' }, wrongFoods: [{ label: 'جزر', icon: '🥕' }, { label: 'سمك', icon: '🐟' }] },
+          { id: 'q5', animal: { label: 'طائر', icon: '🐦' }, correctFood: { label: 'حبوب', icon: '🌾' }, wrongFoods: [{ label: 'لحم', icon: '🥩' }, { label: 'أوراق', icon: '🍃' }] },
+          { id: 'q6', animal: { label: 'أسد', icon: '🦁' }, correctFood: { label: 'لحم', icon: '🥩' }, wrongFoods: [{ label: 'عشب', icon: '🌿' }, { label: 'حبوب', icon: '🌾' }] },
+          { id: 'q7', animal: { label: 'فيل', icon: '🐘' }, correctFood: { label: 'أوراق', icon: '🍃' }, wrongFoods: [{ label: 'لحم', icon: '🥩' }, { label: 'سمك', icon: '🐟' }] },
         ],
       },
     },

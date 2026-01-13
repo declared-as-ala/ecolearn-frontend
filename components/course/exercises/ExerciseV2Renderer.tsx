@@ -113,8 +113,8 @@ function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: Choic
   const [selected, setSelected] = useState<string | null>(null);
   const [isLocked, setIsLocked] = useState(false);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
-  // Strict comparison: only exact match is correct
-  const correct = selected !== null && selected.trim() === exercise.correct?.trim();
+  // Strict comparison: only exact match is correct (strip checkmarks for comparison)
+  const correct = selected !== null && cleanOptionText(selected) === cleanOptionText(exercise.correct || '');
 
   // Handle option selection with immediate feedback and locking
   const handleOptionClick = (opt: string) => {
@@ -123,9 +123,9 @@ function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: Choic
     setSelected(opt);
     setIsLocked(true);
     
-    // Strict validation: only exact match (with trim) is correct
+    // Strict validation: only exact match is correct (strip checkmarks for comparison)
     // Wrong answers are NEVER marked as correct
-    const isCorrect = opt.trim() === exercise.correct?.trim();
+    const isCorrect = cleanOptionText(opt) === cleanOptionText(exercise.correct || '');
     const score = isCorrect ? maxScore : 0;
     const passed = score >= maxScore * 0.7;
     
@@ -190,8 +190,8 @@ function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: Choic
       return 'border-gray-100 bg-white hover:border-blue-300';
     }
     // Selected option - show green if correct, red if wrong
-    // Strict validation: only exact match with correct answer is correct
-    if (opt.trim() === exercise.correct?.trim()) {
+    // Strict validation: only exact match with correct answer is correct (strip checkmarks)
+    if (cleanOptionText(opt) === cleanOptionText(exercise.correct || '')) {
       return 'border-green-500 bg-green-50 text-green-900';
     } else {
       return 'border-red-500 bg-red-50 text-red-900';
@@ -210,7 +210,7 @@ function ChoiceExercise({ exercise, isCompleted, onComplete }: { exercise: Choic
         <div className="grid grid-cols-1 gap-4 mb-5">
           {displayOptions.map((opt: string) => {
             const isSelected = selected === opt;
-            const isCorrectOption = opt.trim() === exercise.correct?.trim();
+            const isCorrectOption = cleanOptionText(opt) === cleanOptionText(exercise.correct || '');
             const showFeedback = isLocked && isSelected;
             
             return (
@@ -696,7 +696,6 @@ function DragSequenceExercise({ exercise, isCompleted, onComplete }: { exercise:
   }, [exercise.id, exercise.items]);
   
   const [order, setOrder] = useState<string[]>(initialOrder);
-  const [dragId, setDragId] = useState<string | null>(null);
   const [result, setResult] = useState<null | { passed: boolean; score: number; feedback: string }>(null);
 
   // Completed view (server says completed)
@@ -725,21 +724,21 @@ function DragSequenceExercise({ exercise, isCompleted, onComplete }: { exercise:
         maxScore={maxScore}
         feedback={result.feedback}
         rewardBadge={exercise.rewardBadge}
-        onRetry={() => { setResult(null); setOrder(initialOrder); setDragId(null); }}
+        onRetry={() => { setResult(null); setOrder(initialOrder); }}
       />
     );
   }
 
-  const move = (sourceId: string, targetId: string) => {
-    if (sourceId === targetId) return;
+  // Move item up or down in the order
+  const moveItem = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === order.length - 1) return;
+    
     setOrder((prev) => {
-      const next = [...prev];
-      const si = next.indexOf(sourceId);
-      const ti = next.indexOf(targetId);
-      if (si < 0 || ti < 0) return prev;
-      next.splice(si, 1);
-      next.splice(ti, 0, sourceId);
-      return next;
+      const newOrder = [...prev];
+      const newIndex = direction === 'up' ? index - 1 : index + 1;
+      [newOrder[index], newOrder[newIndex]] = [newOrder[newIndex], newOrder[index]];
+      return newOrder;
     });
   };
 
@@ -763,35 +762,76 @@ function DragSequenceExercise({ exercise, isCompleted, onComplete }: { exercise:
         <CardTitle className="text-xl font-extrabold text-sky-900">{exercise.title}</CardTitle>
       </CardHeader>
       <CardContent className="p-6 space-y-4">
-        <p className="text-lg font-bold text-gray-800 whitespace-pre-wrap">{exercise.prompt}</p>
-        <div className="bg-white rounded-2xl border-4 border-sky-200 p-4">
-          <p className="font-bold text-sky-800 mb-3">اسحب العناصر لتعديل الترتيب 👇</p>
-          <div className="flex flex-col gap-3">
-            {order.map((id) => {
-              const item = byId.get(id);
-              return (
-                <div
-                  key={id}
-                  draggable
-                  onDragStart={() => setDragId(id)}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => { if (dragId) move(dragId, id); }}
-                  className="cursor-move select-none rounded-2xl border-2 border-sky-100 bg-gradient-to-r from-white to-sky-50 p-4 font-extrabold text-gray-800 shadow-sm hover:shadow-md transition-all active:scale-95"
-                >
-                  <span className="ml-2 text-2xl">{item?.emoji || '🔸'}</span>
-                  {item?.label || id}
-                </div>
-              );
-            })}
-          </div>
+        <p className="text-lg font-bold text-gray-800 whitespace-pre-wrap mb-4">{exercise.prompt}</p>
+        
+        {/* Instructions */}
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-3 mb-4">
+          <p className="text-center font-bold text-blue-800 text-lg">
+            استخدم الأسهم ⬆️ ⬇️ لترتيب العناصر بالترتيب الصحيح
+          </p>
         </div>
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <p className="font-bold text-amber-700">+{exercise.points} نقطة</p>
+
+        {/* Items List */}
+        <div className="bg-white rounded-2xl border-4 border-sky-200 p-4 space-y-3">
+          {order.map((id, index) => {
+            const item = byId.get(id);
+            const position = index + 1;
+            
+            return (
+              <div
+                key={id}
+                className="flex items-center gap-3 p-4 rounded-2xl border-2 border-sky-100 bg-gradient-to-r from-white to-sky-50 shadow-sm hover:shadow-md transition-all"
+              >
+                {/* Position Number */}
+                <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-500 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                  {position}
+                </div>
+                
+                {/* Item Content */}
+                <div className="flex-1 flex items-center gap-3">
+                  {item?.emoji && (
+                    <span className="text-3xl">{item.emoji}</span>
+                  )}
+                  <span className="font-bold text-gray-800 text-lg flex-1">
+                    {item?.label || id}
+                  </span>
+                </div>
+                
+                {/* Move Buttons */}
+                <div className="flex flex-col gap-1">
+                  <Button
+                    onClick={() => moveItem(index, 'up')}
+                    disabled={index === 0}
+                    size="sm"
+                    className="h-8 w-8 p-0 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    title="نقل للأعلى"
+                  >
+                    ⬆️
+                  </Button>
+                  <Button
+                    onClick={() => moveItem(index, 'down')}
+                    disabled={index === order.length - 1}
+                    size="sm"
+                    className="h-8 w-8 p-0 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    title="نقل للأسفل"
+                  >
+                    ⬇️
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex items-center justify-between gap-3 flex-wrap pt-2">
+          <p className="font-bold text-amber-700 text-lg">+{exercise.points} نقطة</p>
           <Button
             onClick={submit}
-            className="rounded-2xl bg-green-600 hover:bg-green-700 text-white font-bold"
+            className="rounded-2xl bg-green-600 hover:bg-green-700 text-white font-bold text-lg px-8 py-6"
+            size="lg"
           >
-            تحقّق ✅
+            تحقّق من الإجابة ✅
           </Button>
         </div>
       </CardContent>
@@ -835,7 +875,7 @@ function McqSetExercise({ exercise, isCompleted, onComplete }: { exercise: McqSe
     );
   }
 
-  const correctCount = exercise.questions.filter((q) => answers[q.id] === q.correct).length;
+  const correctCount = exercise.questions.filter((q) => cleanOptionText(answers[q.id] || '') === cleanOptionText(q.correct || '')).length;
   const score = Math.round((correctCount / Math.max(1, exercise.questions.length)) * maxScore);
   const passed = score >= maxScore * 0.7;
 
@@ -870,7 +910,7 @@ function McqSetExercise({ exercise, isCompleted, onComplete }: { exercise: McqSe
                       answers[q.id] === opt ? 'border-indigo-500 bg-indigo-50 text-indigo-900' : 'border-gray-100 bg-white hover:border-indigo-300'
                     }`}
                   >
-                    {opt}
+                    {cleanOptionText(opt)}
                   </button>
                 ))}
               </div>
@@ -929,7 +969,7 @@ function ScenarioExercise({ exercise, isCompleted, onComplete }: { exercise: Sce
   }
 
   const submit = () => {
-    const correct = selected === exercise.correct;
+    const correct = cleanOptionText(selected || '') === cleanOptionText(exercise.correct || '');
     const score = correct ? maxScore : 0;
     const passed = score >= maxScore * 0.7;
     const fb = correct ? exercise.successMessage : exercise.errorMessage;
