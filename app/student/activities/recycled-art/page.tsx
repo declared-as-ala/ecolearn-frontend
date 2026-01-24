@@ -154,9 +154,9 @@ export default function RecycledArtActivityPage() {
         <ActivityScreen
             currentScreen={currentScreen}
             totalScreens={TOTAL_SCREENS}
-            onNext={handleNext}
+            onNext={currentScreen === TOTAL_SCREENS ? handleComplete : handleNext}
             onPrevious={currentScreen > 1 ? handlePrevious : undefined}
-            showNext={true}
+            showNext={currentScreen !== TOTAL_SCREENS}
             showPrevious={currentScreen > 1}
             nextLabel={currentScreen === TOTAL_SCREENS ? 'إنهاء النشاط ➡️' : 'متابعة ➡️'}
         >
