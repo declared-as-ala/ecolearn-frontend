@@ -62,6 +62,13 @@ export default function RecycledArtActivityPage() {
         }
     };
 
+    const handleExit = () => {
+        // Navigate back to activities page
+        if (typeof window !== 'undefined') {
+            window.location.href = '/student/activities';
+        }
+    };
+
     const updateActivityData = (updates: any) => {
         setActivityData((prev: any) => ({ ...prev, ...updates }));
     };
@@ -114,6 +121,7 @@ export default function RecycledArtActivityPage() {
             showNext={currentScreen !== TOTAL_SCREENS}
             showPrevious={currentScreen > 1}
             nextLabel={currentScreen === TOTAL_SCREENS ? 'إنهاء النشاط ➡️' : 'متابعة ➡️'}
+            onExit={handleExit}
         >
             {renderScreen()}
         </ActivityScreen>
