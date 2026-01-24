@@ -996,3 +996,134 @@ export const parentAPI = {
   },
 };
 
+// Activities API
+export const activitiesAPI = {
+  saveProgress: async (activityId: string, data: {
+    currentScreen: number;
+    progressData: any;
+  }): Promise<any> => {
+    const response = await apiRequest(`/activities/${activityId}/progress`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to save progress');
+    return result;
+  },
+
+  submitTreePlanting: async (data: {
+    userId: string;
+    activityId: string;
+    studentName: string;
+    treeType: string;
+    plantingDate: string;
+    school: string;
+    plantingLocation: string;
+    plantingLocationArabic: string;
+    assignedRole: string;
+    assignedRoleArabic: string;
+    waterAmount: number;
+    documentationNote: string;
+    documentationEmoji: string;
+    careInitiatives: string[];
+    careInitiativesArabic: string[];
+    reflectionResponses?: any;
+  }): Promise<any> => {
+    const response = await apiRequest('/activities/tree-planting/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to submit activity');
+    return result;
+  },
+
+  getMyTrees: async (): Promise<any[]> => {
+    const response = await apiRequest('/activities/tree-planting/my-trees');
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to fetch trees');
+    return result;
+  },
+
+  submitRecycledArt: async (data: {
+    userId: string;
+    activityId: string;
+    studentName: string;
+    classSection: string;
+    toolsUsed: string[];
+    modelIdea: string;
+    activityDate: string;
+    modelImage?: any;
+    documentationNote: string;
+    documentationEmoji: string;
+    initiatives: string[];
+    initiativesArabic: string[];
+    evaluationData?: any;
+    reflectionResponses?: any;
+  }): Promise<any> => {
+    const response = await apiRequest('/activities/recycled-art/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to submit activity');
+    return result;
+  },
+
+  submitGreenCleanliness: async (data: {
+    userId: string;
+    activityId: string;
+    cleaningArea: string;
+    cleaningAreaArabic: string;
+    assignedRole: string;
+    assignedRoleArabic: string;
+    studentName?: string;
+    classSection?: string;
+    toolsUsed?: string[];
+    sortedItems?: Record<string, string>;
+    documentationNote: string;
+    documentationEmoji: string;
+    reflection?: string;
+    initiatives: string[];
+    initiativesArabic: string[];
+    evaluationData?: any;
+    reflectionResponses?: any;
+  }): Promise<any> => {
+    const response = await apiRequest('/activities/green-cleanliness/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to submit activity');
+    return result;
+  },
+
+  submitEcoVillage: async (data: {
+    userId: string;
+    activityId: string;
+    assignedRole: string;
+    assignedRoleArabic: string;
+    studentName: string;
+    completedPart: string;
+    completedPartArabic: string;
+    completionDate: string;
+    school: string;
+    environmentalMessage: string;
+    documentationNote: string;
+    documentationEmoji: string;
+    initiatives: string[];
+    initiativesArabic: string[];
+    customIdea?: string;
+    evaluationData?: any;
+    reflectionResponses?: any;
+  }): Promise<any> => {
+    const response = await apiRequest('/activities/ecovillage/submit', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message || 'Failed to submit activity');
+    return result;
+  },
+};
+
