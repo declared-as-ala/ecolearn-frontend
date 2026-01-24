@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 
 interface ActivityScreenProps {
     children: ReactNode;
@@ -13,6 +14,7 @@ interface ActivityScreenProps {
     showPrevious?: boolean;
     nextLabel?: string;
     className?: string;
+    onExit?: () => void;
 }
 
 export default function ActivityScreen({
@@ -24,8 +26,20 @@ export default function ActivityScreen({
     showNext = true,
     showPrevious = false,
     nextLabel = 'متابعة ➡️',
-    className = ''
+    className = '',
+    onExit
 }: ActivityScreenProps) {
+    const handleExit = () => {
+        if (onExit) {
+            onExit();
+        } else {
+            // Default: navigate to activities page
+            if (typeof window !== 'undefined') {
+                window.location.href = '/student/activities';
+            }
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-hidden" dir="rtl">
             {/* Progress Bar */}
@@ -42,6 +56,17 @@ export default function ActivityScreen({
             <div className="absolute top-4 left-4 text-sm text-gray-600 font-medium bg-white px-3 py-1 rounded-full shadow-sm">
                 {currentScreen} / {totalScreens}
             </div>
+
+            {/* Exit Button */}
+            <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleExit}
+                className="absolute top-4 right-4 z-20 bg-white hover:bg-red-50 text-gray-600 hover:text-red-600 rounded-full p-2 shadow-lg transition-all border-2 border-gray-200 hover:border-red-300"
+                title="خروج"
+            >
+                <X className="w-5 h-5" />
+            </motion.button>
 
             {/* Main Content */}
             <motion.div
