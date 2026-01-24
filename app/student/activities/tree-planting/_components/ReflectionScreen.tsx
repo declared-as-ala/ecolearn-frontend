@@ -26,6 +26,7 @@ export default function ReflectionScreen({ onComplete, onUpdate, data }: Reflect
     const [responses, setResponses] = useState<Record<string, string>>(
         data.reflectionResponses || {}
     );
+    const [isNavigating, setIsNavigating] = useState(false);
 
     const handleResponseChange = (questionId: string, value: string) => {
         const updated = { ...responses, [questionId]: value };
@@ -33,8 +34,21 @@ export default function ReflectionScreen({ onComplete, onUpdate, data }: Reflect
         onUpdate({ reflectionResponses: updated });
     };
 
-    const canComplete = Object.keys(responses).length === reflectionQuestions.length &&
-        Object.values(responses).every(r => r.trim().length > 0);
+    const handleFinish = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (isNavigating) return; // Prevent double clicks
+        
+        setIsNavigating(true);
+        
+        // Immediate navigation - no validation required
+        if (typeof window !== 'undefined') {
+            window.location.href = '/student/dashboard';
+        } else {
+            onComplete();
+        }
+    };
 
     return (
         <div className="w-full max-w-5xl mx-auto p-6" dir="rtl">
@@ -91,24 +105,18 @@ export default function ReflectionScreen({ onComplete, onUpdate, data }: Reflect
             </motion.div>
 
             <motion.button
-                whileHover={canComplete ? { scale: 1.05 } : {}}
-                whileTap={canComplete ? { scale: 0.95 } : {}}
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (canComplete) {
-                        onComplete();
-                    }
-                }}
-                disabled={!canComplete}
+                whileHover={!isNavigating ? { scale: 1.05 } : {}}
+                whileTap={!isNavigating ? { scale: 0.95 } : {}}
+                onClick={handleFinish}
+                disabled={isNavigating}
                 type="button"
                 className={`w-full py-4 rounded-xl font-bold text-xl shadow-lg transition-all ${
-                    canComplete
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    isNavigating
+                        ? 'bg-gray-400 text-white cursor-wait'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
                 }`}
             >
-                ➡️ إنهاء النشاط
+                {isNavigating ? '⏳ جاري الانتقال...' : '➡️ إنهاء النشاط'}
             </motion.button>
         </div>
     );

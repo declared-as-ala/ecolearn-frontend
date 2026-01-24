@@ -44,8 +44,26 @@ export default function EvaluationScreen({ onComplete, onUpdate, data }: Evaluat
     const [evaluations, setEvaluations] = useState<Record<string, string>>(data.evaluationData || {});
     const [responses, setResponses] = useState<Record<string, string>>(data.reflectionResponses || {});
     const [showReflection, setShowReflection] = useState(false);
+    const [isNavigating, setIsNavigating] = useState(false);
 
     const isTeacher = user?.role === 'teacher';
+    
+    const handleFinish = (e?: React.MouseEvent) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        if (isNavigating) return;
+        setIsNavigating(true);
+        
+        // Immediate navigation
+        if (typeof window !== 'undefined') {
+            window.location.replace('/student/dashboard');
+        } else {
+            onComplete();
+        }
+    };
 
     const handleRatingChange = (indicatorId: string, rating: string) => {
         const updated = { ...evaluations, [indicatorId]: rating };
@@ -63,7 +81,7 @@ export default function EvaluationScreen({ onComplete, onUpdate, data }: Evaluat
         if (isTeacher) {
             setShowReflection(true);
         } else {
-            onComplete();
+            handleFinish();
         }
     };
 
@@ -127,7 +145,7 @@ export default function EvaluationScreen({ onComplete, onUpdate, data }: Evaluat
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={onComplete}
+                    onClick={handleFinish}
                     className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white rounded-xl font-bold text-xl shadow-lg"
                 >
                     ➡️ إنهاء النشاط
@@ -208,17 +226,18 @@ export default function EvaluationScreen({ onComplete, onUpdate, data }: Evaluat
                     </div>
 
                     <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={onComplete}
-                        disabled={!canComplete}
+                        whileHover={!isNavigating ? { scale: 1.05 } : {}}
+                        whileTap={!isNavigating ? { scale: 0.95 } : {}}
+                        onClick={handleFinish}
+                        disabled={isNavigating}
+                        type="button"
                         className={`w-full py-4 rounded-xl font-bold text-xl shadow-lg transition-all ${
-                            canComplete
-                                ? 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            isNavigating
+                                ? 'bg-gray-400 text-white cursor-wait'
+                                : 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white'
                         }`}
                     >
-                        ➡️ إنهاء النشاط
+                        {isNavigating ? '⏳ جاري الانتقال...' : '➡️ إنهاء النشاط'}
                     </motion.button>
                 </div>
             )}

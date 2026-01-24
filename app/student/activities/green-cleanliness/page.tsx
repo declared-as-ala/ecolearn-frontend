@@ -55,17 +55,10 @@ export default function GreenCleanlinessActivityPage() {
         }
     };
 
-    const handleComplete = (e?: React.MouseEvent) => {
-        // Prevent any default behaviors
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        // Just navigate away without backend interaction - use replace to prevent back navigation
-        // Use window.location for immediate navigation without any React/Next.js side effects
+    const handleComplete = () => {
+        // Immediate navigation - no API calls, no delays
         if (typeof window !== 'undefined') {
-            window.location.href = '/student/dashboard';
+            window.location.replace('/student/dashboard');
         }
     };
 
