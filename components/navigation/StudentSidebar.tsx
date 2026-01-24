@@ -31,9 +31,24 @@ export default function StudentSidebar() {
       icon: <GraduationCap className="w-5 h-5" />
     },
     {
-      href: '/student/activities',
-      label: 'الأنشطة',
-      icon: <Activity className="w-5 h-5" />
+      href: '/student/activities/tree-planting',
+      label: '🌱 يوم التشجير',
+      icon: <span className="text-xl">🌱</span>
+    },
+    {
+      href: '/student/activities/recycled-art',
+      label: '🎨 الفن الأخضر',
+      icon: <span className="text-xl">🎨</span>
+    },
+    {
+      href: '/student/activities/green-cleanliness',
+      label: '🧹 النظافة الخضراء',
+      icon: <span className="text-xl">🧹</span>
+    },
+    {
+      href: '/student/activities/ecovillage',
+      label: '🏡 EcoVillage',
+      icon: <span className="text-xl">🏡</span>
     },
     {
       href: '/student/settings',
@@ -105,8 +120,8 @@ export default function StudentSidebar() {
                 ? pathname.startsWith('/student/courses')
                 : item.href === '/student/dashboard'
                   ? pathname === '/student/dashboard'
-                  : item.href === '/student/activities'
-                    ? pathname.startsWith('/student/activities')
+                  : item.href.startsWith('/student/activities')
+                    ? pathname === item.href
                     : pathname === item.href;
 
               const content = (

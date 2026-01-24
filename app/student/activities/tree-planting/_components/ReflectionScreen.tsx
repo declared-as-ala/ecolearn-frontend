@@ -91,10 +91,17 @@ export default function ReflectionScreen({ onComplete, onUpdate, data }: Reflect
             </motion.div>
 
             <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onComplete}
+                whileHover={canComplete ? { scale: 1.05 } : {}}
+                whileTap={canComplete ? { scale: 0.95 } : {}}
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (canComplete) {
+                        onComplete();
+                    }
+                }}
                 disabled={!canComplete}
+                type="button"
                 className={`w-full py-4 rounded-xl font-bold text-xl shadow-lg transition-all ${
                     canComplete
                         ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'

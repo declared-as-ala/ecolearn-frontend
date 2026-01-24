@@ -55,9 +55,18 @@ export default function RecycledArtActivityPage() {
         }
     };
 
-    const handleComplete = () => {
-        // Just navigate away without backend interaction
-        router.push('/student/dashboard');
+    const handleComplete = (e?: React.MouseEvent) => {
+        // Prevent any default behaviors
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        // Just navigate away without backend interaction - use replace to prevent back navigation
+        // Use window.location for immediate navigation without any React/Next.js side effects
+        if (typeof window !== 'undefined') {
+            window.location.href = '/student/dashboard';
+        }
     };
 
     const updateActivityData = (updates: any) => {
@@ -102,7 +111,7 @@ export default function RecycledArtActivityPage() {
         <ActivityScreen
             currentScreen={currentScreen}
             totalScreens={TOTAL_SCREENS}
-            onNext={currentScreen === TOTAL_SCREENS ? handleComplete : handleNext}
+            onNext={currentScreen === TOTAL_SCREENS ? () => handleComplete() : handleNext}
             onPrevious={currentScreen > 1 ? handlePrevious : undefined}
             showNext={currentScreen !== TOTAL_SCREENS}
             showPrevious={currentScreen > 1}
