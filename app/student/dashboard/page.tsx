@@ -405,6 +405,49 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
+        {/* Activities Quick Access */}
+        <Card className="mb-6 bg-white/80 backdrop-blur-sm border-2 border-green-200/50 shadow-md rounded-3xl overflow-hidden">
+          <CardContent className="p-6">
+            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <Leaf className="w-6 h-6 text-green-500" />
+              الأنشطة التطبيقية الميدانية 🌱
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link href="/student/activities/tree-planting">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 text-center border-2 border-green-200 hover:shadow-md hover:scale-105 transition-all cursor-pointer">
+                  <div className="text-4xl mb-2">🌱</div>
+                  <p className="font-bold text-gray-800 text-sm">يوم التشجير</p>
+                </div>
+              </Link>
+              <Link href="/student/activities/recycled-art">
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 text-center border-2 border-purple-200 hover:shadow-md hover:scale-105 transition-all cursor-pointer">
+                  <div className="text-4xl mb-2">🎨</div>
+                  <p className="font-bold text-gray-800 text-sm">الفن الأخضر</p>
+                </div>
+              </Link>
+              <Link href="/student/activities/green-cleanliness">
+                <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl p-4 text-center border-2 border-green-200 hover:shadow-md hover:scale-105 transition-all cursor-pointer">
+                  <div className="text-4xl mb-2">🧹</div>
+                  <p className="font-bold text-gray-800 text-sm">النظافة الخضراء</p>
+                </div>
+              </Link>
+              <Link href="/student/activities/ecovillage">
+                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-4 text-center border-2 border-green-200 hover:shadow-md hover:scale-105 transition-all cursor-pointer">
+                  <div className="text-4xl mb-2">🏡</div>
+                  <p className="font-bold text-gray-800 text-sm">EcoVillage</p>
+                </div>
+              </Link>
+            </div>
+            <div className="mt-4 text-center">
+              <Link href="/student/activities">
+                <Button variant="outline" className="text-green-600 border-green-300 hover:bg-green-50">
+                  عرض جميع الأنشطة ➡️
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Badges Section */}
         {user.badges && user.badges.length > 0 && (
           <Card className="bg-white/80 backdrop-blur-sm border-2 border-green-200/50 shadow-md rounded-3xl overflow-hidden">

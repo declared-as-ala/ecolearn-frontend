@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, GraduationCap, Settings, LogOut, Leaf, ChevronRight, ChevronLeft } from 'lucide-react';
+import { BookOpen, GraduationCap, Settings, LogOut, Leaf, ChevronRight, ChevronLeft, Activity } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
@@ -29,6 +29,11 @@ export default function StudentSidebar() {
       href: '/student/dashboard',
       label: 'مستواي',
       icon: <GraduationCap className="w-5 h-5" />
+    },
+    {
+      href: '/student/activities',
+      label: 'الأنشطة',
+      icon: <Activity className="w-5 h-5" />
     },
     {
       href: '/student/settings',
@@ -100,7 +105,9 @@ export default function StudentSidebar() {
                 ? pathname.startsWith('/student/courses')
                 : item.href === '/student/dashboard'
                   ? pathname === '/student/dashboard'
-                  : pathname === item.href;
+                  : item.href === '/student/activities'
+                    ? pathname.startsWith('/student/activities')
+                    : pathname === item.href;
 
               const content = (
                 <>
