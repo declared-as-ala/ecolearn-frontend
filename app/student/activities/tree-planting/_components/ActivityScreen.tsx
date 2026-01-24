@@ -50,13 +50,13 @@ export default function ActivityScreen({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.4 }}
-                className={`flex flex-col items-center justify-center min-h-screen p-6 ${className}`}
+                className={`flex flex-col items-center justify-center min-h-screen p-6 pb-32 overflow-y-auto ${className}`}
             >
                 {children}
             </motion.div>
 
             {/* Navigation Buttons */}
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 px-6">
+            <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4 px-6 z-10">
                 {showPrevious && onPrevious && (
                     <motion.button
                         whileHover={{ scale: 1.05 }}

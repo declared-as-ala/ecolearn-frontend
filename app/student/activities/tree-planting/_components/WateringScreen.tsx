@@ -40,7 +40,7 @@ export default function WateringScreen({ onNext, onUpdate, data }: WateringScree
     };
 
     return (
-        <div className="w-full max-w-4xl mx-auto p-6" dir="rtl">
+        <div className="w-full max-w-4xl mx-auto p-6 pb-32" dir="rtl">
             <h2 className="text-4xl font-bold text-green-800 mb-8 text-center">
                 السقي الأول
             </h2>
@@ -70,7 +70,7 @@ export default function WateringScreen({ onNext, onUpdate, data }: WateringScree
                 </div>
 
                 {/* Water Amount Slider */}
-                <div className="mb-6">
+                <div className="mb-8">
                     <label className="block text-2xl font-bold text-gray-700 mb-4 text-center">
                         كمية الماء: {waterAmount}%
                     </label>
@@ -85,7 +85,7 @@ export default function WateringScreen({ onNext, onUpdate, data }: WateringScree
                             background: `linear-gradient(to right, #10b981 0%, #10b981 ${waterAmount}%, #e5e7eb ${waterAmount}%, #e5e7eb 100%)`
                         }}
                     />
-                    <div className="flex justify-between text-sm text-gray-500 mt-2">
+                    <div className="flex justify-between text-sm text-gray-500 mt-2 mb-4">
                         <span>قليل</span>
                         <span>متوسط</span>
                         <span>كثير</span>
@@ -93,7 +93,7 @@ export default function WateringScreen({ onNext, onUpdate, data }: WateringScree
                 </div>
 
                 {/* Water Button */}
-                <div className="text-center mb-4">
+                <div className="text-center mb-6">
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -109,7 +109,7 @@ export default function WateringScreen({ onNext, onUpdate, data }: WateringScree
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`text-center p-4 rounded-xl ${
+                        className={`text-center p-4 rounded-xl mb-6 ${
                             isCorrect
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-yellow-100 text-yellow-800'
@@ -120,7 +120,7 @@ export default function WateringScreen({ onNext, onUpdate, data }: WateringScree
                 )}
 
                 {/* Visual Water Indicator */}
-                <div className="mt-6 flex justify-center gap-2">
+                <div className="mt-6 mb-4 flex justify-center gap-2">
                     {Array.from({ length: 10 }).map((_, i) => (
                         <motion.div
                             key={i}
