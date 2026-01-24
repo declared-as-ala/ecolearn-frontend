@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { activitiesAPI, usersAPI } from '@/lib/api';
 import ActivityScreen from '../tree-planting/_components/ActivityScreen';
 import WelcomeScreen from './_components/WelcomeScreen';
 import QuoteScreen from './_components/QuoteScreen';
@@ -16,7 +15,6 @@ import IdentityCardScreen from './_components/IdentityCardScreen';
 import DocumentationScreen from './_components/DocumentationScreen';
 import InitiativeScreen from './_components/InitiativeScreen';
 import EvaluationScreen from './_components/EvaluationScreen';
-import CompletionScreen from '../tree-planting/_components/CompletionScreen';
 
 const TOTAL_SCREENS = 11;
 
@@ -24,7 +22,6 @@ export default function RecycledArtActivityPage() {
     const router = useRouter();
     const { user } = useAuth();
     const [currentScreen, setCurrentScreen] = useState(1);
-    const [completionData, setCompletionData] = useState<{ pointsEarned?: number; badgesEarned?: string[] } | null>(null);
     const [activityData, setActivityData] = useState<any>({
         studentName: '',
         classSection: '',
@@ -58,43 +55,9 @@ export default function RecycledArtActivityPage() {
         }
     };
 
-    const handleComplete = async () => {
-        if (!user) return;
-        
-        try {
-            // Submit the activity
-            const result = await activitiesAPI.submitRecycledArt({
-                activityId: 'recycled-art-activity',
-                userId: user.id || user._id || '',
-                ...activityData
-            });
-
-            // Store completion data
-            setCompletionData({
-                pointsEarned: result.pointsEarned || 100,
-                badgesEarned: result.badgesEarned || ['🎨 بطل الفن الأخضر']
-            });
-
-            // Add points to user
-            if (result.pointsEarned) {
-                try {
-                    await usersAPI.addPoints({
-                        points: result.pointsEarned,
-                        type: 'activity',
-                        description: 'نشاط تطبيقي ميداني: صناعة مجسم إبداعي من البلاستيك المعاد تدويره',
-                        activityId: 'recycled-art-activity'
-                    });
-                } catch (err) {
-                    console.log('Points may already be added by backend');
-                }
-            }
-
-            // Navigate to completion screen
-            setCurrentScreen(TOTAL_SCREENS + 1);
-        } catch (error) {
-            console.error('Error completing activity:', error);
-            alert('حدث خطأ أثناء حفظ النشاط. يرجى المحاولة مرة أخرى.');
-        }
+    const handleComplete = () => {
+        // Just navigate away without backend interaction
+        router.push('/student/dashboard');
     };
 
     const updateActivityData = (updates: any) => {
@@ -126,13 +89,7 @@ export default function RecycledArtActivityPage() {
             case 11:
                 return <EvaluationScreen onComplete={handleComplete} onUpdate={updateActivityData} data={activityData} />;
             default:
-                return (
-                    <CompletionScreen
-                        pointsEarned={completionData?.pointsEarned || 100}
-                        badgesEarned={completionData?.badgesEarned || ['🎨 بطل الفن الأخضر']}
-                        onFinish={() => router.push('/student/dashboard')}
-                    />
-                );
+                return null;
         }
     };
 
@@ -140,15 +97,6 @@ export default function RecycledArtActivityPage() {
         return null;
     }
 
-    const showCompletion = currentScreen > TOTAL_SCREENS;
-
-    if (showCompletion) {
-        return (
-            <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 overflow-auto" dir="rtl">
-                {renderScreen()}
-            </div>
-        );
-    }
 
     return (
         <ActivityScreen

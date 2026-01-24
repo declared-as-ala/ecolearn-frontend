@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { activitiesAPI, usersAPI } from '@/lib/api';
 import ActivityScreen from './_components/ActivityScreen';
 import WelcomeScreen from './_components/WelcomeScreen';
 import QuoteScreen from './_components/QuoteScreen';
@@ -18,7 +17,6 @@ import DocumentationScreen from './_components/DocumentationScreen';
 import InitiativesScreen from './_components/InitiativesScreen';
 import EvaluationScreen from './_components/EvaluationScreen';
 import ReflectionScreen from './_components/ReflectionScreen';
-import CompletionScreen from './_components/CompletionScreen';
 
 const TOTAL_SCREENS = 13;
 
@@ -26,7 +24,6 @@ export default function TreePlantingActivityPage() {
     const router = useRouter();
     const { user } = useAuth();
     const [currentScreen, setCurrentScreen] = useState(1);
-    const [completionData, setCompletionData] = useState<{ pointsEarned?: number; badgesEarned?: string[] } | null>(null);
     const [activityData, setActivityData] = useState<any>({
         plantingLocation: null,
         plantingLocationArabic: null,
@@ -63,44 +60,9 @@ export default function TreePlantingActivityPage() {
         }
     };
 
-    const handleComplete = async () => {
-        if (!user) return;
-        
-        try {
-            // Submit the activity
-            const result = await activitiesAPI.submitTreePlanting({
-                activityId: 'tree-planting-day', // This should match backend activity ID
-                userId: user.id || user._id || '',
-                ...activityData
-            });
-
-            // Store completion data
-            setCompletionData({
-                pointsEarned: result.pointsEarned || 100,
-                badgesEarned: result.badgesEarned || ['🌳 حامي الطبيعة']
-            });
-
-            // Add points to user (if not already added by backend)
-            if (result.pointsEarned) {
-                try {
-                    await usersAPI.addPoints({
-                        points: result.pointsEarned,
-                        type: 'activity',
-                        description: 'نشاط بيئي تطبيقي: يوم التشجير',
-                        activityId: 'tree-planting-day'
-                    });
-                } catch (err) {
-                    // Points might already be added by backend
-                    console.log('Points may already be added by backend');
-                }
-            }
-
-            // Navigate to completion screen
-            setCurrentScreen(TOTAL_SCREENS + 1);
-        } catch (error) {
-            console.error('Error completing activity:', error);
-            alert('حدث خطأ أثناء حفظ النشاط. يرجى المحاولة مرة أخرى.');
-        }
+    const handleComplete = () => {
+        // Just navigate away without backend interaction
+        router.push('/student/dashboard');
     };
 
     const updateActivityData = (updates: any) => {
@@ -178,13 +140,7 @@ export default function TreePlantingActivityPage() {
                     />
                 );
             default:
-                return (
-                    <CompletionScreen
-                        pointsEarned={completionData?.pointsEarned || 100}
-                        badgesEarned={completionData?.badgesEarned || ['🌳 حامي الطبيعة']}
-                        onFinish={() => router.push('/student/dashboard')}
-                    />
-                );
+                return null;
         }
     };
 
@@ -192,16 +148,6 @@ export default function TreePlantingActivityPage() {
         return null;
     }
 
-    const showCompletion = currentScreen > TOTAL_SCREENS;
-
-    // Don't wrap completion screen with ActivityScreen
-    if (showCompletion) {
-        return (
-            <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-auto" dir="rtl">
-                {renderScreen()}
-            </div>
-        );
-    }
 
     return (
         <ActivityScreen

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { activitiesAPI, usersAPI } from '@/lib/api';
 import ActivityScreen from '../tree-planting/_components/ActivityScreen';
 import WelcomeScreen from './_components/WelcomeScreen';
 import QuoteScreen from './_components/QuoteScreen';
@@ -15,7 +14,6 @@ import SortingScreen from './_components/SortingScreen';
 import DocumentationScreen from './_components/DocumentationScreen';
 import InitiativeScreen from './_components/InitiativeScreen';
 import EvaluationScreen from './_components/EvaluationScreen';
-import CompletionScreen from '../tree-planting/_components/CompletionScreen';
 
 const TOTAL_SCREENS = 10;
 
@@ -23,7 +21,6 @@ export default function GreenCleanlinessActivityPage() {
     const router = useRouter();
     const { user } = useAuth();
     const [currentScreen, setCurrentScreen] = useState(1);
-    const [completionData, setCompletionData] = useState<{ pointsEarned?: number; badgesEarned?: string[] } | null>(null);
     const [activityData, setActivityData] = useState<any>({
         cleaningArea: null,
         cleaningAreaArabic: null,
@@ -58,43 +55,9 @@ export default function GreenCleanlinessActivityPage() {
         }
     };
 
-    const handleComplete = async () => {
-        if (!user) return;
-        
-        try {
-            // Submit the activity
-            const result = await activitiesAPI.submitGreenCleanliness({
-                activityId: 'green-cleanliness-campaign',
-                userId: user.id || user._id || '',
-                ...activityData
-            });
-
-            // Store completion data
-            setCompletionData({
-                pointsEarned: result.pointsEarned || 100,
-                badgesEarned: result.badgesEarned || ['🧹 بطل النظافة الخضراء']
-            });
-
-            // Add points to user
-            if (result.pointsEarned) {
-                try {
-                    await usersAPI.addPoints({
-                        points: result.pointsEarned,
-                        type: 'activity',
-                        description: 'حملة النظافة الخضراء: أبطال بيئتنا يحافظون على نظافة مدرستهم',
-                        activityId: 'green-cleanliness-campaign'
-                    });
-                } catch (err) {
-                    console.log('Points may already be added by backend');
-                }
-            }
-
-            // Navigate to completion screen
-            setCurrentScreen(TOTAL_SCREENS + 1);
-        } catch (error) {
-            console.error('Error completing activity:', error);
-            alert('حدث خطأ أثناء حفظ النشاط. يرجى المحاولة مرة أخرى.');
-        }
+    const handleComplete = () => {
+        // Just navigate away without backend interaction
+        router.push('/student/dashboard');
     };
 
     const updateActivityData = (updates: any) => {
@@ -124,13 +87,7 @@ export default function GreenCleanlinessActivityPage() {
             case 10:
                 return <EvaluationScreen onComplete={handleComplete} onUpdate={updateActivityData} data={activityData} />;
             default:
-                return (
-                    <CompletionScreen
-                        pointsEarned={completionData?.pointsEarned || 100}
-                        badgesEarned={completionData?.badgesEarned || ['🧹 بطل النظافة الخضراء']}
-                        onFinish={() => router.push('/student/dashboard')}
-                    />
-                );
+                return null;
         }
     };
 
@@ -138,15 +95,6 @@ export default function GreenCleanlinessActivityPage() {
         return null;
     }
 
-    const showCompletion = currentScreen > TOTAL_SCREENS;
-
-    if (showCompletion) {
-        return (
-            <div className="fixed inset-0 bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 overflow-auto" dir="rtl">
-                {renderScreen()}
-            </div>
-        );
-    }
 
     return (
         <ActivityScreen
