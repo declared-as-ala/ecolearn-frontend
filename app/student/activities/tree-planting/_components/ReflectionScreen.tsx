@@ -42,9 +42,10 @@ export default function ReflectionScreen({ onComplete, onUpdate, data }: Reflect
         
         setIsNavigating(true);
         
-        // Immediate navigation - no validation required
+        // Immediate navigation - no API calls, no database saves
         if (typeof window !== 'undefined') {
-            window.location.href = '/student/dashboard';
+            // Use replace to prevent back button issues and ensure no API calls
+            window.location.replace('/student/dashboard');
         } else {
             onComplete();
         }

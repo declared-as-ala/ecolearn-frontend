@@ -102,7 +102,12 @@ export default function GreenCleanlinessActivityPage() {
         <ActivityScreen
             currentScreen={currentScreen}
             totalScreens={TOTAL_SCREENS}
-            onNext={currentScreen === TOTAL_SCREENS ? () => handleComplete() : handleNext}
+            onNext={currentScreen === TOTAL_SCREENS ? () => {
+                // Direct navigation - no API calls
+                if (typeof window !== 'undefined') {
+                    window.location.replace('/student/dashboard');
+                }
+            } : handleNext}
             onPrevious={currentScreen > 1 ? handlePrevious : undefined}
             showNext={currentScreen !== TOTAL_SCREENS}
             showPrevious={currentScreen > 1}
